@@ -300,7 +300,7 @@ public class AssignmentsEditorWidget extends Composite implements HasValue<Strin
     }
 
     protected void getDataTypes() {
-        final String simpleDataTypes = "Boolean:Boolean,Float:Float,Integer:Integer,Object:Object,String:String";
+        final String simpleDataTypes = "Boolean:Boolean,Float:Float,Integer:Integer,Object:Object,String:String,Long:Long,java.util.Date:java.util.Date,java.util.ArrayList:java.util.ArrayList";
         clientDataTypesService
                 .call(getDiagramPath())
                 .then(dataTypes -> {
