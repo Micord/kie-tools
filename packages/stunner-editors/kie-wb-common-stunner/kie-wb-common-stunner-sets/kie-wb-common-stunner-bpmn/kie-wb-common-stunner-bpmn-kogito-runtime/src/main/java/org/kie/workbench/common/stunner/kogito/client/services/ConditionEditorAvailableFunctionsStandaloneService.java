@@ -52,7 +52,10 @@ public class ConditionEditorAvailableFunctionsStandaloneService implements Condi
         List<FunctionDef> functionDefList = new ArrayList<>();
         for (FunctionDef functionDef : FunctionsRegistry.getInstance().getFunctions()) {
             String param = functionDef.getParams().get(0).getType();
-            if (param.equals(definitionClass)) {
+            if (functionDef.getName().equals("isNull")) {
+                functionDefList.add(functionDef);
+            }
+            else if (param.equals(definitionClass)) {
                 functionDefList.add(functionDef);
             }
         }
