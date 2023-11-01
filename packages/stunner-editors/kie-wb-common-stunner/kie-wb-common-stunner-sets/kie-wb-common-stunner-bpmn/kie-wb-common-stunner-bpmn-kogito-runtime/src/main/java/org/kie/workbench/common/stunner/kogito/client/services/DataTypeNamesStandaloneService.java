@@ -38,7 +38,10 @@ public class DataTypeNamesStandaloneService implements DataTypeNamesService {
                                                                              "Float",
                                                                              "Integer",
                                                                              "Object",
-                                                                             "String"));
+                                                                             "String",
+                                                                             "java.util.Date",
+                                                                             "java.util.ArrayList",
+                                                                             "Long"));
 
     Set<String> dataTypesSet = new HashSet<>();
     boolean cacheRead = false;

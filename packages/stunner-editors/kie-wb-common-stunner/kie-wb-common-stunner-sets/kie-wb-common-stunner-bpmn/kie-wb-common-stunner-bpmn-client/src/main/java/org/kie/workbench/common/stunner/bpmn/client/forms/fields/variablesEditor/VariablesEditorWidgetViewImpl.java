@@ -186,6 +186,7 @@ public class VariablesEditorWidgetViewImpl extends Composite implements Variable
                                                                                  "String",
                                                                                  "Long",
                                                                                  "java.util.Date",
+                                                                                 "java.util.ArrayList",
                                                                                  "Double"));
         final List<String> simpleDataTypeDisplayNames = new ArrayList<String>(Arrays.asList("Boolean",
                                                                                             "Float",
@@ -194,6 +195,7 @@ public class VariablesEditorWidgetViewImpl extends Composite implements Variable
                                                                                             "String",
                                                                                             "Long",
                                                                                             "java.util.Date",
+                                                                                            "java.util.ArrayList",
                                                                                             "Double"));
 
         Set<String> types = StringUtils.getSetDataTypes(value);
