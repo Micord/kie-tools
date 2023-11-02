@@ -34,7 +34,7 @@ import static java.util.Arrays.stream;
 public class ProcessesDataProvider {
 
     private final StunnerFormsHandler formsHandler;
-    final List<String> processIds;
+    private List<String> processIds;
 
     // CDI proxy.
     public ProcessesDataProvider() {
@@ -44,11 +44,10 @@ public class ProcessesDataProvider {
     @Inject
     public ProcessesDataProvider(final StunnerFormsHandler formsHandler) {
         this.formsHandler = formsHandler;
-        this.processIds = new LinkedList<>(toList(buildArrayProcessesPaths(getJsonResourcesPaths())));
     }
 
     public List<String> getProcessIds() {
-        return processIds;
+        return processIds = new LinkedList<>(toList(buildArrayProcessesPaths(getJsonResourcesPaths())));
     }
 
     void onProcessesUpdatedEvent(final @Observes ProcessDataEvent event) {
