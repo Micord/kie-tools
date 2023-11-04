@@ -120,7 +120,7 @@ public class CallActivityImpl extends ActivityImpl implements CallActivity {
 
 	private static native String[] getJsonResourcesPaths()/*-{
 		if (parent.parent.resourcesPaths && Object.keys(parent.parent.resourcesPaths).length !== 0) {
-			return JSON.parse(parent.parent.resourcesPaths);
+			return parent.parent.resourcesPaths;
 		}
 		return null;
 	}-*/;

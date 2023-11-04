@@ -74,12 +74,11 @@ public class ProcessesDataProvider {
     }-*/;
 
     private static native String[] buildArrayProcessesPaths(String jsonResources)/*-{
-        var parsedResourcesPaths = JSON.parse(jsonResources);
         var processesList = [];
-        if (parsedResourcesPaths === undefined) {
-            throw new Error("Failed parsed JSON with resources paths");
+        if (jsonResources === undefined) {
+            console.error("Failed get JSON with resources paths");
         }
-        for (var key in parsedResourcesPaths) {
+        for (var key in jsonResources) {
             processesList.push(key);
         }
         return processesList;
