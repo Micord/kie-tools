@@ -77,6 +77,7 @@ public class ProcessesDataProvider {
         var processesList = [];
         if (jsonResources === undefined) {
             console.error("Failed get JSON with resources paths");
+            return processesList;
         }
         for (var key in jsonResources) {
             processesList.push(key);
