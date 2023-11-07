@@ -66,8 +66,8 @@ public class ProcessesDataProviderTest {
 
     @Test
     public void testOnProcessesNOTUpdatedEvent() {
-        tested.processIds.add("p1");
-        tested.processIds.add("p2");
+        tested.getProcessIds().add("p1");
+        tested.getProcessIds().add("p2");
         ProcessDataEvent event = mock(ProcessDataEvent.class);
         when(event.getProcessIds()).thenReturn(new String[]{"p1", "p2"});
         tested.onProcessesUpdatedEvent(event);

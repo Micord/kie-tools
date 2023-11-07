@@ -34,7 +34,7 @@ import static java.util.Arrays.stream;
 public class ProcessesDataProvider {
 
     private final StunnerFormsHandler formsHandler;
-    final List<String> processIds;
+    private List<String> processIds;
 
     // CDI proxy.
     public ProcessesDataProvider() {
@@ -44,11 +44,10 @@ public class ProcessesDataProvider {
     @Inject
     public ProcessesDataProvider(final StunnerFormsHandler formsHandler) {
         this.formsHandler = formsHandler;
-        this.processIds = new LinkedList<>(toList(buildArrayProcessesPaths(getJsonResourcesPaths())));
     }
 
     public List<String> getProcessIds() {
-        return processIds;
+        return processIds = new LinkedList<>(toList(buildArrayProcessesPaths(getJsonResourcesPaths())));
     }
 
     void onProcessesUpdatedEvent(final @Observes ProcessDataEvent event) {
@@ -75,12 +74,12 @@ public class ProcessesDataProvider {
     }-*/;
 
     private static native String[] buildArrayProcessesPaths(String jsonResources)/*-{
-        var parsedResourcesPaths = JSON.parse(jsonResources);
         var processesList = [];
-        if (parsedResourcesPaths === undefined) {
-            throw new Error("Failed parsed JSON with resources paths");
+        if (jsonResources === undefined) {
+            console.error("Failed get JSON with resources paths");
+            return processesList;
         }
-        for (var key in parsedResourcesPaths) {
+        for (var key in jsonResources) {
             processesList.push(key);
         }
         return processesList;
