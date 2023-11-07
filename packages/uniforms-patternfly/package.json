@@ -1,6 +1,6 @@
 {
   "name": "@kie-tools/uniforms-patternfly",
-  "version": "0.0.0",
+  "version": "0.31.0",
   "description": "Patternfly forms for uniforms",
   "license": "Apache-2.0",
   "author": {
@@ -38,7 +38,6 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-react": "^7.16.0",
-    "@kie-tools-scripts/build-env": "workspace:*",
     "@kie-tools/eslint": "workspace:*",
     "@kie-tools/root-env": "workspace:*",
     "@kie-tools/tsconfig": "workspace:*",

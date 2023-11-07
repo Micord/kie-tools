@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "chrome-extension-serverless-workflow-editor",
-  "version": "0.0.0",
+  "version": "0.31.0",
   "description": "",
   "license": "Apache-2.0",
   "homepage": "https://github.com/kiegroup/kie-tools",
@@ -37,7 +37,6 @@
     "@kie-tools/serverless-workflow-combined-editor": "workspace:*",
     "@kie-tools/serverless-workflow-diagram-editor-assets": "workspace:*",
     "@kie-tools/serverless-workflow-diagram-editor-envelope": "workspace:*",
-    "@kie-tools/serverless-workflow-mermaid-viewer": "workspace:*",
     "@kie-tools/serverless-workflow-text-editor": "workspace:*",
     "@kie-tools/tsconfig": "workspace:*",
     "@types/chrome": "^0.0.193",

@@ -33,6 +33,7 @@ package-lock.json
 **/.env.development.local
 **/.env.test.local
 **/.env.production.local
+!packages/kie-sandbox-distribution/.env
 
 ## kie-editors-standalone
 **/it-tests/**/videos
@@ -42,7 +43,10 @@ package-lock.json
 
 ## online-editor
 **/videos/
-!packages/online-editor/build
+!packages/online-editor/build/**
+
+## serverless-logic-web-tools
+!packages/serverless-logic-web-tools/build/**
 
 ## vscode-*
 **/.vscode-test/
@@ -259,3 +263,7 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
+# xml-parser-ts-codegen on some packages
+packages/bpmn-marshaller/**/ts-gen
+packages/dmn-marshaller/**/ts-gen
+packages/scesim-marshaller/**/ts-gen

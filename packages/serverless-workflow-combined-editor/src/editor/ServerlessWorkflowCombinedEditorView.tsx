@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  Editor,
-  EditorApi,
-  EditorInitArgs,
-  EditorTheme,
-  KogitoEditorEnvelopeContextType,
-} from "@kie-tools-core/editor/dist/api";
+import { EditorInitArgs, EditorTheme, KogitoEditorEnvelopeContextType } from "@kie-tools-core/editor/dist/api";
 import { Notification } from "@kie-tools-core/notifications/dist/api";
 import * as React from "react";
-import { ServerlessWorkflowCombinedEditorChannelApi } from "../api";
+import { ServerlessWorkflowCombinedEditorApi, ServerlessWorkflowCombinedEditorChannelApi } from "../api";
 import { ServerlessWorkflowCombinedEditor } from "./ServerlessWorkflowCombinedEditor";
+import { Position } from "monaco-editor";
 
-export class ServerlessWorkflowCombinedEditorView implements Editor {
-  private readonly editorRef: React.RefObject<EditorApi>;
+export class ServerlessWorkflowCombinedEditorView implements ServerlessWorkflowCombinedEditorApi {
+  private readonly editorRef: React.RefObject<ServerlessWorkflowCombinedEditorApi>;
   public af_isReact = true;
   public af_componentId: "serverless-workflow-combined-editor";
   public af_componentTitle: "Serverless Workflow Combined Editor";
@@ -36,7 +31,7 @@ export class ServerlessWorkflowCombinedEditorView implements Editor {
     private readonly envelopeContext: KogitoEditorEnvelopeContextType<ServerlessWorkflowCombinedEditorChannelApi>,
     private readonly initArgs: EditorInitArgs
   ) {
-    this.editorRef = React.createRef<EditorApi>();
+    this.editorRef = React.createRef<ServerlessWorkflowCombinedEditorApi>();
   }
 
   public setContent(path: string, content: string): Promise<void> {
@@ -78,5 +73,13 @@ export class ServerlessWorkflowCombinedEditorView implements Editor {
 
   public async setTheme(theme: EditorTheme) {
     return this.editorRef.current!.setTheme(theme);
+  }
+
+  public colorNodes(nodeNames: string[], color: string, colorConnectedEnds: boolean): void {
+    this.editorRef.current!.colorNodes(nodeNames, color, colorConnectedEnds);
+  }
+
+  public moveCursorToPosition(position: Position): void {
+    this.editorRef.current!.moveCursorToPosition(position);
   }
 }

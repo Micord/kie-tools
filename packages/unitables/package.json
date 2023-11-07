@@ -1,6 +1,6 @@
 {
   "name": "@kie-tools/unitables",
-  "version": "0.0.0",
+  "version": "0.31.0",
   "description": "",
   "license": "Apache-2.0",
   "keywords": [],
@@ -40,7 +40,7 @@
     "@types/react-table": "^7.0.25",
     "ajv": "^6.12.6",
     "ajv-errors": "^1.0.1",
-    "deep-object-diff": "^1.1.0",
+    "deep-object-diff": "^1.1.9",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "react": "^17.0.2",
