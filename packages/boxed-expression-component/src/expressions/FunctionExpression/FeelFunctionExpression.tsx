@@ -1,25 +1,28 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
-import _ from "lodash";
 import { useCallback, useMemo } from "react";
 import * as ReactTable from "react-table";
 import {
   BeeTableCellProps,
+  BeeTableContextMenuAllowedOperationsConditions,
   BeeTableHeaderVisibility,
   BeeTableOperation,
   BeeTableOperationConfig,
@@ -54,7 +57,7 @@ export type FEEL_ROWTYPE = { functionExpression: FunctionExpressionDefinition };
 export function FeelFunctionExpression({
   functionExpression,
 }: {
-  functionExpression: FeelFunctionExpressionDefinition & { isNested: boolean };
+  functionExpression: FeelFunctionExpressionDefinition & { isNested: boolean; parentElementId: string };
 }) {
   const { i18n } = useBoxedExpressionEditorI18n();
   const { setExpression } = useBoxedExpressionEditorDispatch();
@@ -101,7 +104,11 @@ export function FeelFunctionExpression({
   const beeTableOperationConfig = useMemo<BeeTableOperationConfig>(() => {
     return [
       {
-        group: _.upperCase(i18n.function),
+        group: i18n.terms.selection.toUpperCase(),
+        items: [{ name: i18n.terms.copy, type: BeeTableOperation.SelectionCopy }],
+      },
+      {
+        group: i18n.function.toUpperCase(),
         items: [{ name: i18n.rowOperations.reset, type: BeeTableOperation.RowReset }],
       },
     ];
@@ -113,10 +120,13 @@ export function FeelFunctionExpression({
 
   const controllerCell = useFunctionExpressionControllerCell(FunctionExpressionDefinitionKind.Feel);
 
-  const cellComponentByColumnAccessor: BeeTableProps<FEEL_ROWTYPE>["cellComponentByColumnAccessor"] = useMemo(
-    () => ({ parameters: (props) => <FeelFunctionImplementationCell {...props} /> }),
-    []
-  );
+  const cellComponentByColumnAccessor: BeeTableProps<FEEL_ROWTYPE>["cellComponentByColumnAccessor"] = useMemo(() => {
+    return {
+      parameters: (props) => (
+        <FeelFunctionImplementationCell {...props} parentElementId={functionExpression.parentElementId} />
+      ),
+    };
+  }, [functionExpression.parentElementId]);
 
   const getRowKey = useCallback((r: ReactTable.Row<FEEL_ROWTYPE>) => {
     return r.original.functionExpression.id;
@@ -155,6 +165,17 @@ export function FeelFunctionExpression({
       }, [functionExpression])
     );
 
+  const allowedOperations = useCallback((conditions: BeeTableContextMenuAllowedOperationsConditions) => {
+    if (!conditions.selection.selectionStart || !conditions.selection.selectionEnd) {
+      return [];
+    }
+
+    return [
+      BeeTableOperation.SelectionCopy,
+      ...(conditions.selection.selectionStart.rowIndex >= 0 ? [BeeTableOperation.RowReset] : []),
+    ];
+  }, []);
+
   /// //////////////////////////////////////////////////////
 
   return (
@@ -164,6 +185,7 @@ export function FeelFunctionExpression({
           onColumnResizingWidthChange={onColumnResizingWidthChange}
           resizerStopBehavior={ResizerStopBehavior.SET_WIDTH_WHEN_SMALLER}
           operationConfig={beeTableOperationConfig}
+          allowedOperations={allowedOperations}
           onColumnUpdates={onColumnUpdates}
           getRowKey={getRowKey}
           onRowReset={onRowReset}
@@ -182,7 +204,12 @@ export function FeelFunctionExpression({
   );
 }
 
-export function FeelFunctionImplementationCell({ data, rowIndex, columnIndex }: BeeTableCellProps<FEEL_ROWTYPE>) {
+export function FeelFunctionImplementationCell({
+  data,
+  rowIndex,
+  columnIndex,
+  parentElementId,
+}: BeeTableCellProps<FEEL_ROWTYPE> & { parentElementId: string }) {
   const functionExpression = data[rowIndex].functionExpression as FeelFunctionExpressionDefinition;
 
   const { setExpression } = useBoxedExpressionEditorDispatch();
@@ -205,6 +232,7 @@ export function FeelFunctionImplementationCell({ data, rowIndex, columnIndex }: 
         isNested={true}
         rowIndex={rowIndex}
         columnIndex={columnIndex}
+        parentElementId={parentElementId}
       />
     </NestedExpressionDispatchContextProvider>
   );

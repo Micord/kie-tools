@@ -1,18 +1,22 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 package org.dashbuilder.shared.marshalling;
 
 import java.util.ArrayList;
@@ -32,43 +36,80 @@ import static org.junit.Assert.assertNotNull;
 
 public class RuntimeModelJSONMarshallerTest {
 
-    private String RUNTIME_MODEL_JSON = "{\n" + 
-            "  \"lastModified\": 123,\n" + 
-            "  \"navTree\": {\n" + 
-            "    \"root_items\": [\n" + 
-            "      {\n" + 
-            "        \"id\": \"TestId\",\n" + 
-            "        \"type\": \"ITEM\",\n" + 
-            "        \"name\": \"TestItem\",\n" + 
-            "        \"description\": \"Item Description\",\n" + 
-            "        \"modifiable\": false\n" + 
-            "      }\n" + 
-            "    ]\n" + 
-            "  },\n" + 
-            "  \"layoutTemplates\": [\n" + 
-            "    {\n" + 
-            "      \"style\": \"FLUID\",\n" + 
-            "      \"name\": \"My Template\"\n" + 
-            "    }\n" + 
-            "  ],\n" + 
-            "  \"datasets\": [\n" + 
-            "    {\n" + 
-            "      \"uuid\": \"123\",\n" + 
-            "      \"provider\": \"External\",\n" + 
-            "      \"isPublic\": true,\n" + 
-            "      \"cacheEnabled\": true,\n" + 
-            "      \"cacheMaxRows\": 1000,\n" + 
-            "      \"pushEnabled\": false,\n" + 
-            "      \"pushMaxSize\": 1024,\n" + 
-            "      \"refreshAlways\": false,\n" + 
-            "      \"dynamic\": false,\n" + 
+    private String GLOBAL_DATASET = "{\n" +
+            "  \"global\": {\n" +
+            "    \"dataset\": {\n" +
+            "      \"content\": \"[[\\\"Global\\\"]]\"\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"datasets\": [\n" +
+            "    {\n" +
+            "      \"uuid\": \"a\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"uuid\": \"b\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"pages\": [\n" +
+            "    {\n" +
+            "      \"name\": null\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+
+    private String SINGLE_GLOBAL_DATASET = "{\n" +
+            "  \"global\": {\n" +
+            "    \"dataset\": {\n" +
+            "      \"uuid\": \"a\",\n" +
+            "      \"content\": \"[[\\\"Global\\\"]]\"\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"pages\": [\n" +
+            "    {\n" +
+            "      \"name\": null\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+
+    private String RUNTIME_MODEL_JSON = "{\n" +
+            "  \"lastModified\": 123,\n" +
+            "  \"navTree\": {\n" +
+            "    \"root_items\": [\n" +
+            "      {\n" +
+            "        \"id\": \"TestId\",\n" +
+            "        \"type\": \"ITEM\",\n" +
+            "        \"name\": \"TestItem\",\n" +
+            "        \"description\": \"Item Description\",\n" +
+            "        \"modifiable\": false\n" +
+            "      }\n" +
+            "    ]\n" +
+            "  },\n" +
+            "  \"layoutTemplates\": [\n" +
+            "    {\n" +
+            "      \"style\": \"FLUID\",\n" +
+            "      \"name\": \"My Template\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"datasets\": [\n" +
+            "    {\n" +
+            "      \"uuid\": \"123\",\n" +
+            "      \"provider\": \"External\",\n" +
+            "      \"isPublic\": true,\n" +
+            "      \"cacheEnabled\": true,\n" +
+            "      \"cacheMaxRows\": 1000,\n" +
+            "      \"pushEnabled\": false,\n" +
+            "      \"pushMaxSize\": 1024,\n" +
+            "      \"refreshAlways\": false,\n" +
+            "      \"dynamic\": false,\n" +
             "      \"url\": \"http://acme.com\",\n" +
-            "      \"accumulate\": false\n" +
-            "    }\n" + 
-            "  ],\n" + 
-            "  \"properties\": {\n" + 
-            "    \"TEST\": \"VALUE\"\n" + 
-            "  }\n" + 
+            "      \"accumulate\": false,\n" +
+            "      \"method\": \"GET\",\n" +
+            "      \"path\": \"\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"properties\": {\n" +
+            "    \"TEST\": \"VALUE\"\n" +
+            "  }\n" +
             "}";
 
     RuntimeModelJSONMarshaller marshaller;
@@ -76,6 +117,29 @@ public class RuntimeModelJSONMarshallerTest {
     @Before
     public void setup() {
         marshaller = RuntimeModelJSONMarshaller.get();
+    }
+
+    @Test
+    public void globalDataSetTest() {
+        var model = marshaller.fromJson(GLOBAL_DATASET);
+        var datasets = model.getClientDataSets();
+        var a = model.getClientDataSets().get(0);
+        var b = model.getClientDataSets().get(1);
+        assertEquals(2, datasets.size());
+        assertEquals("[[\"Global\"]]", a.getContent());
+        assertEquals("[[\"Global\"]]", b.getContent());
+        assertEquals("a", a.getUUID());
+        assertEquals("b", b.getUUID());
+    }
+
+    @Test
+    public void globalSingleDataSetTest() {
+        var model = marshaller.fromJson(SINGLE_GLOBAL_DATASET);
+        var datasets = model.getClientDataSets();
+        var a = model.getClientDataSets().get(0);
+        assertEquals(1, datasets.size());
+        assertEquals("[[\"Global\"]]", a.getContent());
+        assertEquals("a", a.getUUID());
     }
 
     @Test
@@ -106,9 +170,9 @@ public class RuntimeModelJSONMarshallerTest {
         var model = marshaller.fromJson(RUNTIME_MODEL_JSON);
         checkModel(model);
     }
-    
+
     @Test
-    public void fromJsonTestWithPages() {
+    public void fromJsonTestWithPagesTest() {
         var model = marshaller.fromJson(RUNTIME_MODEL_JSON.replaceAll("layoutTemplates", "pages"));
         checkModel(model);
     }

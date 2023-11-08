@@ -1,23 +1,29 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 package org.dashbuilder.displayer;
 
 import java.util.Optional;
 
 import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.DataSetOpType;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.DataSetSort;
 import org.junit.Test;
 
@@ -143,16 +149,37 @@ public class GlobalDisplayerSettingsTest {
     }
 
     @Test
+    public void testLookupOpOrder() {
+        var globalSettings = new DisplayerSettings();
+        var settings = new DisplayerSettings();
+
+        var userLookup = new DataSetLookup(null);
+        userLookup.addOperation(new DataSetFilter());
+        settings.setDataSetLookup(userLookup);
+
+        var globalLookup = new DataSetLookup("GLOBAL UUID");
+        globalLookup.addOperation(new DataSetSort());
+        globalSettings.setDataSetLookup(globalLookup);
+
+        globalDisplayerSettings.setDisplayerSettings(globalSettings);
+        globalDisplayerSettings.apply(settings);
+
+        assertEquals(globalLookup.getDataSetUUID(), settings.getDataSetLookup().getDataSetUUID());
+        assertEquals(DataSetOpType.SORT, settings.getDataSetLookup().getOperation(0).getType());
+        assertEquals(DataSetOpType.FILTER, settings.getDataSetLookup().getOperation(1).getType());
+    }
+
+    @Test
     public void testGlobalColumnsSettings() {
         var globalSettings = new DisplayerSettings();
         var settings = new DisplayerSettings();
-        var userSettingsColumnId= "user columns";
-        var globalSettingsColumnId= "global column";
+        var userSettingsColumnId = "user columns";
+        var globalSettingsColumnId = "global column";
         settings.getColumnSettingsList().add(new ColumnSettings(userSettingsColumnId));
         globalSettings.getColumnSettingsList().add(new ColumnSettings(globalSettingsColumnId));
         globalDisplayerSettings.setDisplayerSettings(globalSettings);
         globalDisplayerSettings.apply(settings);
-        
+
         assertEquals(2, settings.getColumnSettingsList().size());
         assertEquals(globalSettingsColumnId, settings.getColumnSettingsList().get(0).getColumnId());
         assertEquals(userSettingsColumnId, settings.getColumnSettingsList().get(1).getColumnId());

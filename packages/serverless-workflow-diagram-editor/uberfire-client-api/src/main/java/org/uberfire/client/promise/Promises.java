@@ -1,18 +1,22 @@
 /*
- * Copyright (C) 2017 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.uberfire.client.promise;
 
@@ -28,7 +32,7 @@ import java.util.function.Supplier;
 import javax.enterprise.context.Dependent;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
+import elemental2.core.JsObject;
 import elemental2.promise.Promise;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
@@ -145,7 +149,7 @@ public class Promises {
                                             final Function<RuntimeException, Promise<T>> catchBlock,
                                             final Function<V, Promise<T>> expectedRejectionHandler) {
 
-        if (o instanceof JavaScriptObject) {
+        if (o instanceof JsObject) {
             // A RuntimeException occurred inside a promise and was transformed in a JavaScriptObject
             return resolve()
                     .then(i -> catchBlock.apply(new RuntimeException("Client-side exception inside Promise: " + o.toString())))

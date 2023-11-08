@@ -1,17 +1,20 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
@@ -21,6 +24,7 @@ import { useMemo, useState, ForwardRefRenderFunction, useImperativeHandle, forwa
 import { WorkspaceFile } from "@kie-tools-core/workspaces-git-fs/dist/context/WorkspacesContext";
 import { SwfChannelComponent } from "./channel/SwfChannelComponent";
 import { DashChannelComponent } from "./channel/DashChannelComponent";
+import { YardChannelComponent } from "./channel/YardChannelComponent";
 import { useController } from "@kie-tools-core/react-hooks/dist/useController";
 import { When } from "react-if";
 import { isOfKind } from "@kie-tools-core/workspaces-git-fs/dist/constants/ExtensionHelper";
@@ -32,8 +36,13 @@ import {
 import { DashbuilderYamlLanguageService } from "@kie-tools/dashbuilder-language-service/dist/channel";
 import { EmbeddedEditor, EmbeddedEditorChannelApiImpl, EmbeddedEditorRef } from "@kie-tools-core/editor/dist/embedded";
 import { Props } from "@kie-tools-core/editor/dist/embedded/embedded/EmbeddedEditor";
+import { YardYamlLanguageService } from "@kie-tools/yard-language-service/dist/channel";
 
-type SupportedLanguageService = SwfYamlLanguageService | SwfJsonLanguageService | DashbuilderYamlLanguageService;
+type SupportedLanguageService =
+  | SwfYamlLanguageService
+  | SwfJsonLanguageService
+  | DashbuilderYamlLanguageService
+  | YardYamlLanguageService;
 
 type NotificationHandler =
   | { isSupported: false }
@@ -77,12 +86,14 @@ const RefForwardingWebToolsEmbeddedEditor: ForwardRefRenderFunction<
 
   const [swfChannelComponent, swfChannelComponentRef] = useController<EditorChannelComponentRef>();
   const [dashChannelComponent, dashChannelComponentRef] = useController<EditorChannelComponentRef>();
+  const [yardChannelComponent, yardChannelComponentRef] = useController<EditorChannelComponentRef>();
   const availableComponents = useMemo(
-    () => [swfChannelComponent, dashChannelComponent],
-    [dashChannelComponent, swfChannelComponent]
+    () => [swfChannelComponent, dashChannelComponent, yardChannelComponent],
+    [dashChannelComponent, swfChannelComponent, yardChannelComponent]
   );
 
   // Keep getFileContents in the dependency list to update the stateControl instance
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const stateControl = useMemo(() => new StateControl(), [file?.getFileContents]);
 
   const channelApiImpl = useMemo(
@@ -154,6 +165,14 @@ const RefForwardingWebToolsEmbeddedEditor: ForwardRefRenderFunction<
           <When condition={isOfKind("dash", workspaceFile.name)}>
             <DashChannelComponent
               ref={dashChannelComponentRef}
+              channelApiImpl={channelApiImpl}
+              editor={editor}
+              workspaceFile={workspaceFile}
+            />
+          </When>
+          <When condition={isOfKind("yard", workspaceFile.name)}>
+            <YardChannelComponent
+              ref={yardChannelComponentRef}
               channelApiImpl={channelApiImpl}
               editor={editor}
               workspaceFile={workspaceFile}

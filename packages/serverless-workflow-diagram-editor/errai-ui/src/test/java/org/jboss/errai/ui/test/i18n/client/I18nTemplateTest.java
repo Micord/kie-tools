@@ -1,18 +1,22 @@
 /*
- * Copyright (C) 2015 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.jboss.errai.ui.test.i18n.client;
 
@@ -100,26 +104,26 @@ public class I18nTemplateTest extends AbstractErraiCDITest {
   public void testPrefixedKeyUsedWhenAvailableForLocale() throws Exception {
     TranslationService.setCurrentLocale("fr_fr");
     final I18nPrefixingTestBean bean = IOCUtil.getInstance(I18nPrefixingTestBean.class);
-    assertEquals("Accueil spécifique!", bean.welcome.getTextContent());
+    assertEquals("Accueil spécifique!", bean.welcome.textContent);
   }
 
   @Test
   public void testUnprefixedKeyUsedWhenNoPrefixedKeyDefinedForLocale() throws Exception {
     TranslationService.setCurrentLocale("fr_fr");
     final I18nPrefixingTestBean bean = IOCUtil.getInstance(I18nPrefixingTestBean.class);
-    assertEquals("Au revoir générique!", bean.farewell.getTextContent());
+    assertEquals("Au revoir générique!", bean.farewell.textContent);
   }
 
   @Test
   public void testPrefixedDefaultBundleUsedBeforeUnprefixedDefaultBundle() throws Exception {
     final I18nPrefixingTestBean bean = IOCUtil.getInstance(I18nPrefixingTestBean.class);
-    assertEquals("Specific goodbye!", bean.farewell.getTextContent());
+    assertEquals("Specific goodbye!", bean.farewell.textContent);
   }
 
   @Test
   public void testUnprefixedDefaultBundleWhenNoPrefixedKeyExists() throws Exception {
     final I18nPrefixingTestBean bean = IOCUtil.getInstance(I18nPrefixingTestBean.class);
-    assertEquals("Translation of UI element was wrong.", "Generic welcome!", bean.welcome.getTextContent());
+    assertEquals("Translation of UI element was wrong.", "Generic welcome!", bean.welcome.textContent);
   }
 
   private void localeListBoxAssertions(final I18nTemplateTestApp app) {

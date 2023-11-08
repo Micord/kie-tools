@@ -1,18 +1,22 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 package org.dashbuilder.renderer.echarts.client.js;
 
 import java.util.Arrays;
@@ -123,6 +127,8 @@ public interface ECharts {
     @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
     public class AreaStyle {
 
+        @JsProperty
+        public native void setOpacity(Double opacity);
     }
 
     @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
@@ -230,6 +236,7 @@ public interface ECharts {
         @JsProperty
         public native void setDistance(int distance);
 
+        @Override
         @JsProperty
         public native void setShow(boolean show);
 
@@ -330,6 +337,12 @@ public interface ECharts {
 
         @JsProperty
         public native void setData(Object[] data);
+
+        @JsProperty
+        public native void setData(String[][] data);
+
+        @JsProperty
+        public native void setSymbol(String syumbol);
 
     }
 
@@ -460,6 +473,9 @@ public interface ECharts {
         @JsProperty
         public native void setValueFormatter(ValueFormatterCallback callback);
 
+        @JsProperty
+        public native void setTrigger(String trigger);
+
     }
 
     @JsFunction
@@ -588,6 +604,7 @@ public interface ECharts {
     }
 
     public enum XAxisType {
+        time,
         category,
         value;
     }
@@ -597,15 +614,14 @@ public interface ECharts {
         svg,
         canvas;
 
-        public static Renderer DEFAULT_RENDERER = canvas;
+        public static final Renderer DEFAULT_RENDERER = canvas;
 
         public static Renderer byName(String echartsRenderer) {
             if (echartsRenderer == null) {
                 return DEFAULT_RENDERER;
             }
             return Arrays.stream(Renderer.values())
-                    .filter(r -> r.name().toLowerCase().equals(echartsRenderer
-                            .toLowerCase()))
+                    .filter(r -> r.name().equalsIgnoreCase(echartsRenderer))
                     .findAny().orElse(DEFAULT_RENDERER);
         }
     }

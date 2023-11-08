@@ -1,18 +1,22 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.kie.workbench.common.stunner.sw.client;
 
@@ -93,13 +97,13 @@ public class ShapeFactory
         } else if (definitionId.equals(getDefinitionId(OperationState.class))) {
             return GlyphFactory.STATE_OPERATION;
         } else if (definitionId.equals(getDefinitionId(SleepState.class))) {
-            return GlyphFactory.STATE_INJECT;
+            return GlyphFactory.STATE_SLEEP;
         } else if (definitionId.equals(getDefinitionId(ParallelState.class))) {
-            return GlyphFactory.STATE_INJECT;
+            return GlyphFactory.STATE_PARALLEL;
         } else if (definitionId.equals(getDefinitionId(ForEachState.class))) {
-            return GlyphFactory.STATE_INJECT;
+            return GlyphFactory.STATE_FOREACH;
         } else if (definitionId.equals(getDefinitionId(CallbackState.class))) {
-            return GlyphFactory.STATE_INJECT;
+            return GlyphFactory.STATE_CALLBACK;
         } else if (definitionId.equals(getDefinitionId(Workflow.class))) {
             return GlyphFactory.TRANSITION;
         } else if (definitionId.equals(getDefinitionId(Start.class))) {
@@ -125,11 +129,11 @@ public class ShapeFactory
         } else if (definitionId.equals(getDefinitionId(ErrorTransition.class))) {
             return GlyphFactory.TRANSITION_ERROR;
         } else if (definitionId.equals(getDefinitionId(EventConditionTransition.class))) {
-            return GlyphFactory.TRANSITION_CONDITION;
+            return GlyphFactory.TRANSITION_EVENT_CONDITION;
         } else if (definitionId.equals(getDefinitionId(DataConditionTransition.class))) {
-            return GlyphFactory.TRANSITION_CONDITION;
+            return GlyphFactory.TRANSITION_DATA_CONDITION;
         } else if (definitionId.equals(getDefinitionId(DefaultConditionTransition.class))) {
-            return GlyphFactory.TRANSITION_CONDITION;
+            return GlyphFactory.TRANSITION_DEFAULT_CONDITION;
         } else if (definitionId.equals(getDefinitionId(ActionTransition.class))) {
             return GlyphFactory.TRANSITION_ACTION;
         } else if (definitionId.equals(getDefinitionId(CompensationTransition.class))) {

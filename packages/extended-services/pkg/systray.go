@@ -2,19 +2,22 @@
 // +build !headless
 
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
 
 package pkg
@@ -25,15 +28,14 @@ import (
 	"os/exec"
 	"runtime"
 
-	"github.com/getlantern/systray"
+	"fyne.io/systray"
 	"github.com/kiegroup/kie-tools/packages/extended-services/pkg/images"
 	"github.com/kiegroup/kie-tools/packages/extended-services/pkg/metadata"
 )
 
 type Systray struct {
-	Server                   *Proxy
-	StartStopItem            *systray.MenuItem
-	ToggleInsecureSkipVerify *systray.MenuItem
+	Server        *Proxy
+	StartStopItem *systray.MenuItem
 
 	runnerPortItem *systray.MenuItem
 	openKieSandbox *systray.MenuItem
@@ -65,14 +67,6 @@ func (s *Systray) onReady() {
 				s.Stop()
 			} else {
 				s.Start()
-			}
-		case <-s.ToggleInsecureSkipVerify.ClickedCh:
-			if s.Server.InsecureSkipVerify {
-				s.Server.InsecureSkipVerify = false
-				s.ToggleInsecureSkipVerify.SetTitle(metadata.ALLOW_INSECURE_SKIP_VERIFY)
-			} else {
-				s.Server.InsecureSkipVerify = true
-				s.ToggleInsecureSkipVerify.SetTitle(metadata.DISALLOW_INSECURE_SKIP_VERIFY)
 			}
 		case <-quitItem.ClickedCh:
 			s.Stop()
@@ -111,13 +105,7 @@ func (s *Systray) mainSection() {
 }
 
 func (s *Systray) operationSection() {
-	if s.Server.InsecureSkipVerify {
-		s.ToggleInsecureSkipVerify = systray.AddMenuItem(metadata.DISALLOW_INSECURE_SKIP_VERIFY, "Toggle InsecureSkipVerify allowing or not the use of s-signed certificates")
-	} else {
-		s.ToggleInsecureSkipVerify = systray.AddMenuItem(metadata.ALLOW_INSECURE_SKIP_VERIFY, "Toggle InsecureSkipVerify allowing or not the use of s-signed certificates")
-	}
 	s.StartStopItem = systray.AddMenuItem(metadata.START, "")
-
 }
 
 func (s *Systray) Refresh() {

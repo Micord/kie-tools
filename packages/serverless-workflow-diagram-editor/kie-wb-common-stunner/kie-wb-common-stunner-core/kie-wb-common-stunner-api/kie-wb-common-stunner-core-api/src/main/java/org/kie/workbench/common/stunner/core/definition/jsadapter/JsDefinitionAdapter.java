@@ -1,18 +1,22 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.kie.workbench.common.stunner.core.definition.jsadapter;
 
@@ -31,7 +35,6 @@ import org.kie.workbench.common.stunner.core.definition.adapter.DefinitionAdapte
 import org.kie.workbench.common.stunner.core.definition.adapter.DefinitionId;
 import org.kie.workbench.common.stunner.core.definition.property.PropertyMetaTypes;
 import org.kie.workbench.common.stunner.core.factory.graph.ElementFactory;
-import org.kie.workbench.common.stunner.core.factory.graph.NodeFactory;
 import org.kie.workbench.common.stunner.core.i18n.StunnerTranslationService;
 
 @ApplicationScoped
@@ -40,6 +43,7 @@ public class JsDefinitionAdapter implements DefinitionAdapter<Object> {
     private final Map<String, String> categories;
     private final Map<String, String> labels;
     private final Map<String, String> nameFields;
+    private final Map<String, Class<? extends ElementFactory>> elementFactories;
 
     private StunnerTranslationService translationService;
 
@@ -47,6 +51,7 @@ public class JsDefinitionAdapter implements DefinitionAdapter<Object> {
         categories = new HashMap<String, String>();
         labels = new HashMap<String, String>();
         nameFields = new HashMap<String, String>();
+        elementFactories = new HashMap<String, Class<? extends ElementFactory>>();
     }
 
     @Override
@@ -63,6 +68,11 @@ public class JsDefinitionAdapter implements DefinitionAdapter<Object> {
     public String getCategory(Object pojo) {
         String id = getJsDefinitionId(pojo);
         return categories.get(id);
+    }
+
+    @Override
+    public Class<? extends ElementFactory> getElementFactory(Object pojo) {
+        return elementFactories.get(getCategory(pojo));
     }
 
     @Override
@@ -111,7 +121,7 @@ public class JsDefinitionAdapter implements DefinitionAdapter<Object> {
 
     @Override
     public Class<? extends ElementFactory> getGraphFactoryType(Object pojo) {
-        return NodeFactory.class;
+        return getElementFactory(pojo);
     }
 
     @Override
@@ -126,6 +136,10 @@ public class JsDefinitionAdapter implements DefinitionAdapter<Object> {
 
     public void setCategory(String definitionId, String category) {
         categories.put(definitionId, category);
+    }
+
+    public void setElementFactory(String category, Class<? extends ElementFactory> factory) {
+        elementFactories.put(category, factory);
     }
 
     public void setLabels(String definitionId, String[] definitionLabels) {

@@ -1,18 +1,22 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.kie.workbench.common.stunner.core.client.session.command.impl;
 
@@ -21,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.CanvasHandlerImpl;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.keyboard.KeyboardControl;
-import org.kie.workbench.common.stunner.core.client.canvas.event.command.CanvasCommandExecutedEvent;
 import org.kie.workbench.common.stunner.core.client.canvas.event.command.CanvasCommandUndoneEvent;
 import org.kie.workbench.common.stunner.core.client.canvas.event.registration.CurrentRegistryChangedEvent;
 import org.kie.workbench.common.stunner.core.client.command.CanvasViolation;
@@ -123,47 +126,10 @@ public class RedoSessionCommandTest extends BaseSessionCommandKeyboardTest {
     }
 
     @Test
-    public void testOnCommandExecutedSuccess() {
-        RedoSessionCommand command = spy(new RedoSessionCommand(sessionCommandManager, redoCommandHandler));
-
-        doCallRealMethod().when(command).onCommandExecuted(any(CanvasCommandExecutedEvent.class));
-        doCallRealMethod().when(command).bind(any(EditorSession.class));
-
-        when(session.getCanvasHandler()).thenReturn(canvasHandler);
-        when(session.getKeyboardControl()).thenReturn(keyboardControl);
-        when(keyboardControl.addKeyShortcutCallback(any(KeyboardControl.KeyShortcutCallback.class))).thenReturn(keyboardControl);
-        ((AbstractClientSessionCommand) command).bind(session);
-
-        CanvasCommandExecutedEvent event = new CanvasCommandExecutedEvent(canvasHandler,
-                                                                          new CompositeCommand(true),
-                                                                          null);
-        command.onCommandExecuted(event);
-        verify(redoCommandHandler, times(1)).onCommandExecuted(event.getCommand());
-    }
-
-    public void testOnCommandExecutedFails() {
-        RedoSessionCommand command = spy(new RedoSessionCommand(sessionCommandManager, redoCommandHandler));
-
-        doCallRealMethod().when(command).onCommandExecuted(any(CanvasCommandExecutedEvent.class));
-        doCallRealMethod().when(command).bind(any(EditorSession.class));
-
-        when(session.getCanvasHandler()).thenReturn(canvasHandler);
-        when(session.getKeyboardControl()).thenReturn(keyboardControl);
-        when(keyboardControl.addKeyShortcutCallback(any(KeyboardControl.KeyShortcutCallback.class))).thenReturn(keyboardControl);
-        ((AbstractClientSessionCommand) command).bind(session);
-
-        CanvasCommandExecutedEvent event = new CanvasCommandExecutedEvent(canvasHandler,
-                                                                          new CompositeCommand(true),
-                                                                          null);
-        command.onCommandExecuted(event);
-        verify(redoCommandHandler, times(0)).onCommandExecuted(event.getCommand());
-    }
-
-    @Test
     public void testOnCurrentRegistryChanged() {
         final CurrentRegistryChangedEvent event = mock(CurrentRegistryChangedEvent.class);
-        ((RedoSessionCommand)command).onCurrentRegistryChanged(event);
+        ((RedoSessionCommand) command).onCurrentRegistryChanged(event);
 
-        verify((RedoSessionCommand)command).checkState();
+        verify((RedoSessionCommand) command).checkState();
     }
 }

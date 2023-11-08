@@ -1,18 +1,22 @@
 /*
- * Copyright (C) 2016 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.jboss.errai.ui.test.quickhandler.client.res;
 
@@ -20,15 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.google.gwt.dom.client.ButtonElement;
-import org.jboss.errai.common.client.dom.Anchor;
-import org.jboss.errai.common.client.dom.Button;
-import org.jboss.errai.common.client.dom.Div;
-import org.jboss.errai.common.client.dom.Event;
-import org.jboss.errai.common.client.dom.MouseEvent;
-import org.jboss.errai.common.client.dom.TextInput;
+import elemental2.dom.Event;
+import elemental2.dom.HTMLAnchorElement;
+import elemental2.dom.HTMLButtonElement;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLInputElement;
+import elemental2.dom.MouseEvent;
 import org.jboss.errai.common.client.logging.util.StringFormat;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -70,23 +75,23 @@ public class InteropEventQuickHandlerTemplate {
 
   @Inject
   @DataField
-  public Div root;
+  public HTMLDivElement root;
 
   @Inject
   @DataField
-  public Anchor anchor;
+  public HTMLAnchorElement anchor;
 
   @Inject
   @DataField
-  public Button button;
+  public HTMLButtonElement button;
 
   @Inject
   @DataField
-  public Button privateHandler;
+  public HTMLButtonElement privateHandler;
 
   @Inject
   @DataField
-  public TextInput input;
+  public HTMLInputElement input;
 
   @Inject
   @DataField
@@ -98,39 +103,44 @@ public class InteropEventQuickHandlerTemplate {
 
   public List<ObservedEvent> observed = new ArrayList<>();
 
+  @PostConstruct
+  public void init() {
+    input.type = "text";
+  }
+
   @EventHandler("anchor")
   public void onAnchorSingleOrDoubleClicked(final @ForEvent({"click", "dblclick"}) MouseEvent evt) {
-    observed.add(new ObservedEvent("anchor", evt.getType()));
+    observed.add(new ObservedEvent("anchor", evt.type));
   }
 
   @EventHandler("button")
   public void onButtonSingle(final @ForEvent("click") MouseEvent evt) {
-    observed.add(new ObservedEvent("button", evt.getType()));
+    observed.add(new ObservedEvent("button", evt.type));
   }
 
   @EventHandler("input")
   public void onInputChanged(final @ForEvent("change") Event evt) {
-    observed.add(new ObservedEvent("input", evt.getType()));
+    observed.add(new ObservedEvent("input", evt.type));
   }
 
   @EventHandler("buttonWidget")
   public void onButtonWidgetSingle(final @ForEvent("click") MouseEvent evt) {
-    observed.add(new ObservedEvent("buttonWidget", evt.getType()));
+    observed.add(new ObservedEvent("buttonWidget", evt.type));
   }
 
   @EventHandler("buttonGwtElement")
   public void onButtonGwtElementSingle(final @ForEvent("click") MouseEvent evt) {
-    observed.add(new ObservedEvent("buttonGwtElement", evt.getType()));
+    observed.add(new ObservedEvent("buttonGwtElement", evt.type));
   }
 
   @EventHandler("noFieldButton")
   public void onNoFieldButtonSingle(final @ForEvent("click") MouseEvent evt) {
-    observed.add(new ObservedEvent("noFieldButton", evt.getType()));
+    observed.add(new ObservedEvent("noFieldButton", evt.type));
   }
 
   @EventHandler("privateHandler")
   private void onButtonDoubleClick(final @ForEvent("dblclick") MouseEvent evt) {
-    observed.add(new ObservedEvent("privateHandler", evt.getType()));
+    observed.add(new ObservedEvent("privateHandler", evt.type));
   }
 
 }

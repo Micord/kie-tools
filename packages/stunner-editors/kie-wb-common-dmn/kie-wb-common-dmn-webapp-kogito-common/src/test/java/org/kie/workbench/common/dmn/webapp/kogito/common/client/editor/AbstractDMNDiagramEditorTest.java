@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
 
 package org.kie.workbench.common.dmn.webapp.kogito.common.client.editor;
@@ -37,7 +40,6 @@ import org.kie.workbench.common.dmn.client.editors.search.DMNEditorSearchIndex;
 import org.kie.workbench.common.dmn.client.editors.search.DMNSearchableElement;
 import org.kie.workbench.common.dmn.client.editors.types.DataTypesPage;
 import org.kie.workbench.common.dmn.client.resources.i18n.DMNEditorConstants;
-import org.kie.workbench.common.dmn.client.widgets.codecompletion.MonacoFEELInitializer;
 import org.kie.workbench.common.dmn.client.widgets.toolbar.DMNLayoutHelper;
 import org.kie.workbench.common.kogito.client.editor.MultiPageEditorContainerView;
 import org.kie.workbench.common.stunner.client.widgets.editor.StunnerEditor;
@@ -140,9 +142,6 @@ public class AbstractDMNDiagramEditorTest {
     private KogitoClientDiagramService diagramServices;
 
     @Mock
-    private MonacoFEELInitializer feelInitializer;
-
-    @Mock
     private CanvasFileExport canvasFileExport;
 
     @Mock
@@ -187,7 +186,6 @@ public class AbstractDMNDiagramEditorTest {
                                                       openDiagramLayoutExecutor,
                                                       dataTypesPage,
                                                       diagramServices,
-                                                      feelInitializer,
                                                       canvasFileExport,
                                                       promises,
                                                       includedModelsPage,
@@ -227,7 +225,6 @@ public class AbstractDMNDiagramEditorTest {
 
         editor.open(diagram, callback);
 
-        verify(feelInitializer).initializeFEELEditor();
         verify(decisionNavigatorDock, times(1)).init();
         verify(diagramPropertiesDock, times(1)).init();
         verify(diagramPreviewAndExplorerDock, times(1)).init();
@@ -248,7 +245,6 @@ public class AbstractDMNDiagramEditorTest {
 
         editor.open(diagram, callback);
 
-        verify(feelInitializer).initializeFEELEditor();
         verify(decisionNavigatorDock, times(1)).init();
         verify(diagramPropertiesDock, times(1)).init();
         verify(diagramPreviewAndExplorerDock, times(1)).init();
@@ -465,7 +461,6 @@ public class AbstractDMNDiagramEditorTest {
                                                final OpenDiagramLayoutExecutor openDiagramLayoutExecutor,
                                                final DataTypesPage dataTypesPage,
                                                final KogitoClientDiagramService diagramServices,
-                                               final MonacoFEELInitializer feelInitializer,
                                                final CanvasFileExport canvasFileExport,
                                                final Promises promises,
                                                final IncludedModelsPage includedModelsPage,
@@ -491,7 +486,6 @@ public class AbstractDMNDiagramEditorTest {
                   openDiagramLayoutExecutor,
                   dataTypesPage,
                   diagramServices,
-                  feelInitializer,
                   canvasFileExport,
                   promises,
                   includedModelsPage,

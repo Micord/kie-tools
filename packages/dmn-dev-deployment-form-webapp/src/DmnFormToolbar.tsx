@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { I18nHtml } from "@kie-tools-core/i18n/dist/react-components";
@@ -55,16 +58,16 @@ export function DmnFormToolbar(props: Props) {
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 
   const onOpenSwaggerUI = useCallback(() => {
-    window.open(routes.swaggerUi.path({}), "_blank");
-  }, []);
+    window.open(routes.swaggerUi.path({}, app?.data?.baseUrl), "_blank");
+  }, [app?.data?.baseUrl]);
 
   const openForm = useCallback(
     (uri: string) => {
       history.push({
-        pathname: routes.form.path({ filePath: uri.slice(1) }),
+        pathname: routes.form.path({ filePath: uri.slice(1) }, app?.data?.baseUrl),
       });
     },
-    [history]
+    [history, app?.data?.baseUrl]
   );
 
   const filename = useMemo(() => {
@@ -146,18 +149,15 @@ export function DmnFormToolbar(props: Props) {
         <Flex alignItems={{ default: "alignItemsCenter" }}>
           <FlexItem style={{ display: "flex", alignItems: "center" }}>
             <Brand
-              src={routes.static.images.kieHorizontalLogoReverse.path({})}
+              src={routes.static.images.appLogoReverse.path({}, app?.data?.baseUrl)}
               alt={"Logo"}
               heights={{ default: "38px" }}
             >
-              <source srcSet={routes.static.images.kieHorizontalLogoReverse.path({})} />
+              <source srcSet={routes.static.images.appLogoReverse.path({}, app?.data?.baseUrl)} />
             </Brand>
           </FlexItem>
           <FlexItem style={{ display: "flex", alignItems: "center" }}>
             <TextContent>
-              <Text component={TextVariants.h3} style={{ display: "inline" }}>
-                Sandbox
-              </Text>
               &nbsp;&nbsp;
               <Text component={TextVariants.small} style={{ display: "inline" }}>
                 <i>Dev deployments</i>

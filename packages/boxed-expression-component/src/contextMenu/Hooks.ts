@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -20,8 +23,8 @@ import { useBoxedExpressionEditor } from "../expressions/BoxedExpressionEditor/B
 import { NavigationKeysUtils } from "../keysUtils";
 
 export function useCustomContextMenuHandler(domEventTargetRef: React.RefObject<HTMLDivElement | null>): {
-  xPos: string;
-  yPos: string;
+  xPos: number;
+  yPos: number;
   isOpen: boolean;
 } {
   const { setCurrentlyOpenContextMenu, currentlyOpenContextMenu, editorRef, scrollableParentRef } =
@@ -29,7 +32,6 @@ export function useCustomContextMenuHandler(domEventTargetRef: React.RefObject<H
 
   const [scroll, setScroll] = useState({ x: 0, y: 0 });
 
-  // FIXME: Need to calculate the context menu length for it to not be hidden by the borders of the screen (https://github.com/kiegroup/kie-issues/issues/168).
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const [isOpen, setOpen] = useState(false);
@@ -39,7 +41,10 @@ export function useCustomContextMenuHandler(domEventTargetRef: React.RefObject<H
   const hide = useCallback(
     (e: MouseEvent) => {
       e.preventDefault();
-      if (!isOpen) {
+      /* In SAFARI only, CTRL + click shortcut used to open the Menu, results in two distinct mouse events: "contextmenu" and “click“, in this order.
+         Considering this hide() function is currently bound with both event handlers, the second event (click) will suddenly close the menu. 
+         To prevent this, if ctrlKey is actually pressed, the event is ignored. */
+      if (!isOpen || e.ctrlKey) {
         return;
       }
 
@@ -127,8 +132,8 @@ export function useCustomContextMenuHandler(domEventTargetRef: React.RefObject<H
   }, [domEventTargetRef, hide, currentlyOpenContextMenu, isOpen, show]);
 
   return {
-    xPos: `${position.x - scroll.x + 1}px`, // Leave some margin for clicking without moving the mouse.
-    yPos: `${position.y - scroll.y + 1}px`, // Leave some margin for clicking without moving the mouse.
+    xPos: position.x - scroll.x + 1, // Leave some margin for clicking without moving the mouse.
+    yPos: position.y - scroll.y + 1, // Leave some margin for clicking without moving the mouse.
     isOpen,
   };
 }

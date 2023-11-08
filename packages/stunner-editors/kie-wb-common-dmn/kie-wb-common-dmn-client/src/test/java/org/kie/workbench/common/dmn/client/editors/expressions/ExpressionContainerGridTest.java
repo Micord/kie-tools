@@ -1,17 +1,20 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
 
 package org.kie.workbench.common.dmn.client.editors.expressions;
@@ -53,7 +56,6 @@ import org.kie.workbench.common.dmn.client.resources.i18n.DMNEditorConstants;
 import org.kie.workbench.common.dmn.client.widgets.grid.BaseExpressionGrid;
 import org.kie.workbench.common.dmn.client.widgets.grid.ExpressionGridCache;
 import org.kie.workbench.common.dmn.client.widgets.grid.ExpressionGridCacheImpl;
-import org.kie.workbench.common.dmn.client.widgets.grid.columns.factory.AutocompleteTextAreaDOMElementFactory;
 import org.kie.workbench.common.dmn.client.widgets.grid.columns.factory.TextAreaSingletonDOMElementFactory;
 import org.kie.workbench.common.dmn.client.widgets.grid.controls.container.CellEditorControlsView;
 import org.kie.workbench.common.dmn.client.widgets.grid.controls.list.HasListSelectorControl;
@@ -197,7 +199,7 @@ public class ExpressionContainerGridTest {
     private TextAreaSingletonDOMElementFactory textAreaSingletonDOMElementFactory;
 
     @Mock
-    private AutocompleteTextAreaDOMElementFactory autocompleteTextareaDOMElementFactory;
+    private TextAreaSingletonDOMElementFactory autocompleteTextareaDOMElementFactory;
 
     @Captor
     private ArgumentCaptor<Optional<HasName>> hasNameCaptor;
@@ -361,9 +363,6 @@ public class ExpressionContainerGridTest {
         assertThat(expressionCellValue.getValue().isPresent()).isTrue();
         assertThat(expressionCellValue.getValue().get()).isSameAs(undefinedExpressionEditor);
         assertThat(grid.isOnlyVisualChangeAllowed()).isFalse();
-
-        verify(undefinedExpressionEditor).selectFirstCell();
-        verify(gridLayer).batch();
     }
 
     @Test
@@ -381,9 +380,6 @@ public class ExpressionContainerGridTest {
         assertThat(expressionCellValue.getValue().isPresent()).isTrue();
         assertThat(expressionCellValue.getValue().get()).isSameAs(literalExpressionEditor);
         assertThat(grid.isOnlyVisualChangeAllowed()).isFalse();
-
-        verify(literalExpressionEditor).selectFirstCell();
-        verify(gridLayer).batch();
     }
 
     @Test
@@ -521,9 +517,6 @@ public class ExpressionContainerGridTest {
                            hasExpression,
                            Optional.of(hasName),
                            false);
-        verify(gridLayer).select(literalExpressionEditor);
-        verify(literalExpressionEditor).selectFirstCell();
-        verify(gridLayer).batch();
 
         //Get and select ClearExpression item
         final List<HasListSelectorControl.ListSelectorItem> items = grid.getItems(0, 0);
@@ -554,7 +547,7 @@ public class ExpressionContainerGridTest {
         //Verify Expression has been restored and UndefinedExpressionEditor resized
         assertThat(grid.getModel().getColumns().get(0).getWidth()).isEqualTo(COLUMN_NEW_WIDTH);
         verify(gridLayer).select(literalExpressionEditor);
-        verify(literalExpressionEditor, times(2)).selectFirstCell();
+        verify(literalExpressionEditor, times(1)).selectFirstCell();
         verify(gridLayer, times(2)).batch();
     }
 

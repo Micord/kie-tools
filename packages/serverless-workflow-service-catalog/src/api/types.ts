@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 export enum AuthProviderType {
@@ -40,8 +43,8 @@ export interface SwfServiceCatalogService {
   name: string;
   type: SwfServiceCatalogServiceType;
   source: SwfServiceCatalogServiceSource;
-
   functions: SwfServiceCatalogFunction[];
+  events?: SwfServiceCatalogEvent[];
   rawContent: string;
 }
 
@@ -64,6 +67,10 @@ export enum SwfServiceCatalogFunctionType {
   custom = "custom",
 }
 
+export enum SwfServiceCatalogEventType {
+  asyncapi = "asyncapi",
+}
+
 export enum SupportArtifactTypes {
   Openapi = "OPENAPI",
   Asyncapi = "ASYNCAPI",
@@ -84,7 +91,23 @@ export enum SwfCatalogSourceType {
   LOCAL_FS = "LOCAL_FS",
 }
 
+export enum SwfServiceCatalogEventKind {
+  CONSUMED = "consumed",
+  PRODUCED = "produced",
+}
+
 export type SwfServiceCatalogFunctionSource =
+  | {
+      registry: string;
+      serviceId: string;
+      type: SwfCatalogSourceType.SERVICE_REGISTRY;
+    }
+  | {
+      type: SwfCatalogSourceType.LOCAL_FS;
+      serviceFileAbsolutePath: string;
+    };
+
+export type SwfServiceCatalogEventSource =
   | {
       registry: string;
       serviceId: string;
@@ -100,4 +123,13 @@ export interface SwfServiceCatalogFunction {
   name: string;
   arguments: Record<string, SwfServiceCatalogFunctionArgumentType>;
   type: SwfServiceCatalogFunctionType;
+}
+
+export interface SwfServiceCatalogEvent {
+  source: SwfServiceCatalogEventSource;
+  name: string;
+  kind: SwfServiceCatalogEventKind;
+  type: SwfServiceCatalogEventType;
+  eventSource: string;
+  eventType: string;
 }

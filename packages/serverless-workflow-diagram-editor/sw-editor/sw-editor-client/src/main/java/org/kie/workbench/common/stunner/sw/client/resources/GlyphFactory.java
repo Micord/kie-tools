@@ -1,18 +1,22 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.kie.workbench.common.stunner.sw.client.resources;
 
@@ -25,6 +29,14 @@ public interface GlyphFactory {
     ImageDataUriGlyph END = ImageDataUriGlyph.create(ImageResources.INSTANCE.end().getSafeUri());
 
     ImageDataUriGlyph STATE_INJECT = ImageDataUriGlyph.create(ImageResources.INSTANCE.stateInject().getSafeUri());
+
+    ImageDataUriGlyph STATE_SLEEP = ImageDataUriGlyph.create(ImageResources.INSTANCE.stateSleep().getSafeUri());
+
+    ImageDataUriGlyph STATE_PARALLEL = ImageDataUriGlyph.create(ImageResources.INSTANCE.stateParallel().getSafeUri());
+
+    ImageDataUriGlyph STATE_FOREACH = ImageDataUriGlyph.create(ImageResources.INSTANCE.stateForeach().getSafeUri());
+
+    ImageDataUriGlyph STATE_CALLBACK = ImageDataUriGlyph.create(ImageResources.INSTANCE.stateCallback().getSafeUri());
 
     ImageDataUriGlyph STATE_SWITCH = ImageDataUriGlyph.create(ImageResources.INSTANCE.stateSwitch().getSafeUri());
 
@@ -48,9 +60,13 @@ public interface GlyphFactory {
 
     ImageDataUriGlyph TRANSITION_ERROR = ImageDataUriGlyph.create(ImageResources.INSTANCE.transitionError().getSafeUri());
 
-    ImageDataUriGlyph TRANSITION_CONDITION = ImageDataUriGlyph.create(ImageResources.INSTANCE.transitionCondition().getSafeUri());
-
     ImageDataUriGlyph TRANSITION_ACTION = ImageDataUriGlyph.create(ImageResources.INSTANCE.transitionAction().getSafeUri());
 
     ImageDataUriGlyph TRANSITION_COMPENSATION = ImageDataUriGlyph.create(ImageResources.INSTANCE.transitionCompensation().getSafeUri());
+
+    ImageDataUriGlyph TRANSITION_DEFAULT_CONDITION = ImageDataUriGlyph.create(ImageResources.INSTANCE.transitionDefaultCondition().getSafeUri());
+
+    ImageDataUriGlyph TRANSITION_DATA_CONDITION = ImageDataUriGlyph.create(ImageResources.INSTANCE.transitionDataCondition().getSafeUri());
+
+    ImageDataUriGlyph TRANSITION_EVENT_CONDITION = ImageDataUriGlyph.create(ImageResources.INSTANCE.transitionEventCondition().getSafeUri());
 }

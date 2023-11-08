@@ -1,43 +1,50 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 export class Dependencies {
   public readonly singleEdit = {
     iframeContainerTarget: () => {
-      return document.querySelector(".file") as HTMLElement | null;
+      return (
+        document.querySelector("[class$='react-code-view-edit']")?.parentElement?.parentElement ??
+        (null as HTMLElement | null)
+      );
     },
     toolbarContainerTarget: () => {
-      return document.querySelector(
-        ".js-breadcrumb-container.d-flex.flex-items-center.flex-wrap.flex-auto"
-      ) as HTMLElement | null;
+      return (
+        document.querySelector("[class$='react-code-view-edit']")?.parentElement?.parentElement ??
+        (null as HTMLElement | null)
+      );
     },
     githubTextEditorToReplaceElement: () => {
-      return document.querySelector(".js-code-editor") as HTMLElement | null;
+      return document.querySelector("[class$='react-code-view-edit']")?.parentElement ?? (null as HTMLElement | null);
     },
   };
 
   public readonly singleView = {
     iframeContainerTarget: () => {
-      return document.querySelector(".Box.mt-3.position-relative") as HTMLElement | null;
+      return document.getElementById("highlighted-line-menu-positioner") as HTMLElement | null;
     },
     toolbarContainerTarget: () => {
-      return document.querySelector(".Box.mt-3.position-relative") as HTMLElement | null;
+      return document.querySelector("[class$='react-code-size-details-banner']") as HTMLElement | null;
     },
     githubTextEditorToReplaceElement: () => {
-      return document.querySelector(".Box-body.p-0.blob-wrapper.data") as HTMLElement | null;
+      return document.getElementById("highlighted-line-menu-positioner") as HTMLElement | null;
     },
   };
 
@@ -55,7 +62,7 @@ export class Dependencies {
 
   public readonly openRepoInExternalEditor = {
     buttonContainerOnRepoFilesList: () => {
-      return document.querySelector(".file-navigation") as HTMLElement | null;
+      return document.querySelector(".d-flex.gap-2")?.parentElement as HTMLElement | null;
     },
     buttonContainerOnPrs: () => {
       return document.querySelector(".gh-header-actions") as HTMLElement | null;
@@ -64,16 +71,17 @@ export class Dependencies {
 
   public readonly all = {
     notificationIndicator: () => {
-      return document.querySelector(".notification-indicator") as HTMLElement | null;
+      return (document.querySelector(".notification-indicator") ??
+        document.querySelector(".AppHeader-search")) as HTMLElement | null;
     },
     body: () => {
       return document.body;
     },
     edit__githubFileNameInput: () => {
-      return document.querySelector(".js-blob-filename") as HTMLInputElement | null;
+      return document.querySelector("[aria-describedby=file-name-editor-breadcrumb]") as HTMLInputElement | null;
     },
     edit__githubTextAreaWithFileContents: () => {
-      return document.querySelector(".file-editor-textarea") as HTMLTextAreaElement | null;
+      return document.getElementById("kie-tools__initial-content") as HTMLTextAreaElement | null;
     },
     pr__mutationObserverTarget: () => {
       return document.getElementById("files") as HTMLElement | null;
@@ -100,6 +108,15 @@ export class Dependencies {
         const elements = Array.from(document.querySelectorAll(".gh-header-meta .css-truncate-target"));
         return elements.length > 0 ? (elements as HTMLElement[]) : null;
       },
+    },
+    hideDocumentBody: () => {
+      (document.querySelector("[data-turbo-body]") as HTMLElement).style.display = "none";
+    },
+    showDocumentBody: () => {
+      (document.querySelector("[data-turbo-body]") as HTMLElement).style.display = "unset";
+    },
+    getViewFileButton: () => {
+      return document.querySelector("a[class='pl-5 dropdown-item btn-link']") as HTMLAnchorElement | null;
     },
   };
 }

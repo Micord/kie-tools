@@ -1,31 +1,35 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useCancelableEffect } from "@kie-tools-core/react-hooks/dist/useCancelableEffect";
 import { ENV_FILE_PATH } from "./EnvConstants";
-import { DEFAULT_ENV_VARS, EnvContext } from "./EnvContext";
+import { EnvContext } from "./EnvContext";
+import { EnvJson } from "./EnvJson";
 
 interface Props {
   children: React.ReactNode;
 }
 
 export function EnvContextProvider(props: Props) {
-  const [vars, setVars] = useState(DEFAULT_ENV_VARS);
+  const [env, setEnv] = useState<EnvJson>();
   const [fetchDone, setFetchDone] = useState(false);
 
   useCancelableEffect(
@@ -40,11 +44,10 @@ export function EnvContextProvider(props: Props) {
             throw new Error(`Failed to fetch ${ENV_FILE_PATH}: ${response.statusText}`);
           }
 
-          const varsWithName = await response.json();
-          setVars((previous) => ({ ...previous, ...varsWithName }));
+          const envJson = await response.json();
+          setEnv((prev) => ({ ...(prev ?? {}), ...envJson }));
         })
         .catch((e) => {
-          // env json file could not be fetched, so we keep the default values
           console.error(e);
         })
         .finally(() => {
@@ -55,9 +58,9 @@ export function EnvContextProvider(props: Props) {
 
   const value = useMemo(
     () => ({
-      vars,
+      env: env!,
     }),
-    [vars]
+    [env]
   );
 
   return <EnvContext.Provider value={value}>{fetchDone && props.children}</EnvContext.Provider>;

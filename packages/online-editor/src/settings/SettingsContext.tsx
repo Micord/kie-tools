@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
@@ -22,10 +25,10 @@ import { SettingsModalBody, SettingsTabs } from "./SettingsModalBody";
 import { useHistory } from "react-router";
 import { Modal, ModalVariant } from "@patternfly/react-core/dist/js/components/Modal";
 import { QueryParams } from "../navigation/Routes";
-import { useExtendedServices } from "../kieSandboxExtendedServices/KieSandboxExtendedServicesContext";
+import { useExtendedServices } from "../extendedServices/ExtendedServicesContext";
 
-export const KIE_SANDBOX_EXTENDED_SERVICES_HOST_COOKIE_NAME = "kie-tools-COOKIE__kie-sandbox-extended-services--host";
-export const KIE_SANDBOX_EXTENDED_SERVICES_PORT_COOKIE_NAME = "kie-tools-COOKIE__kie-sandbox-extended-services--port";
+export const EXTENDED_SERVICES_HOST_COOKIE_NAME = "kie-tools-COOKIE__kie-sandbox-extended-services--host";
+export const EXTENDED_SERVICES_PORT_COOKIE_NAME = "kie-tools-COOKIE__kie-sandbox-extended-services--port";
 
 export class ExtendedServicesConfig {
   constructor(public readonly host: string, public readonly port: string) {}
@@ -41,7 +44,6 @@ export class ExtendedServicesConfig {
     return {
       jitExecutor: `${this.buildUrl()}/`,
       ping: `${this.buildUrl()}/ping`,
-      corsProxy: `${this.buildUrl()}/cors-proxy`,
     };
   }
 }
@@ -49,7 +51,7 @@ export class ExtendedServicesConfig {
 export interface SettingsContextType {
   isOpen: boolean;
   activeTab: SettingsTabs;
-  kieSandboxExtendedServices: {
+  extendedServices: {
     config: ExtendedServicesConfig;
   };
 }
@@ -57,7 +59,7 @@ export interface SettingsContextType {
 export interface SettingsDispatchContextType {
   open: (activeTab?: SettingsTabs) => void;
   close: () => void;
-  kieSandboxExtendedServices: {
+  extendedServices: {
     setConfig: React.Dispatch<React.SetStateAction<ExtendedServicesConfig>>;
   };
 }
@@ -97,7 +99,7 @@ export function SettingsContextProvider(props: any) {
     return {
       open,
       close,
-      kieSandboxExtendedServices: {
+      extendedServices: {
         setConfig: extendedServices.saveNewConfig,
       },
     };
@@ -107,7 +109,7 @@ export function SettingsContextProvider(props: any) {
     return {
       isOpen,
       activeTab,
-      kieSandboxExtendedServices: {
+      extendedServices: {
         config: extendedServices.config,
       },
     };

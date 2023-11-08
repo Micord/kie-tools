@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import {
@@ -21,13 +24,14 @@ import {
   EnvelopeContent,
   EnvelopeContentType,
   EnvelopeMapping,
+  StateControlCommand,
   useKogitoEditorEnvelopeContext,
 } from "@kie-tools-core/editor/dist/api";
 import { EmbeddedEditorFile } from "@kie-tools-core/editor/dist/channel";
 import { EmbeddedEditor, useEditorRef, useStateControlSubscription } from "@kie-tools-core/editor/dist/embedded";
 import { LoadingScreen } from "@kie-tools-core/editor/dist/envelope";
 import { MessageBusClientApi } from "@kie-tools-core/envelope-bus/dist/api";
-import { useSharedValue, useSubscription } from "@kie-tools-core/envelope-bus/dist/hooks";
+import { useSharedValue } from "@kie-tools-core/envelope-bus/dist/hooks";
 import { Notification } from "@kie-tools-core/notifications/dist/api";
 import { WorkspaceEdit } from "@kie-tools-core/workspace/dist/api";
 import {
@@ -47,7 +51,7 @@ import {
   DrawerPanelBody,
   DrawerPanelContent,
 } from "@patternfly/react-core/dist/js/components/Drawer";
-import { basename, extname } from "path";
+import { basename, extname } from "path-browserify";
 import * as React from "react";
 import {
   forwardRef,
@@ -60,9 +64,10 @@ import {
   useState,
 } from "react";
 import { Position } from "monaco-editor";
-import { ServerlessWorkflowCombinedEditorChannelApi, SwfFeatureToggle, SwfPreviewOptions } from "../api";
+import { ServerlessWorkflowCombinedEditorChannelApi, SwfPreviewOptions } from "../api";
 import { useSwfDiagramEditorChannelApi } from "./hooks/useSwfDiagramEditorChannelApi";
-import { useSwfTextEditorChannelApi } from "./hooks/useSwfTextEditorChannelApi";
+import { UseSwfTextEditorChannelApiArgs, useSwfTextEditorChannelApi } from "./hooks/useSwfTextEditorChannelApi";
+import { colorNodes } from "./helpers/ColorNodes";
 
 interface Props {
   locale: string;
@@ -70,10 +75,13 @@ interface Props {
   channelType: ChannelType;
   resourcesPathPrefix: string;
   onNewEdit: (edit: WorkspaceEdit) => void;
+  onStateControlCommandUpdate: (command: StateControlCommand) => void;
 }
 
 export type ServerlessWorkflowCombinedEditorRef = {
   setContent(path: string, content: string): Promise<void>;
+  colorNodes(nodeNames: string[], color: string, colorConnectedEnds: boolean): void;
+  moveCursorToPosition(position: Position): void;
 };
 
 interface File {
@@ -93,15 +101,13 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
   ServerlessWorkflowCombinedEditorRef | undefined,
   Props
 > = (props, forwardedRef) => {
+  const { onStateControlCommandUpdate, onNewEdit } = props;
   const [file, setFile] = useState<File | undefined>(undefined);
   const [embeddedTextEditorFile, setEmbeddedTextEditorFile] = useState<EmbeddedEditorFile>();
   const [embeddedDiagramEditorFile, setEmbeddedDiagramEditorFile] = useState<EmbeddedEditorFile>();
   const editorEnvelopeCtx = useKogitoEditorEnvelopeContext<ServerlessWorkflowCombinedEditorChannelApi>();
   const [diagramEditorEnvelopeContent] = useSharedValue<string>(
     editorEnvelopeCtx.channelApi.shared.kogitoSwfGetDiagramEditorEnvelopeContent
-  );
-  const [mermaidEnvelopeContent] = useSharedValue<string>(
-    editorEnvelopeCtx.channelApi.shared.kogitoSwfGetMermaidEnvelopeContent
   );
   const [textEditorEnvelopeContent] = useSharedValue<string>(
     editorEnvelopeCtx.channelApi.shared.kogitoSwfGetTextEditorEnvelopeContent
@@ -110,9 +116,6 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
   const { editor: textEditor, editorRef: textEditorRef } = useEditorRef();
   const { editor: diagramEditor, editorRef: diagramEditorRef } = useEditorRef();
 
-  const [featureToggle] = useSharedValue<SwfFeatureToggle>(
-    editorEnvelopeCtx.channelApi?.shared.kogitoSwfFeatureToggle_get
-  );
   const [previewOptions] = useSharedValue<SwfPreviewOptions>(
     editorEnvelopeCtx.channelApi?.shared.kogitoSwfPreviewOptions_get
   );
@@ -137,21 +140,24 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
     } else {
       return isTextEditorReady && isDiagramEditorReady;
     }
-  }, [isDiagramEditorReady, isTextEditorReady]);
+  }, [isDiagramEditorReady, isTextEditorReady, previewOptions]);
 
-  const buildEnvelopeContent = (content: string, path: string): EnvelopeContent => {
-    if (isStandalone) {
-      return {
-        type: EnvelopeContentType.CONTENT,
-        content: content,
-      };
-    } else {
-      return {
-        type: EnvelopeContentType.PATH,
-        path,
-      };
-    }
-  };
+  const buildEnvelopeContent = useCallback(
+    (content: string, path: string): EnvelopeContent => {
+      if (isStandalone) {
+        return {
+          type: EnvelopeContentType.CONTENT,
+          content: content,
+        };
+      } else {
+        return {
+          type: EnvelopeContentType.PATH,
+          path,
+        };
+      }
+    },
+    [isStandalone]
+  );
 
   const textEditorEnvelopeLocator = useMemo(
     () =>
@@ -166,36 +172,32 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
           ),
         }),
       ]),
-    [props.resourcesPathPrefix, targetOrigin, textEditorEnvelopeContent]
+    [props.resourcesPathPrefix, targetOrigin, textEditorEnvelopeContent, buildEnvelopeContent]
   );
 
-  const diagramEditorEnvelopeLocator = useMemo(() => {
-    const diagramEnvelopeMappingConfig =
-      featureToggle && !featureToggle.stunnerEnabled
-        ? {
-            resourcesPathPrefix: props.resourcesPathPrefix + "/mermaid",
-            envelopeContent: buildEnvelopeContent(
-              mermaidEnvelopeContent ?? "",
-              props.resourcesPathPrefix + "/serverless-workflow-mermaid-viewer-envelope.html"
-            ),
-          }
-        : {
-            resourcesPathPrefix: props.resourcesPathPrefix + "/diagram",
-            envelopeContent: buildEnvelopeContent(
-              diagramEditorEnvelopeContent ?? "",
-              props.resourcesPathPrefix + "/serverless-workflow-diagram-editor-envelope.html"
-            ),
-          };
+  const diagramEditorEnvelopeLocator = useMemo(
+    () =>
+      new EditorEnvelopeLocator(targetOrigin, [
+        new EnvelopeMapping({
+          type: ENVELOPE_LOCATOR_TYPE,
+          filePathGlob: "**/*.sw.+(json|yml|yaml)",
+          resourcesPathPrefix: props.resourcesPathPrefix + "/diagram",
+          envelopeContent: buildEnvelopeContent(
+            diagramEditorEnvelopeContent ?? "",
+            props.resourcesPathPrefix + "/serverless-workflow-diagram-editor-envelope.html"
+          ),
+        }),
+      ]),
+    [props.resourcesPathPrefix, targetOrigin, diagramEditorEnvelopeContent, buildEnvelopeContent]
+  );
 
-    return new EditorEnvelopeLocator(targetOrigin, [
-      new EnvelopeMapping({
-        type: ENVELOPE_LOCATOR_TYPE,
-        filePathGlob: "**/*.sw.+(json|yml|yaml)",
-        resourcesPathPrefix: diagramEnvelopeMappingConfig.resourcesPathPrefix,
-        envelopeContent: diagramEnvelopeMappingConfig.envelopeContent,
-      }),
-    ]);
-  }, [featureToggle, props.resourcesPathPrefix, targetOrigin, mermaidEnvelopeContent, diagramEditorEnvelopeContent]);
+  const textEditorEnvelopeApi = useMemo(
+    () =>
+      textEditor &&
+      (textEditor.getEnvelopeServer()
+        .envelopeApi as unknown as MessageBusClientApi<ServerlessWorkflowTextEditorEnvelopeApi>),
+    [textEditor]
+  );
 
   useImperativeHandle(
     forwardedRef,
@@ -233,21 +235,24 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
         getContent: async () => file?.content ?? "",
         getPreview: async () => diagramEditor?.getPreview() ?? "",
         undo: async () => {
-          textEditor?.undo();
-          diagramEditor?.undo();
+          await Promise.all([textEditor?.undo(), diagramEditor?.undo()]);
         },
         redo: async () => {
-          textEditor?.redo();
-          diagramEditor?.redo();
+          await Promise.all([textEditor?.redo(), diagramEditor?.redo()]);
         },
         validate: async (): Promise<Notification[]> => textEditor?.validate() ?? [],
         setTheme: async (theme: EditorTheme) => {
-          textEditor?.setTheme(theme);
-          diagramEditor?.setTheme(theme);
+          await Promise.all([textEditor?.setTheme(theme), diagramEditor?.setTheme(theme)]);
+        },
+        colorNodes: (nodeNames: string[], color: string, colorConnectedEnds: boolean) => {
+          colorNodes(nodeNames, color, colorConnectedEnds);
+        },
+        moveCursorToPosition: (position: Position) => {
+          textEditorEnvelopeApi?.notifications.kogitoSwfTextEditor__moveCursorToPosition.send(position);
         },
       };
     },
-    [diagramEditor, file, props.isReadOnly, textEditor]
+    [diagramEditor, file, props.isReadOnly, textEditor, textEditorEnvelopeApi]
   );
 
   useStateControlSubscription(
@@ -259,13 +264,12 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
         }
 
         const content = await textEditor.getContent();
-        props.onNewEdit(new WorkspaceEdit(content));
         setFile((prevState) => ({
           ...prevState!,
           content,
         }));
       },
-      [props, textEditor]
+      [textEditor]
     )
   );
 
@@ -278,13 +282,12 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
         }
 
         const content = await diagramEditor.getContent();
-        props.onNewEdit(new WorkspaceEdit(content));
         setFile((prevState) => ({
           ...prevState!,
           content,
         }));
       },
-      [props, diagramEditor]
+      [diagramEditor]
     )
   );
 
@@ -339,17 +342,55 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
     [editorEnvelopeCtx, embeddedDiagramEditorFile, onDiagramEditorReady, textEditor, props.locale]
   );
 
-  const useSwfTextEditorChannelApiArgs = useMemo(
+  const onTextEditorNewEdit = useCallback(
+    (edit: WorkspaceEdit) => {
+      onNewEdit(edit);
+    },
+    [onNewEdit]
+  );
+
+  const onTextEditorStateControlCommandUpdate = useCallback(
+    (command: StateControlCommand) => {
+      switch (command) {
+        case StateControlCommand.UNDO:
+          onStateControlCommandUpdate(StateControlCommand.UNDO);
+          break;
+        case StateControlCommand.REDO:
+          onStateControlCommandUpdate(StateControlCommand.REDO);
+          break;
+        default:
+          console.info(`Unknown message type received: ${command}`);
+          break;
+      }
+    },
+    [onStateControlCommandUpdate]
+  );
+
+  const useSwfTextEditorChannelApiArgs = useMemo<UseSwfTextEditorChannelApiArgs>(
     () => ({
+      apiOverrides: {
+        kogitoWorkspace_newEdit: onTextEditorNewEdit,
+        kogitoEditor_stateControlCommandUpdate: onTextEditorStateControlCommandUpdate,
+        kogitoEditor_ready: onTextEditorReady,
+        kogitoEditor_setContentError: onTextEditorSetContentError,
+      },
       channelApi:
         editorEnvelopeCtx.channelApi as unknown as MessageBusClientApi<ServerlessWorkflowTextEditorChannelApi>,
       locale: props.locale,
       embeddedEditorFile: embeddedTextEditorFile,
-      onEditorReady: onTextEditorReady,
       swfDiagramEditorEnvelopeApi: diagramEditor?.getEnvelopeServer()
         .envelopeApi as unknown as MessageBusClientApi<ServerlessWorkflowDiagramEditorEnvelopeApi>,
     }),
-    [editorEnvelopeCtx, onTextEditorReady, diagramEditor, embeddedTextEditorFile, props.locale]
+    [
+      onTextEditorNewEdit,
+      onTextEditorStateControlCommandUpdate,
+      onTextEditorReady,
+      onTextEditorSetContentError,
+      editorEnvelopeCtx.channelApi,
+      props.locale,
+      embeddedTextEditorFile,
+      diagramEditor,
+    ]
   );
 
   const { stateControl: diagramEditorStateControl, channelApi: diagramEditorChannelApi } =
@@ -365,8 +406,6 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
           ref={textEditorRef}
           file={embeddedTextEditorFile}
           channelType={props.channelType}
-          kogitoEditor_ready={onTextEditorReady}
-          kogitoEditor_setContentError={onTextEditorSetContentError}
           editorEnvelopeLocator={textEditorEnvelopeLocator}
           locale={props.locale}
           customChannelApiImpl={textEditorChannelApi}
@@ -395,19 +434,6 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
     );
   };
 
-  useSubscription(
-    editorEnvelopeCtx.channelApi.notifications.kogitoSwfCombinedEditor_moveCursorToPosition,
-    useCallback(
-      (position: Position) => {
-        const swfTextEditorEnvelopeApi = textEditor?.getEnvelopeServer()
-          .envelopeApi as unknown as MessageBusClientApi<ServerlessWorkflowTextEditorEnvelopeApi>;
-
-        swfTextEditorEnvelopeApi.notifications.kogitoSwfTextEditor__moveCursorToPosition.send(position);
-      },
-      [textEditor]
-    )
-  );
-
   window.editor = useMemo(
     () =>
       new SwfStunnerEditor(
@@ -416,6 +442,12 @@ const RefForwardingServerlessWorkflowCombinedEditor: ForwardRefRenderFunction<
       ),
     [diagramEditor]
   );
+
+  useEffect(() => {
+    if (isCombinedEditorReady) {
+      editorEnvelopeCtx.channelApi.notifications.kogitoSwfCombinedEditor_combinedEditorReady.send();
+    }
+  }, [editorEnvelopeCtx, isCombinedEditorReady]);
 
   return (
     <div style={{ height: "100%" }}>

@@ -1,23 +1,27 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
 import { useCallback, useMemo } from "react";
 import * as ReactTable from "react-table";
 import {
+  BeeTableContextMenuAllowedOperationsConditions,
   BeeTableHeaderVisibility,
   BeeTableOperation,
   BeeTableOperationConfig,
@@ -39,12 +43,16 @@ import {
   INVOCATION_EXTRA_WIDTH,
 } from "../../resizing/WidthConstants";
 import { BeeTable, BeeTableColumnUpdate } from "../../table/BeeTable";
-import { useBoxedExpressionEditorDispatch } from "../BoxedExpressionEditor/BoxedExpressionEditorContext";
+import {
+  useBoxedExpressionEditor,
+  useBoxedExpressionEditorDispatch,
+} from "../BoxedExpressionEditor/BoxedExpressionEditorContext";
 import { useNestedExpressionContainerWithNestedExpressions } from "../../resizing/Hooks";
 import { ArgumentEntryExpressionCell } from "./ArgumentEntryExpressionCell";
 import { ContextEntryInfoCell } from "../ContextExpression";
 import "./InvocationExpression.css";
 import { DEFAULT_EXPRESSION_NAME } from "../ExpressionDefinitionHeaderMenu";
+import { getExpressionTotalMinWidth } from "../../resizing/WidthMaths";
 
 type ROWTYPE = ContextExpressionDefinitionEntry;
 
@@ -52,9 +60,11 @@ export const INVOCATION_EXPRESSION_DEFAULT_PARAMETER_NAME = "p-1";
 export const INVOCATION_EXPRESSION_DEFAULT_PARAMETER_DATA_TYPE = DmnBuiltInDataType.Undefined;
 export const INVOCATION_EXPRESSION_DEFAULT_PARAMETER_LOGIC_TYPE = ExpressionDefinitionLogicType.Undefined;
 
-export function InvocationExpression(invocationExpression: InvocationExpressionDefinition & { isNested: boolean }) {
+export function InvocationExpression(
+  invocationExpression: InvocationExpressionDefinition & { isNested: boolean; parentElementId: string }
+) {
   const { i18n } = useBoxedExpressionEditorI18n();
-
+  const { variables } = useBoxedExpressionEditor();
   const { setExpression } = useBoxedExpressionEditorDispatch();
 
   const parametersWidth = useMemo(() => {
@@ -80,12 +90,18 @@ export function InvocationExpression(invocationExpression: InvocationExpressionD
   const { nestedExpressionContainerValue, onColumnResizingWidthChange: onColumnResizingWidthChange2 } =
     useNestedExpressionContainerWithNestedExpressions(
       useMemo(() => {
+        const entriesWidths = invocationExpression.bindingEntries.map((e) =>
+          getExpressionTotalMinWidth(0, e.entryExpression)
+        );
+
+        const maxNestedExpressionWidth = Math.max(...entriesWidths, INVOCATION_ARGUMENT_EXPRESSION_MIN_WIDTH);
+
         return {
           nestedExpressions: invocationExpression.bindingEntries?.map((e) => e.entryExpression) ?? [],
           fixedColumnActualWidth: parametersWidth,
           fixedColumnResizingWidth: parametersResizingWidth,
           fixedColumnMinWidth: INVOCATION_PARAMETER_MIN_WIDTH,
-          nestedExpressionMinWidth: INVOCATION_ARGUMENT_EXPRESSION_MIN_WIDTH,
+          nestedExpressionMinWidth: maxNestedExpressionWidth,
           extraWidth: INVOCATION_EXTRA_WIDTH,
           expression: invocationExpression,
           flexibleColumnIndex: 2,
@@ -181,6 +197,12 @@ export function InvocationExpression(invocationExpression: InvocationExpressionD
               name: u.name,
             },
           }));
+        } else {
+          setExpression((prev: InvocationExpressionDefinition) => ({
+            ...prev,
+            dataType: u.dataType,
+            name: u.name,
+          }));
         }
       }
     },
@@ -211,7 +233,9 @@ export function InvocationExpression(invocationExpression: InvocationExpressionD
   const cellComponentByColumnAccessor: BeeTableProps<ROWTYPE>["cellComponentByColumnAccessor"] = useMemo(
     () => ({
       parametersInfo: (props) => <ContextEntryInfoCell {...props} onEntryUpdate={updateEntry} />,
-      argumentExpression: (props) => <ArgumentEntryExpressionCell {...props} />,
+      argumentExpression: (props) => (
+        <ArgumentEntryExpressionCell {...props} parentElementId={invocationExpression.parentElementId} />
+      ),
     }),
     [updateEntry]
   );
@@ -224,7 +248,17 @@ export function InvocationExpression(invocationExpression: InvocationExpressionD
           { name: i18n.rowOperations.reset, type: BeeTableOperation.RowReset },
           { name: i18n.rowOperations.insertAbove, type: BeeTableOperation.RowInsertAbove },
           { name: i18n.rowOperations.insertBelow, type: BeeTableOperation.RowInsertBelow },
+          { name: i18n.insert, type: BeeTableOperation.RowInsertN },
           { name: i18n.rowOperations.delete, type: BeeTableOperation.RowDelete },
+        ],
+      },
+      {
+        group: i18n.terms.selection.toUpperCase(),
+        items: [
+          { name: i18n.terms.copy, type: BeeTableOperation.SelectionCopy },
+          { name: i18n.terms.cut, type: BeeTableOperation.SelectionCut },
+          { name: i18n.terms.paste, type: BeeTableOperation.SelectionPaste },
+          { name: i18n.terms.reset, type: BeeTableOperation.SelectionReset },
         ],
       },
     ];
@@ -300,6 +334,28 @@ export function InvocationExpression(invocationExpression: InvocationExpressionD
     [getDefaultArgumentEntry, setExpression]
   );
 
+  const allowedOperations = useCallback(
+    (conditions: BeeTableContextMenuAllowedOperationsConditions) => {
+      if (!conditions.selection.selectionStart || !conditions.selection.selectionEnd) {
+        return [];
+      }
+
+      return [
+        BeeTableOperation.SelectionCopy,
+        ...(conditions.selection.selectionStart.rowIndex >= 0
+          ? [
+              BeeTableOperation.RowInsertAbove,
+              BeeTableOperation.RowInsertBelow,
+              BeeTableOperation.RowInsertN,
+              ...(beeTableRows.length > 1 ? [BeeTableOperation.RowDelete] : []),
+              BeeTableOperation.RowReset,
+            ]
+          : []),
+      ];
+    },
+    [beeTableRows.length]
+  );
+
   return (
     <NestedExpressionContainerContext.Provider value={nestedExpressionContainerValue}>
       <div className={`invocation-expression ${invocationExpression.id}`}>
@@ -315,6 +371,7 @@ export function InvocationExpression(invocationExpression: InvocationExpressionD
           onColumnUpdates={onColumnUpdates}
           onColumnResizingWidthChange={onColumnResizingWidthChange}
           operationConfig={beeTableOperationConfig}
+          allowedOperations={allowedOperations}
           getRowKey={getRowKey}
           onRowAdded={onRowAdded}
           onRowReset={onRowReset}
@@ -322,6 +379,7 @@ export function InvocationExpression(invocationExpression: InvocationExpressionD
           shouldRenderRowIndexColumn={false}
           shouldShowRowsInlineControls={true}
           shouldShowColumnsInlineControls={false}
+          variables={variables}
         />
       </div>
     </NestedExpressionContainerContext.Provider>

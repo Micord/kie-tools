@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import {
@@ -30,6 +33,95 @@ export type SwfLanguageServiceCodeLensesFunctionsArgs =
     config: SwfLanguageServiceConfig;
     displayRhhccIntegration?: boolean;
   };
+
+const logInRegistries = (args: SwfLanguageServiceCodeLensesFunctionsArgs, jsonPath: string[]): CodeLens[] =>
+  !args.displayRhhccIntegration
+    ? []
+    : createCodeLenses({
+        document: args.document,
+        rootNode: args.rootNode,
+        jsonPath,
+        positionLensAt: "begin",
+        commandDelegates: ({ position, node }) => {
+          const commandName: SwfLanguageServiceCommandTypes = "swf.ls.commands.LogInServiceRegistries";
+
+          if (
+            node.type !== "array" ||
+            !args.codeCompletionStrategy.shouldCreateCodelens({ node, commandName, content: args.content }) ||
+            args.config.shouldConfigureServiceRegistries() ||
+            !args.config.shouldServiceRegistriesLogIn()
+          ) {
+            return [];
+          }
+
+          return [
+            {
+              name: commandName,
+              title: "↪ Log in Service Registries...",
+              args: [{ position } as SwfLanguageServiceCommandArgs[typeof commandName]],
+            },
+          ];
+        },
+      });
+
+const setUpRegistries = (args: SwfLanguageServiceCodeLensesFunctionsArgs, jsonPath: string[]): CodeLens[] =>
+  !args.displayRhhccIntegration
+    ? []
+    : createCodeLenses({
+        document: args.document,
+        rootNode: args.rootNode,
+        jsonPath,
+        positionLensAt: "begin",
+        commandDelegates: ({ position, node }) => {
+          const commandName: SwfLanguageServiceCommandTypes = "swf.ls.commands.OpenServiceRegistriesConfig";
+
+          if (
+            node.type !== "array" ||
+            !args.codeCompletionStrategy.shouldCreateCodelens({ node, commandName, content: args.content }) ||
+            !args.config.shouldConfigureServiceRegistries()
+          ) {
+            return [];
+          }
+
+          return [
+            {
+              name: commandName,
+              title: "↪ Setup Service Registries...",
+              args: [{ position } as SwfLanguageServiceCommandArgs[typeof commandName]],
+            },
+          ];
+        },
+      });
+
+const refreshRegistries = (args: SwfLanguageServiceCodeLensesFunctionsArgs, jsonPath: string[]): CodeLens[] =>
+  !args.displayRhhccIntegration
+    ? []
+    : createCodeLenses({
+        document: args.document,
+        rootNode: args.rootNode,
+        jsonPath,
+        positionLensAt: "begin",
+        commandDelegates: ({ position, node }) => {
+          const commandName: SwfLanguageServiceCommandTypes = "swf.ls.commands.RefreshServiceRegistries";
+
+          if (
+            node.type !== "array" ||
+            !args.codeCompletionStrategy.shouldCreateCodelens({ node, commandName, content: args.content }) ||
+            args.config.shouldConfigureServiceRegistries() ||
+            !args.config.canRefreshServices()
+          ) {
+            return [];
+          }
+
+          return [
+            {
+              name: commandName,
+              title: "↺ Refresh Service Registries...",
+              args: [{ position } as SwfLanguageServiceCommandArgs[typeof commandName]],
+            },
+          ];
+        },
+      });
 
 /**
  * Functions to create CodeLenses
@@ -61,92 +153,21 @@ export const SwfLanguageServiceCodeLenses: EditorLanguageServiceCodeLenses = {
       nodeType: "array",
     }),
 
-  setupServiceRegistries: (args: SwfLanguageServiceCodeLensesFunctionsArgs): CodeLens[] =>
-    !args.displayRhhccIntegration
-      ? []
-      : createCodeLenses({
-          document: args.document,
-          rootNode: args.rootNode,
-          jsonPath: ["functions"],
-          positionLensAt: "begin",
-          commandDelegates: ({ position, node }) => {
-            const commandName: SwfLanguageServiceCommandTypes = "swf.ls.commands.OpenServiceRegistriesConfig";
+  setupServiceRegistriesForFunctions: (args: SwfLanguageServiceCodeLensesFunctionsArgs) =>
+    setUpRegistries(args, ["functions"]),
 
-            if (
-              node.type !== "array" ||
-              !args.codeCompletionStrategy.shouldCreateCodelens({ node, commandName, content: args.content }) ||
-              !args.config.shouldConfigureServiceRegistries()
-            ) {
-              return [];
-            }
+  logInServiceRegistriesForFunctions: (args: SwfLanguageServiceCodeLensesFunctionsArgs) =>
+    logInRegistries(args, ["functions"]),
 
-            return [
-              {
-                name: commandName,
-                title: "↪ Setup Service Registries...",
-                args: [{ position } as SwfLanguageServiceCommandArgs[typeof commandName]],
-              },
-            ];
-          },
-        }),
+  refreshServiceRegistriesForFunctions: (args: SwfLanguageServiceCodeLensesFunctionsArgs) =>
+    refreshRegistries(args, ["functions"]),
 
-  logInServiceRegistries: (args: SwfLanguageServiceCodeLensesFunctionsArgs): CodeLens[] =>
-    !args.displayRhhccIntegration
-      ? []
-      : createCodeLenses({
-          document: args.document,
-          rootNode: args.rootNode,
-          jsonPath: ["functions"],
-          positionLensAt: "begin",
-          commandDelegates: ({ position, node }) => {
-            const commandName: SwfLanguageServiceCommandTypes = "swf.ls.commands.LogInServiceRegistries";
+  setupServiceRegistriesForEvents: (args: SwfLanguageServiceCodeLensesFunctionsArgs) =>
+    setUpRegistries(args, ["events"]),
 
-            if (
-              node.type !== "array" ||
-              !args.codeCompletionStrategy.shouldCreateCodelens({ node, commandName, content: args.content }) ||
-              args.config.shouldConfigureServiceRegistries() ||
-              !args.config.shouldServiceRegistriesLogIn()
-            ) {
-              return [];
-            }
+  logInServiceRegistriesForEvents: (args: SwfLanguageServiceCodeLensesFunctionsArgs) =>
+    logInRegistries(args, ["events"]),
 
-            return [
-              {
-                name: commandName,
-                title: "↪ Log in Service Registries...",
-                args: [{ position } as SwfLanguageServiceCommandArgs[typeof commandName]],
-              },
-            ];
-          },
-        }),
-
-  refreshServiceRegistries: (args: SwfLanguageServiceCodeLensesFunctionsArgs): CodeLens[] =>
-    !args.displayRhhccIntegration
-      ? []
-      : createCodeLenses({
-          document: args.document,
-          rootNode: args.rootNode,
-          jsonPath: ["functions"],
-          positionLensAt: "begin",
-          commandDelegates: ({ position, node }) => {
-            const commandName: SwfLanguageServiceCommandTypes = "swf.ls.commands.RefreshServiceRegistries";
-
-            if (
-              node.type !== "array" ||
-              !args.codeCompletionStrategy.shouldCreateCodelens({ node, commandName, content: args.content }) ||
-              args.config.shouldConfigureServiceRegistries() ||
-              !args.config.canRefreshServices()
-            ) {
-              return [];
-            }
-
-            return [
-              {
-                name: commandName,
-                title: "↺ Refresh Service Registries...",
-                args: [{ position } as SwfLanguageServiceCommandArgs[typeof commandName]],
-              },
-            ];
-          },
-        }),
+  refreshServiceRegistriesForEvents: (args: SwfLanguageServiceCodeLensesFunctionsArgs) =>
+    refreshRegistries(args, ["events"]),
 };

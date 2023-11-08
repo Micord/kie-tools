@@ -1,18 +1,22 @@
 /*
- * Copyright (C) 2012 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.jboss.errai.ui.rebind;
 
@@ -30,8 +34,6 @@ import org.jboss.errai.codegen.meta.MetaMethod;
 import org.jboss.errai.codegen.meta.MetaParameter;
 import org.jboss.errai.codegen.util.Refs;
 import org.jboss.errai.codegen.util.Stmt;
-import org.jboss.errai.databinding.client.PropertyChangeUnsubscribeHandle;
-import org.jboss.errai.databinding.rebind.DataBindingUtil;
 import org.jboss.errai.ioc.client.api.CodeDecorator;
 import org.jboss.errai.ioc.client.container.Factory;
 import org.jboss.errai.ioc.client.container.RefHolder;
@@ -43,7 +45,6 @@ import org.jboss.errai.ui.shared.TemplateWidgetMapper;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jboss.errai.ui.shared.api.annotations.style.StyleBinding;
 import org.jboss.errai.ui.shared.api.style.BindingRegistrationHandle;
-import org.jboss.errai.ui.shared.api.style.StyleBindingChangeHandler;
 import org.jboss.errai.ui.shared.api.style.StyleBindingExecutor;
 import org.jboss.errai.ui.shared.api.style.StyleBindingsRegistry;
 
@@ -122,14 +123,10 @@ public class StyleBindingCodeDecorator extends IOCDecoratorExtension<StyleBindin
   }
 
   private static void addCleanup(final Decorable decorable, final FactoryController controller, final List<Statement> destructionStmts) {
-    final DataBindingUtil.DataBinderRef dataBinder = DataBindingUtil.lookupDataBinderRef(decorable, controller);
 
     if (!controller.hasAttribute(STYLE_BINDING_HOUSEKEEPING_ATTR)) {
       destructionStmts.add(
               Stmt.invokeStatic(StyleBindingsRegistry.class, "get").invoke("cleanAllForBean", Refs.get("instance")));
-      if (dataBinder != null) {
-        destructionStmts.add(controller.getReferenceStmt("styleBindingChangeHandlerUnsub", PropertyChangeUnsubscribeHandle.class).invoke("unsubscribe"));
-      }
       controller.setAttribute(STYLE_BINDING_HOUSEKEEPING_ATTR, Boolean.TRUE);
     }
   }
@@ -169,22 +166,9 @@ public class StyleBindingCodeDecorator extends IOCDecoratorExtension<StyleBindin
     }
 
 
-    final DataBindingUtil.DataBinderRef dataBinder = DataBindingUtil.lookupDataBinderRef(decorable, controller);
-
     final List<Statement> initStmts = new ArrayList<Statement>();
     final List<Statement> destructionStmts = new ArrayList<Statement>();
 
-    if (dataBinder != null) {
-      if (!controller.hasAttribute(DATA_BINDING_CONFIG_ATTR)) {
-        final String handlerVarName = "bindingChangeHandler";
-        controller.setAttribute(DATA_BINDING_CONFIG_ATTR, Boolean.TRUE);
-
-        initStmts.add(controller.setReferenceStmt(handlerVarName, newObject(StyleBindingChangeHandler.class)));
-        // ERRAI-817 deferred initialization
-        initStmts.add(controller.setReferenceStmt("styleBindingChangeHandlerUnsub", nestedCall(dataBinder.getValueAccessor()).invoke("addPropertyChangeHandler",
-                controller.getReferenceStmt(handlerVarName, StyleBindingChangeHandler.class))));
-      }
-    }
     // ERRAI-821 deferred initialization
     if (decorable.getType().isAssignableTo(Widget.class)) {
       initStmts.add(invokeStatic(StyleBindingsRegistry.class, "get")

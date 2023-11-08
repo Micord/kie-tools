@@ -1,21 +1,24 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
-import { useCallback, useState, useImperativeHandle, useMemo, useEffect } from "react";
+import { useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { Popover, PopoverPosition, PopoverProps } from "@patternfly/react-core/dist/js/components/Popover";
 import "./PopoverMenu.css";
 import { useBoxedExpressionEditor } from "../../expressions/BoxedExpressionEditor/BoxedExpressionEditorContext";
@@ -63,6 +66,10 @@ export interface PopoverMenuRef {
    */
   setIsVisible: (isVisible: boolean) => void;
 }
+
+const POPUP_DROP_DOWN_RESERVED_HEIGHT = 200;
+
+const POPUP_DEFAULT_HEIGHT = 200;
 
 export const PopoverMenu = React.forwardRef(
   (
@@ -122,6 +129,25 @@ export const PopoverMenu = React.forwardRef(
       })
     );
 
+    const appendElement = useMemo(() => {
+      if (appendTo instanceof HTMLElement) {
+        return appendTo;
+      } else if (appendTo) {
+        return appendTo();
+      }
+    }, [appendTo]);
+
+    const yPos = appendElement?.getBoundingClientRect().top ?? 0;
+    const popupPosition = useMemo(() => {
+      if (appendElement) {
+        const availableHeight = document.documentElement.clientHeight;
+        if (POPUP_DEFAULT_HEIGHT + yPos + POPUP_DROP_DOWN_RESERVED_HEIGHT > availableHeight) {
+          return PopoverPosition.right;
+        }
+      }
+      return PopoverPosition.bottom;
+    }, [appendElement, yPos]);
+
     return (
       <Popover
         id={"menu-selector"}
@@ -129,7 +155,7 @@ export const PopoverMenu = React.forwardRef(
         className={`popover-menu-selector ${className ?? ""}`}
         hasAutoWidth={hasAutoWidth}
         minWidth={minWidth}
-        position={position ?? PopoverPosition.bottom}
+        position={popupPosition}
         distance={distance ?? 0}
         reference={arrowPlacement}
         appendTo={appendTo}

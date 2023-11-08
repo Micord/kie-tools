@@ -1,18 +1,22 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 package org.dashbuilder.shared.marshalling;
 
 import java.util.ArrayList;
@@ -91,6 +95,11 @@ public class LayoutTemplateJSONMarshaller {
             "org.uberfire.ext.plugin.client.perspective.editor.layout.editor.MarkdownLayoutDragComponent";
     static final String MARKDOWN = "MARKDOWN";
     static final String MARKDOWN_CODE_PROP = "MARKDOWN_CODE";
+
+    static final String PANEL_DRAG_TYPE =
+            "org.dashbuilder.client.navigation.widget.PanelLayoutDragComponent";
+    static final String PANEL = "PANEL";
+    static final String PANEL_CODE_PROP = "Page Name";
 
     // to make the json more user friendly
     // replacement for Drag type
@@ -238,9 +247,8 @@ public class LayoutTemplateJSONMarshaller {
                 .getCssProperties()));
         if (settings != null) {
             try {
-                component.setSettings(DisplayerSettingsJSONMarshaller.get().fromJsonObject(settings));
+                component.setSettings(DisplayerSettingsJSONMarshaller.get().fromJsonObject(settings, false));
             } catch (Exception e) {
-                // just log the error and let displayers handle missing configuration
                 LOGGER.warn("Error reading component settings", e);
                 var _displayer = new DisplayerSettings();
                 _displayer.setError(e.getMessage());
@@ -374,7 +382,8 @@ public class LayoutTemplateJSONMarshaller {
                 elementShortcut(object, HTML, HTML_CODE_PROP, HTML_DRAG_TYPE),
                 elementShortcut(object, SCREEN, SCREEN_NAME_PROP, SCREEN_DRAG_TYPE),
                 elementShortcut(object, DIV, DIV_ID_PROP, DIV_DRAG_TYPE),
-                elementShortcut(object, MARKDOWN, MARKDOWN_CODE_PROP, MARKDOWN_DRAG_TYPE))
+                elementShortcut(object, MARKDOWN, MARKDOWN_CODE_PROP, MARKDOWN_DRAG_TYPE),
+                elementShortcut(object, PANEL, PANEL_CODE_PROP, PANEL_DRAG_TYPE))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findAny();

@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 import * as React from "react";
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
@@ -26,17 +29,10 @@ import { WorkspaceEdit } from "@kie-tools-core/workspace/dist/api";
 import { Notification } from "@kie-tools-core/notifications/dist/api";
 import { MonacoEditorOperation, DashbuilderMonacoEditorApi } from "../monaco/DashbuilderMonacoEditorApi";
 import { DashbuilderMonacoEditor } from "../monaco/DashbuilderMonacoEditor";
-import {
-  ChannelType,
-  EditorTheme,
-  StateControlCommand,
-  useKogitoEditorEnvelopeContext,
-} from "@kie-tools-core/editor/dist/api";
+import { ChannelType, EditorTheme, StateControlCommand } from "@kie-tools-core/editor/dist/api";
 import { Dashbuilder } from "../dashbuilder/Dashbuilder";
 import { Toolbar } from "./Toolbar";
 import { Position } from "monaco-editor";
-import { useSubscription } from "@kie-tools-core/envelope-bus/dist/hooks";
-import { DashbuilderEditorChannelApi } from "../api";
 
 const INITIAL_CONTENT = `datasets:
 - uuid: products
@@ -121,6 +117,7 @@ const UPDATE_TIME = 1000;
 
 export type DashbuilderEditorRef = {
   setContent(path: string, content: string): Promise<void>;
+  moveCursorToPosition(position: Position): void;
 };
 
 const RefForwardingDashbuilderEditor: React.ForwardRefRenderFunction<DashbuilderEditorRef | undefined, Props> = (
@@ -131,7 +128,6 @@ const RefForwardingDashbuilderEditor: React.ForwardRefRenderFunction<Dashbuilder
   const [renderContent, setRenderContent] = useState("");
   const [showPreview, setShowPreview] = useState<boolean>(false);
   const dashbuilderMonacoEditorRef = useRef<DashbuilderMonacoEditorApi>(null);
-  const editorEnvelopeCtx = useKogitoEditorEnvelopeContext<DashbuilderEditorChannelApi>();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -161,7 +157,7 @@ const RefForwardingDashbuilderEditor: React.ForwardRefRenderFunction<Dashbuilder
           }
         },
         getContent: (): Promise<string> => {
-          return Promise.resolve(Promise.resolve(dashbuilderMonacoEditorRef.current?.getContent() || ""));
+          return Promise.resolve(dashbuilderMonacoEditorRef.current?.getContent() || "");
         },
         getPreview: (): Promise<string> => {
           // TODO: implement it on Dashbuilder
@@ -179,16 +175,12 @@ const RefForwardingDashbuilderEditor: React.ForwardRefRenderFunction<Dashbuilder
         setTheme: (theme: EditorTheme): Promise<void> => {
           return dashbuilderMonacoEditorRef.current?.setTheme(theme) || Promise.resolve();
         },
+        moveCursorToPosition: (position: Position) => {
+          dashbuilderMonacoEditorRef.current?.moveCursorToPosition(position);
+        },
       };
     },
     []
-  );
-
-  useSubscription(
-    editorEnvelopeCtx.channelApi.notifications.kogitoDashbuilderTextEditor_moveCursorToPosition,
-    useCallback((position: Position) => {
-      dashbuilderMonacoEditorRef.current?.moveCursorToPosition(position);
-    }, [])
   );
 
   const onContentChanged = useCallback(

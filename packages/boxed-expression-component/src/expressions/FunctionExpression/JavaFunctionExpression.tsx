@@ -1,28 +1,32 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { Popover } from "@patternfly/react-core/dist/js/components/Popover/Popover";
 import HelpIcon from "@patternfly/react-icons/dist/js/icons/help-icon";
-import _ from "lodash";
 import * as React from "react";
 import { useCallback, useEffect, useMemo } from "react";
 import * as ReactTable from "react-table";
 import {
   BeeTableCellProps,
+  BeeTableContextMenuAllowedOperationsConditions,
   BeeTableHeaderVisibility,
+  BeeTableOperation,
   BeeTableOperationConfig,
   BeeTableProps,
   DmnBuiltInDataType,
@@ -149,8 +153,12 @@ export function JavaFunctionExpression({
   const beeTableOperationConfig = useMemo<BeeTableOperationConfig>(() => {
     return [
       {
-        group: _.upperCase(i18n.function),
-        items: [],
+        group: i18n.terms.selection.toUpperCase(),
+        items: [{ name: i18n.terms.copy, type: BeeTableOperation.SelectionCopy }],
+      },
+      {
+        group: i18n.function.toUpperCase(),
+        items: [{ name: i18n.rowOperations.reset, type: BeeTableOperation.RowReset }],
       },
     ];
   }, [i18n]);
@@ -238,25 +246,29 @@ export function JavaFunctionExpression({
       for (const u of cellUpdates) {
         // Class
         if (u.rowIndex === 0) {
-          setExpression((prev) => ({
+          setExpression((prev: JavaFunctionExpressionDefinition) => ({
             ...prev,
             className: u.value,
-            classFieldId: u.value,
+            classFieldId: prev.classFieldId ?? generateUuid(),
           }));
         }
 
         // Method
         else if (u.rowIndex === 1) {
-          setExpression((prev) => ({
+          setExpression((prev: JavaFunctionExpressionDefinition) => ({
             ...prev,
             methodName: u.value,
-            methodFieldId: u.value,
+            methodFieldId: prev.methodFieldId ?? generateUuid(),
           }));
         }
       }
     },
     [setExpression]
   );
+
+  const allowedOperations = useCallback((conditions: BeeTableContextMenuAllowedOperationsConditions) => {
+    return [BeeTableOperation.SelectionCopy];
+  }, []);
 
   return (
     <div className={`function-expression ${functionExpression.id}`}>
@@ -265,6 +277,7 @@ export function JavaFunctionExpression({
         onColumnResizingWidthChange={onColumnResizingWidthChange}
         resizerStopBehavior={ResizerStopBehavior.SET_WIDTH_WHEN_SMALLER}
         operationConfig={beeTableOperationConfig}
+        allowedOperations={allowedOperations}
         onColumnUpdates={onColumnUpdates}
         getRowKey={getRowKey}
         onRowReset={onRowReset}

@@ -1,30 +1,35 @@
 /*
- * Copyright 2014 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 package org.dashbuilder.displayer.json;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.json.DataSetJSONMarshaller;
 import org.dashbuilder.dataset.json.DataSetLookupJSONMarshaller;
+import org.dashbuilder.dataset.json.ExternalDataSetJSONParser;
 import org.dashbuilder.displayer.ColumnSettings;
 import org.dashbuilder.displayer.DisplayerSettings;
 import org.dashbuilder.displayer.DisplayerType;
@@ -55,17 +60,17 @@ public class DisplayerSettingsJSONMarshaller {
         return SINGLETON;
     }
 
-    private DataSetJSONMarshaller dataSetJsonMarshaller;
+    private ExternalDataSetJSONParser dataSetJsonParser;
     private DataSetLookupJSONMarshaller dataSetLookupJsonMarshaller;
 
     public DisplayerSettingsJSONMarshaller() {
-        this(DataSetJSONMarshaller.get(), DataSetLookupJSONMarshaller.get());
+        this(DataSetLookupJSONMarshaller.get(), new ExternalDataSetJSONParser(s -> new Date(Long.parseLong(s))));
     }
 
-    public DisplayerSettingsJSONMarshaller(DataSetJSONMarshaller dataSetJsonMarshaller,
-                                           DataSetLookupJSONMarshaller dataSetLookupJsonMarshaller) {
-        this.dataSetJsonMarshaller = dataSetJsonMarshaller;
+    public DisplayerSettingsJSONMarshaller(DataSetLookupJSONMarshaller dataSetLookupJsonMarshaller,
+                                           ExternalDataSetJSONParser externalDataSetJSONParser) {
         this.dataSetLookupJsonMarshaller = dataSetLookupJsonMarshaller;
+        dataSetJsonParser = externalDataSetJSONParser;
     }
 
     public DisplayerSettings fromJsonString(String jsonString) {
@@ -98,7 +103,8 @@ public class DisplayerSettingsJSONMarshaller {
 
         if (jsonObject == null ||
             jsonObject.getType() != JsonType.OBJECT) {
-            throw new IllegalArgumentException("Displayer Settings is not using a valid object");
+            // returns an empty displayer
+            return ds;
         }
 
         // UUID
@@ -116,10 +122,10 @@ public class DisplayerSettingsJSONMarshaller {
                 DATASET_LOOKUP_PREFIX.toUpperCase(),
                 "datasetLookup",
                 "lookup");
-        var data = jsonObject.getObject(DATASET_PREFIX);
+        var data = jsonObject.getString(DATASET_PREFIX);
         var lookup = dataSetLookupJsonMarshaller.fromJson(jsonObject.getObject(lookupNames));
         if (data != null) {
-            var dataSet = dataSetJsonMarshaller.fromJson(data);
+            var dataSet = dataSetJsonParser.parseDataSet(data);
             ds.setDataSet(dataSet);
 
             // Remove from the json input so that it doesn't end up in the settings map.
@@ -180,7 +186,7 @@ public class DisplayerSettingsJSONMarshaller {
         DataSetLookup dataSetLookup = displayerSettings.getDataSetLookup();
         DataSet dataSet = displayerSettings.getDataSet();
         if (dataSet != null) {
-            json.put(DATASET_PREFIX, dataSetJsonMarshaller.toJson(dataSet));
+            json.put(DATASET_PREFIX, dataSetJsonParser.toJsonArray(dataSet));
         } else if (dataSetLookup != null) {
             json.put(DATASET_LOOKUP_PREFIX, dataSetLookupJsonMarshaller.toJson(dataSetLookup));
         } else {
@@ -194,6 +200,10 @@ public class DisplayerSettingsJSONMarshaller {
         }
 
         return json;
+    }
+
+    public void setDataSetJsonParser(ExternalDataSetJSONParser dataSetJsonParser) {
+        this.dataSetJsonParser = dataSetJsonParser;
     }
 
     private void setNodeValue(JsonObject node, String path, String value) {

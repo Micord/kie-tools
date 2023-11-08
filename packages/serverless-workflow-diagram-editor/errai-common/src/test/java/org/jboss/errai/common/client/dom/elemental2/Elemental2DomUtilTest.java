@@ -1,18 +1,22 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.jboss.errai.common.client.dom.elemental2;
 
@@ -161,41 +165,7 @@ public class Elemental2DomUtilTest {
     assertSame(expectedElement, actualElement);
   }
 
-  @Test
-  public void testAsHTMLElementForErraiHTMLElement() throws Exception {
-
-    final org.jboss.errai.common.client.dom.HTMLElement htmlElement = mock(
-        org.jboss.errai.common.client.dom.HTMLElement.class);
-    final HTMLElement expectedElement = mock(HTMLElement.class);
-
-    mockJsCast(expectedElement, htmlElement);
-
-    final HTMLElement actualElement = elemental2DomUtil.asHTMLElement(htmlElement);
-
-    assertSame(expectedElement, actualElement);
-  }
-
-  @Test
-  public void testAsHTMLElementForHTMLElement() throws Exception {
-
-    final org.jboss.errai.common.client.dom.HTMLElement deprecatedElement = mock(
-            org.jboss.errai.common.client.dom.HTMLElement.class);
-    final HTMLElement htmlElement = mock(HTMLElement.class);
-
-    mockJsCast(deprecatedElement, htmlElement);
-
-    org.jboss.errai.common.client.dom.HTMLElement actualElement = elemental2DomUtil.asHTMLElement(htmlElement);
-
-    assertSame(deprecatedElement, actualElement);
-  }
-
   private void mockJsCast(final HTMLElement htmlElement, final Object obj) {
-    PowerMockito.spy(Js.class);
-    PowerMockito.doReturn(htmlElement).when(Js.class);
-    Js.cast(obj);
-  }
-
-  private void mockJsCast(final org.jboss.errai.common.client.dom.HTMLElement htmlElement, final Object obj) {
     PowerMockito.spy(Js.class);
     PowerMockito.doReturn(htmlElement).when(Js.class);
     Js.cast(obj);

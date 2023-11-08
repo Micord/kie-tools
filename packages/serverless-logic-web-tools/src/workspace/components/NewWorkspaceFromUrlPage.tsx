@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
@@ -24,14 +27,13 @@ import { Spinner } from "@patternfly/react-core/dist/js/components/Spinner";
 import { Text, TextContent, TextVariants } from "@patternfly/react-core/dist/js/components/Text";
 import { QueryParams } from "../../navigation/Routes";
 import { useQueryParam } from "../../queryParams/QueryParamsContext";
-import { OnlineEditorPage } from "../../pageTemplate/OnlineEditorPage";
 import { PageSection } from "@patternfly/react-core/dist/js/components/Page";
 import { basename } from "path";
 import { WorkspaceKind } from "@kie-tools-core/workspaces-git-fs/dist/worker/api/WorkspaceOrigin";
 import { GIST_DEFAULT_BRANCH, GIT_DEFAULT_BRANCH } from "@kie-tools-core/workspaces-git-fs/dist/constants/GitConstants";
 import { useSettingsDispatch } from "../../settings/SettingsContext";
 import { useGitHubAuthInfo } from "../../settings/github/Hooks";
-import { EditorPageErrorPage } from "../../editor/EditorPageErrorPage";
+import { ErrorPage } from "../../error/ErrorPage";
 import { LocalFile } from "@kie-tools-core/workspaces-git-fs/dist/worker/api/LocalFile";
 import { encoder } from "@kie-tools-core/workspaces-git-fs/dist/encoderdecoder/EncoderDecoder";
 import { useEditorEnvelopeLocator } from "../../envelopeLocator/EditorEnvelopeLocatorContext";
@@ -264,7 +266,7 @@ export function NewWorkspaceFromUrlPage() {
           throw new Error("Invalid UrlType " + importableUrl.type);
         }
       } catch (e) {
-        setImportingError(e.toString());
+        setImportingError(e.message);
         return;
       }
     }
@@ -285,22 +287,20 @@ export function NewWorkspaceFromUrlPage() {
 
   return (
     <>
-      <OnlineEditorPage>
-        {importingError && <EditorPageErrorPage path={importableUrl.url.toString()} errors={[importingError]} />}
-        {!importingError && (
-          <PageSection variant={"light"} isFilled={true} padding={{ default: "noPadding" }}>
-            <Bullseye>
-              <TextContent>
-                <Bullseye>
-                  <Spinner />
-                </Bullseye>
-                <br />
-                <Text component={TextVariants.p}>{`Importing from '${queryParamUrl}'`}</Text>
-              </TextContent>
-            </Bullseye>
-          </PageSection>
-        )}
-      </OnlineEditorPage>
+      {importingError && <ErrorPage kind="Url" url={importableUrl.url.toString()} errors={[importingError]} />}
+      {!importingError && (
+        <PageSection variant={"light"} isFilled={true} padding={{ default: "noPadding" }}>
+          <Bullseye>
+            <TextContent>
+              <Bullseye>
+                <Spinner />
+              </Bullseye>
+              <br />
+              <Text component={TextVariants.p}>{`Importing from '${queryParamUrl}'`}</Text>
+            </TextContent>
+          </Bullseye>
+        </PageSection>
+      )}
     </>
   );
 }

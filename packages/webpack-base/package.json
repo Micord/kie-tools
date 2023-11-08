@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@kie-tools-core/webpack-base",
-  "version": "0.0.0",
+  "version": "0.32.0",
   "description": "",
   "license": "Apache-2.0",
   "homepage": "https://github.com/kiegroup/kie-tools",
@@ -21,8 +21,9 @@
     "@kie-tools/root-env": "workspace:*",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
+    "querystring-es3": "^0.2.1",
     "source-map-loader": "^2.0.2",
     "ts-loader": "^9.4.2",
-    "webpack": "^5.36.2"
+    "webpack": "^5.88.2"
   }
 }

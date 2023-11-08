@@ -1,6 +1,6 @@
 {
   "name": "@kie-tools/dmn-language-service",
-  "version": "0.0.0",
+  "version": "0.32.0",
   "description": "",
   "license": "Apache-2.0",
   "keywords": [],
@@ -23,6 +23,11 @@
     "build:prod": "pnpm lint && rimraf dist && tsc -p tsconfig.json && pnpm test",
     "lint": "run-script-if --bool \"$(build-env linters.run)\" --then \"kie-tools--eslint ./src\"",
     "test": "run-script-if --ignore-errors \"$(build-env tests.ignoreFailures)\" --bool \"$(build-env tests.run)\" --then \"jest --silent --verbose --passWithNoTests\""
+  },
+  "dependencies": {
+    "@kie-tools/dmn-feel-antlr4-parser": "workspace:*",
+    "@kie-tools/dmn-marshaller": "workspace:*",
+    "antlr4": "^4.13.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

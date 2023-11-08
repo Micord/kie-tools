@@ -1,17 +1,20 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
@@ -34,6 +37,7 @@ import { BitbucketIcon } from "@patternfly/react-icons/dist/js/icons/bitbucket-i
 import { GithubIcon } from "@patternfly/react-icons/dist/js/icons/github-icon";
 import { useGitHubClient } from "../../../github/Hooks";
 import {
+  AuthProviderGroup,
   AuthProviderType,
   GistEnabledAuthProviderType,
   isGistEnabledAuthProviderType,
@@ -44,6 +48,7 @@ import { switchExpression } from "../../../switchExpression/switchExpression";
 import { useOnlineI18n } from "../../../i18n";
 import { LoadOrganizationsSelect, SelectOptionObjectType } from "./LoadOrganizationsSelect";
 import { useGitIntegration } from "./GitIntegrationContextProvider";
+import { useEnv } from "../../../env/hooks/EnvContext";
 
 export interface CreateGistOrSnippetResponse {
   cloneUrl: string;
@@ -56,6 +61,7 @@ export const CreateGistOrSnippetModal = (props: {
   onSuccess?: (args: { url: string }) => void;
   onError?: () => void;
 }) => {
+  const { env } = useEnv();
   const workspaces = useWorkspaces();
   const { authSession, gitConfig, authInfo } = useAuthSession(props.workspace.gitAuthSessionId);
   const authProvider = useAuthProvider(authSession);
@@ -81,7 +87,7 @@ export const CreateGistOrSnippetModal = (props: {
       files: {
         "README.md": {
           content: `
-This Gist was created from KIE Sandbox.
+This Gist was created from ${env.KIE_SANDBOX_APP_NAME}.
 
 This file is temporary and you should not be seeing it.
 If you are, it means that creating this Gist failed and it can safely be deleted.
@@ -94,7 +100,7 @@ If you are, it means that creating this Gist failed and it can safely be deleted
       throw new Error("Gist creation failed.");
     }
     return { cloneUrl: gist.data.git_push_url, htmlUrl: gist.data.html_url };
-  }, [gitHubClient.gists, isPrivate, props.workspace.name]);
+  }, [env.KIE_SANDBOX_APP_NAME, gitHubClient.gists, isPrivate, props.workspace.name]);
 
   const createBitbucketSnippet: () => Promise<CreateGistOrSnippetResponse> = useCallback(async () => {
     if (selectedOrganization?.kind !== "organization") {
@@ -102,11 +108,11 @@ If you are, it means that creating this Gist failed and it can safely be deleted
     }
     const response = await bitbucketClient.createSnippet({
       workspace: selectedOrganization.value,
-      title: props.workspace.name ?? "KIE Sandbox Snippet",
+      title: props.workspace.name ?? `${env.KIE_SANDBOX_APP_NAME} Snippet`,
       files: {
         "README.md": {
           content: `
-This Snippet was created from KIE Sandbox.
+This Snippet was created from ${env.KIE_SANDBOX_APP_NAME}.
 
 This file is temporary and you should not be seeing it.
 If you are, it means that creating this Snippet failed and it can safely be deleted.
@@ -127,7 +133,7 @@ If you are, it means that creating this Snippet failed and it can safely be dele
     })[0].href;
 
     return { cloneUrl, htmlUrl: json.links.html };
-  }, [bitbucketClient, isPrivate, props.workspace.name, selectedOrganization]);
+  }, [bitbucketClient, env.KIE_SANDBOX_APP_NAME, isPrivate, props.workspace.name, selectedOrganization]);
 
   const createGistOrSnippet = useCallback(async () => {
     try {
@@ -136,6 +142,9 @@ If you are, it means that creating this Snippet failed and it can safely be dele
       }
       const gistEnabledAuthProvider = authProvider?.type as GistEnabledAuthProviderType;
       setGistOrSnippetLoading(true);
+
+      const insecurelyDisableTlsCertificateValidation =
+        authProvider?.group === AuthProviderGroup.GIT && authProvider.insecurelyDisableTlsCertificateValidation;
 
       const createGistOrSnippetCommand: () => Promise<CreateGistOrSnippetResponse> = switchExpression(
         gistEnabledAuthProvider,
@@ -150,20 +159,26 @@ If you are, it means that creating this Snippet failed and it can safely be dele
         await workspaces.getGitServerRefs({
           url: new URL(gistOrSnippet.cloneUrl).toString(),
           authInfo,
+          insecurelyDisableTlsCertificateValidation,
         })
       )
         .find((serverRef) => serverRef.ref === "HEAD")!
         .target!.replace("refs/heads/", "");
 
-      const initWorkspaceCommand: (args: { workspaceId: string; remoteUrl: URL; branch: string }) => Promise<void> =
-        switchExpression(gistEnabledAuthProvider, {
-          github: workspaces.initGistOnWorkspace,
-          bitbucket: workspaces.initSnippetOnWorkspace,
-        });
+      const initWorkspaceCommand: (args: {
+        workspaceId: string;
+        remoteUrl: URL;
+        branch: string;
+        insecurelyDisableTlsCertificateValidation?: boolean;
+      }) => Promise<void> = switchExpression(gistEnabledAuthProvider, {
+        github: workspaces.initGistOnWorkspace,
+        bitbucket: workspaces.initSnippetOnWorkspace,
+      });
       await initWorkspaceCommand({
         workspaceId: props.workspace.workspaceId,
         remoteUrl: new URL(gistOrSnippet.cloneUrl),
         branch: gistOrSnippetDefaultBranch,
+        insecurelyDisableTlsCertificateValidation,
       });
 
       await workspaces.addRemote({
@@ -190,10 +205,12 @@ If you are, it means that creating this Snippet failed and it can safely be dele
         remoteRef: `refs/heads/${gistOrSnippetDefaultBranch}`,
         force: true,
         authInfo,
+        insecurelyDisableTlsCertificateValidation,
       });
       await workspaces.pull({
         workspaceId: props.workspace.workspaceId,
         authInfo,
+        insecurelyDisableTlsCertificateValidation,
       });
 
       props.onClose();
@@ -210,7 +227,7 @@ If you are, it means that creating this Snippet failed and it can safely be dele
     }
   }, [
     authInfo,
-    authProvider?.type,
+    authProvider,
     createGitHubGist,
     createBitbucketSnippet,
     workspaces,

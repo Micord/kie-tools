@@ -1,17 +1,20 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { assert, expect } from "chai";
@@ -37,7 +40,14 @@ import {
   WebView,
   Workbench,
 } from "vscode-extension-tester";
-import { webViewReady, activeFrame, envelopeApp, kogitoLoadingSpinner, inputBox } from "./CommonLocators";
+import {
+  webViewReady,
+  activeFrame,
+  envelopeApp,
+  kogitoLoadingSpinner,
+  inputBox,
+  explorerFolder,
+} from "./CommonLocators";
 import { isKieEditorWithDualView, isKieEditorWithSingleView, isDashbuilderEditor } from "./KieFileExtensions";
 
 /**
@@ -182,6 +192,7 @@ export class VSCodeTestHelper {
     } else {
       const pathPieces = fileParentPath.split("/");
       await this.workspaceSectionView.openItem(...pathPieces);
+      await this.waitUntilFolderStructureIsExpanded(pathPieces[0]);
       const fileItem = await this.workspaceSectionView.findItem(fileName);
       if (fileItem != undefined) {
         await fileItem.click();
@@ -197,6 +208,24 @@ export class VSCodeTestHelper {
     const consoleHelper = await webDriver.findElement(webViewReady());
     await consoleHelper.sendKeys(Key.ENTER);
   }
+
+  /**
+   * Waits until folder structure in explorer is loaded and expanded.
+   *
+   * @param topLevelFolderName the name of the top level folder in the explorer
+   */
+  private waitUntilFolderStructureIsExpanded = async (topLevelFolderName: string): Promise<void> => {
+    await this.driver.wait(
+      async () => {
+        const currentValue = await this.driver
+          .findElement(explorerFolder(topLevelFolderName))
+          .getAttribute("aria-expanded");
+        return currentValue === "true";
+      },
+      25000,
+      "Folder structure didn't expand in time. Please investigate."
+    );
+  };
 
   /**
    * Renames file in SideBarView.

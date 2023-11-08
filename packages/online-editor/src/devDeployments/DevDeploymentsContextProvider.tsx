@@ -1,23 +1,26 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useRoutes } from "../navigation/Hooks";
-import { useExtendedServices } from "../kieSandboxExtendedServices/KieSandboxExtendedServicesContext";
+import { useExtendedServices } from "../extendedServices/ExtendedServicesContext";
 import { KieSandboxOpenShiftService } from "./services/openshift/KieSandboxOpenShiftService";
 import { ConfirmDeployModalState, DeleteDeployModalState, DevDeploymentsContext } from "./DevDeploymentsContext";
 import { useWorkspaces, WorkspaceFile } from "@kie-tools-core/workspaces-git-fs/dist/context/WorkspacesContext";
@@ -26,15 +29,16 @@ import { DevDeploymentsConfirmDeleteModal } from "./DevDeploymentsConfirmDeleteM
 import { KieSandboxKubernetesService } from "./services/KieSandboxKubernetesService";
 import { CloudAuthSession } from "../authSessions/AuthSessionApi";
 import { KubernetesConnectionStatus } from "@kie-tools-core/kubernetes-bridge/dist/service";
+import { useEnv } from "../env/hooks/EnvContext";
 
 interface Props {
   children: React.ReactNode;
 }
 
 export function DevDeploymentsContextProvider(props: Props) {
-  const routes = useRoutes();
   const extendedServices = useExtendedServices();
   const workspaces = useWorkspaces();
+  const { env } = useEnv();
 
   // Dropdowns
   const [isDeployDropdownOpen, setDeployDropdownOpen] = useState(false);
@@ -50,7 +54,7 @@ export function DevDeploymentsContextProvider(props: Props) {
       if (authSession.type === "openshift") {
         return new KieSandboxOpenShiftService({
           connection: authSession,
-          proxyUrl: extendedServices.config.url.corsProxy,
+          proxyUrl: env.KIE_SANDBOX_CORS_PROXY_URL,
         });
       } else if (authSession.type === "kubernetes") {
         return new KieSandboxKubernetesService({
@@ -59,7 +63,7 @@ export function DevDeploymentsContextProvider(props: Props) {
       }
       throw new Error("Invalid AuthSession type.");
     },
-    [extendedServices.config.url.corsProxy]
+    [env.KIE_SANDBOX_CORS_PROXY_URL]
   );
 
   const deleteDeployment = useCallback(
@@ -124,12 +128,7 @@ export function DevDeploymentsContextProvider(props: Props) {
           targetFilePath: workspaceFile.relativePath,
           workspaceName,
           workspaceZipBlob: zipBlob,
-          onlineEditorUrl: (baseUrl) =>
-            routes.import.url({
-              base: process.env.WEBPACK_REPLACE__devDeployments_onlineEditorUrl,
-              pathParams: {},
-              queryParams: { url: `${baseUrl}/${workspaceFile.relativePath}` },
-            }),
+          containerImageUrl: env.KIE_SANDBOX_DMN_DEV_DEPLOYMENT_BASE_IMAGE_URL,
         });
         return true;
       } catch (error) {
@@ -137,7 +136,7 @@ export function DevDeploymentsContextProvider(props: Props) {
         return false;
       }
     },
-    [getService, routes.import, workspaces]
+    [env.KIE_SANDBOX_DMN_DEV_DEPLOYMENT_BASE_IMAGE_URL, getService, workspaces]
   );
 
   const value = useMemo(

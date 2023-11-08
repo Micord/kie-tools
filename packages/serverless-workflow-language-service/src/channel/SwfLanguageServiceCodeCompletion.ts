@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import {
@@ -28,6 +31,7 @@ import { jqBuiltInFunctions } from "@kie-tools/serverless-workflow-jq-expression
 import {
   SwfCatalogSourceType,
   SwfServiceCatalogFunction,
+  SwfServiceCatalogEvent,
   SwfServiceCatalogService,
   SwfServiceCatalogServiceType,
 } from "@kie-tools/serverless-workflow-service-catalog/dist/api";
@@ -49,8 +53,10 @@ import { SwfLanguageServiceConfig } from "./SwfLanguageService";
 import { JqCompletions } from "./types";
 
 type SwfCompletionItemServiceCatalogFunction = SwfServiceCatalogFunction & { operation: string };
+type SwfCompletionItemServiceCatalogEvent = SwfServiceCatalogEvent;
 export type SwfCompletionItemServiceCatalogService = Omit<SwfServiceCatalogService, "functions"> & {
   functions: SwfCompletionItemServiceCatalogFunction[];
+  events: SwfCompletionItemServiceCatalogEvent[];
 };
 
 export type SwfLanguageServiceCodeCompletionFunctionsArgs = EditorLanguageServiceCodeCompletionFunctionsArgs & {
@@ -351,15 +357,74 @@ export const SwfLanguageServiceCodeCompletion: EditorLanguageServiceCodeCompleti
   getEventsCompletions: async (args: SwfLanguageServiceCodeCompletionFunctionsArgs): Promise<CompletionItem[]> => {
     const kind = CompletionItemKind.Interface;
 
-    return Promise.resolve([
-      createCompletionItem({
-        ...args,
-        completion: eventCompletion,
-        kind,
-        label: "New event",
-        detail: "Add a new event",
-      }),
-    ]);
+    const existingEventNames = swfModelQueries.getEvents(args.rootNode).map((f) => f.name);
+
+    const specsDir = await args.langServiceConfig.getSpecsDirPosixPaths(args.document);
+
+    const result = args.swfCompletionItemServiceCatalogServices.flatMap((swfServiceCatalogService) => {
+      const dirRelativePosixPath = specsDir.specsDirRelativePosixPath;
+
+      return swfServiceCatalogService.events
+        .filter(
+          (swfServiceCatalogEvent: any) =>
+            swfServiceCatalogEvent.name && !existingEventNames.includes(swfServiceCatalogEvent.name)
+        )
+        .map((swfServiceCatalogEvent: any) => {
+          const swfEvent = {
+            name: `$\{1:${swfServiceCatalogEvent.name}}`,
+            source: swfServiceCatalogEvent.eventSource,
+            type: swfServiceCatalogEvent.eventType,
+            kind: swfServiceCatalogEvent.kind,
+            metadata: swfServiceCatalogEvent.metadata,
+          };
+
+          const command: SwfLanguageServiceCommandExecution<"swf.ls.commands.ImportEventFromCompletionItem"> = {
+            name: "swf.ls.commands.ImportEventFromCompletionItem",
+            args: {
+              containingService: swfServiceCatalogService,
+              documentUri: args.document.uri,
+            },
+          };
+
+          const kind =
+            swfServiceCatalogEvent.source.type === SwfCatalogSourceType.SERVICE_REGISTRY
+              ? CompletionItemKind.Interface
+              : CompletionItemKind.Reference;
+
+          const label = args.codeCompletionStrategy.formatLabel(
+            toCompletionItemLabelPrefix(swfServiceCatalogEvent, dirRelativePosixPath),
+            kind
+          );
+
+          return createCompletionItem({
+            ...args,
+            completion: swfEvent,
+            kind,
+            label,
+            detail:
+              swfServiceCatalogService.source.type === SwfCatalogSourceType.SERVICE_REGISTRY
+                ? swfServiceCatalogService.source.url
+                : swfServiceCatalogEvent.operation,
+            extraOptions: {
+              command: {
+                command: command.name,
+                title: "Import event from completion item",
+                arguments: [command.args],
+              },
+            },
+          });
+        });
+    });
+
+    const genericEventCompletion = createCompletionItem({
+      ...args,
+      completion: eventCompletion,
+      kind,
+      label: "New event",
+      detail: "Add a new event",
+    });
+
+    return Promise.resolve([...result, genericEventCompletion]);
   },
 
   getStatesCompletions: async (args: SwfLanguageServiceCodeCompletionFunctionsArgs): Promise<CompletionItem[]> => {

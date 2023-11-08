@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { Button, ButtonVariant } from "@patternfly/react-core/dist/js/components/Button";
@@ -88,11 +91,11 @@ export const Unitables = ({
   const inputUid = useMemo(() => nextId(), []);
 
   // Set in-cell input heights (begin)
-  const searchRecursively = useCallback((child: any) => {
+  const searchRecursively = useCallback((child: HTMLElement) => {
     if (!child) {
       return;
     }
-    if (child.tagName === "svg") {
+    if (child.tagName === "svg" || child.tagName === "path") {
       return;
     }
     if (child.style) {
@@ -109,7 +112,7 @@ export const Unitables = ({
     const inputsCells = Array.from(tbody?.getElementsByTagName("td") ?? []);
     inputsCells.shift();
     inputsCells.forEach((inputCell) => {
-      searchRecursively(inputCell.childNodes[0]);
+      searchRecursively(inputCell.childNodes[0] as HTMLElement);
     });
   }, [isBeeTableChange, jsonSchemaBridge, formsDivRendered, rows, containerRef, searchRecursively]);
   // Set in-cell input heights (end)
@@ -247,6 +250,7 @@ export const Unitables = ({
             onRowDeleted={onRowDeleted}
             configs={configs}
             setWidth={setWidth}
+            bridge={jsonSchemaBridge}
           />
         </div>
       ) : (

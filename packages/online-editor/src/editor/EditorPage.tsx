@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
@@ -54,6 +57,7 @@ import { ErrorBoundary } from "../reactExt/ErrorBoundary";
 import { EmptyState, EmptyStateBody, EmptyStateIcon } from "@patternfly/react-core/dist/js/components/EmptyState";
 import { I18nWrapped } from "@kie-tools-core/i18n/dist/react-components";
 import { ExclamationTriangleIcon } from "@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon";
+import { useEnv } from "../env/hooks/EnvContext";
 
 export interface Props {
   workspaceId: string;
@@ -63,9 +67,10 @@ export interface Props {
 let saveVersion = 1;
 let refreshVersion = 0;
 
-const KIE_ISSUES_LINK = "https://github.com/kiegroup/kie-issues/issues";
+const KOGITO_JIRA_LINK = "https://issues.jboss.org/projects/KOGITO";
 
 export function EditorPage(props: Props) {
+  const { env } = useEnv();
   const routes = useRoutes();
   const editorEnvelopeLocator = useEditorEnvelopeLocator();
   const history = useHistory();
@@ -83,8 +88,8 @@ export function EditorPage(props: Props) {
   const [embeddedEditorFile, setEmbeddedEditorFile] = useState<EmbeddedEditorFile>();
 
   useEffect(() => {
-    document.title = `KIE Sandbox :: ${props.fileRelativePath}`;
-  }, [props.fileRelativePath]);
+    document.title = `${env.KIE_SANDBOX_APP_NAME} :: ${props.fileRelativePath}`;
+  }, [env.KIE_SANDBOX_APP_NAME, props.fileRelativePath]);
 
   const setContentErrorAlert = useGlobalAlert(
     useCallback(() => {
@@ -229,7 +234,7 @@ export function EditorPage(props: Props) {
 
   // being (UPDATE PREVIEW SVGS)
   const updatePreviewSvg = useCallback(() => {
-    editor?.getPreview().then((svgString) => {
+    editor?.getPreview()?.then((svgString) => {
       if (!workspaceFilePromise.data || !svgString) {
         return;
       }
@@ -331,12 +336,17 @@ export function EditorPage(props: Props) {
 
     return new DmnLanguageService({
       getDmnImportedModel: async (importedModelRelativePath: string) => {
-        const fileContent = await workspaces.getFileContent({
-          workspaceId: workspaceFilePromise.data?.workspaceFile.workspaceId,
-          relativePath: importedModelRelativePath,
-        });
+        try {
+          const fileContent = await workspaces.getFileContent({
+            workspaceId: workspaceFilePromise.data?.workspaceFile.workspaceId,
+            relativePath: importedModelRelativePath,
+          });
 
-        return { content: decoder.decode(fileContent), relativePath: importedModelRelativePath };
+          return { content: decoder.decode(fileContent), relativePath: importedModelRelativePath };
+        } catch (err) {
+          console.debug("ERROR: DmnLanguageService.getImportedModel: ", err);
+          return undefined;
+        }
       },
     });
   }, [workspaces, workspaceFilePromise.data?.workspaceFile]);
@@ -362,9 +372,9 @@ export function EditorPage(props: Props) {
             <TextContent>
               <I18nWrapped
                 components={{
-                  issues: (
-                    <a href={KIE_ISSUES_LINK} target={"_blank"}>
-                      {KIE_ISSUES_LINK}
+                  jira: (
+                    <a href={KOGITO_JIRA_LINK} target={"_blank"}>
+                      {KOGITO_JIRA_LINK}
                     </a>
                   ),
                 }}

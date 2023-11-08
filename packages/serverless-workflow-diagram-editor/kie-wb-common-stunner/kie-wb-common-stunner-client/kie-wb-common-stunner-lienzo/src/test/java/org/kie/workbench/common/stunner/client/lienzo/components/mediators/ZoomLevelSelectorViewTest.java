@@ -1,18 +1,22 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.kie.workbench.common.stunner.client.lienzo.components.mediators;
 
@@ -21,11 +25,11 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jboss.errai.common.client.dom.Button;
-import org.jboss.errai.common.client.dom.Div;
-import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.common.client.dom.UnorderedList;
+import elemental2.dom.HTMLButtonElement;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLLIElement;
+import elemental2.dom.HTMLUListElement;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.junit.Before;
@@ -33,7 +37,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 import org.kie.workbench.common.stunner.core.client.i18n.ClientTranslationService;
-import org.kie.workbench.common.stunner.core.i18n.CoreTranslationMessages;
 import org.kie.workbench.common.stunner.core.util.DefinitionUtils;
 import org.kie.workbench.common.stunner.core.validation.DiagramElementNameProvider;
 import org.mockito.Mock;
@@ -49,31 +52,31 @@ import static org.mockito.Mockito.when;
 public class ZoomLevelSelectorViewTest {
 
     @Mock
-    private Button previewButton;
+    private HTMLButtonElement previewButton;
 
     @Mock
-    private Button decreaseButton;
+    private HTMLButtonElement decreaseButton;
 
     @Mock
-    private Button increaseButton;
+    private HTMLButtonElement increaseButton;
 
     @Mock
-    private Button resetButton;
+    private HTMLButtonElement resetButton;
 
     @Mock
-    private Div dropDownPanelGroup;
+    private HTMLDivElement dropDownPanelGroup;
 
     @Mock
-    private Div dropDownPanel;
+    private HTMLDivElement dropDownPanel;
 
     @Mock
-    private Button dropDownButton;
+    private HTMLButtonElement dropDownButton;
 
     @Mock
-    private Span dropDownText;
+    private HTMLLIElement dropDownText;
 
     @Mock
-    private UnorderedList dropDownMenu;
+    private HTMLUListElement dropDownMenu;
 
     @Mock
     private ManagedInstance<ZoomLevelSelectorItem> items;
@@ -109,41 +112,6 @@ public class ZoomLevelSelectorViewTest {
         tested.dropDownMenu = dropDownMenu;
         tested.items = items;
         tested.translationService = new ClientTranslationService(translationService, elementNameProviders, sessionManager, definitionUtils);
-    }
-
-    @Test
-    public void testInit() {
-        tested.init(presenter);
-        verify(increaseButton, times(1)).setTitle(eq(CoreTranslationMessages.INCREASE));
-        verify(decreaseButton, times(1)).setTitle(eq(CoreTranslationMessages.DECREASE));
-        verify(resetButton, times(1)).setTitle(eq(CoreTranslationMessages.RESET));
-    }
-
-    @Test
-    public void testSetSelectedValue() {
-        tested.setSelectedValue("item1");
-        verify(dropDownText, times(1)).setTextContent(eq("item1"));
-    }
-
-    @Test
-    public void testSetText() {
-        tested.setText("text");
-        verify(dropDownText, times(1)).setTextContent(eq("text"));
-    }
-
-    @Test
-    public void testSetEnabled() {
-        tested.setEnabled(true);
-        verify(dropDownButton, times(1)).setDisabled(false);
-        tested.setEnabled(false);
-        verify(dropDownButton, times(1)).setDisabled(true);
-    }
-
-    @Test
-    public void testDropup() {
-        when(dropDownPanelGroup.getClassName()).thenReturn("pg");
-        tested.dropUp();
-        verify(dropDownPanelGroup, times(1)).setClassName(eq("pg " + ZoomLevelSelectorView.CSS_DROP_UP));
     }
 
     @Test

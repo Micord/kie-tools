@@ -1,23 +1,27 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import * as ReactTable from "react-table";
 import {
+  BeeTableContextMenuAllowedOperationsConditions,
   BeeTableHeaderVisibility,
   BeeTableOperation,
   BeeTableOperationConfig,
@@ -49,14 +53,21 @@ import { ContextEntryExpressionCell } from "./ContextEntryExpressionCell";
 import { ContextEntryInfoCell } from "./ContextEntryInfoCell";
 import "./ContextExpression.css";
 import { ContextResultExpressionCell } from "./ContextResultExpressionCell";
+import { getExpressionTotalMinWidth } from "../../resizing/WidthMaths";
 
 const CONTEXT_ENTRY_DEFAULT_DATA_TYPE = DmnBuiltInDataType.Undefined;
 
 type ROWTYPE = ContextExpressionDefinitionEntry;
 
-export function ContextExpression(contextExpression: ContextExpressionDefinition & { isNested: boolean }) {
+export function ContextExpression(
+  contextExpression: ContextExpressionDefinition & {
+    isNested: boolean;
+    parentElementId: string;
+  }
+) {
   const { i18n } = useBoxedExpressionEditorI18n();
   const { setExpression } = useBoxedExpressionEditorDispatch();
+  const { variables } = useBoxedExpressionEditor();
 
   const entryInfoWidth = useMemo(
     () => contextExpression.entryInfoWidth ?? CONTEXT_ENTRY_INFO_MIN_WIDTH,
@@ -92,6 +103,13 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
   const { nestedExpressionContainerValue, onColumnResizingWidthChange: onColumnResizingWidthChange2 } =
     useNestedExpressionContainerWithNestedExpressions(
       useMemo(() => {
+        const entriesWidths = contextExpression.contextEntries.map((e) =>
+          getExpressionTotalMinWidth(0, e.entryExpression)
+        );
+        const resultWidth = getExpressionTotalMinWidth(0, contextExpression.result);
+
+        const maxNestedExpressionMinWidth = Math.max(...entriesWidths, resultWidth, CONTEXT_ENTRY_EXPRESSION_MIN_WIDTH);
+
         return {
           nestedExpressions: [
             ...contextExpression.contextEntries.map((e) => e.entryExpression),
@@ -100,7 +118,7 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
           fixedColumnActualWidth: entryInfoWidth,
           fixedColumnResizingWidth: entryInfoResizingWidth,
           fixedColumnMinWidth: CONTEXT_ENTRY_INFO_MIN_WIDTH,
-          nestedExpressionMinWidth: CONTEXT_ENTRY_EXPRESSION_MIN_WIDTH,
+          nestedExpressionMinWidth: maxNestedExpressionMinWidth,
           extraWidth: CONTEXT_EXPRESSION_EXTRA_WIDTH,
           expression: contextExpression,
           flexibleColumnIndex: 2,
@@ -148,7 +166,7 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
         ],
       },
     ];
-  }, [contextExpression.name, contextExpression.dataType, entryInfoWidth, setEntryInfoWidth]);
+  }, [contextExpression.id, contextExpression.name, contextExpression.dataType, entryInfoWidth, setEntryInfoWidth]);
 
   const onColumnUpdates = useCallback(
     ([{ name, dataType }]: BeeTableColumnUpdate<ROWTYPE>[]) => {
@@ -169,11 +187,13 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
     (rowIndex: number, newEntry: ContextExpressionDefinitionEntry) => {
       setExpression((prev: ContextExpressionDefinition) => {
         const contextEntries = [...prev.contextEntries];
+
+        variables?.repository.renameVariable(newEntry.entryInfo.id, newEntry.entryInfo.name);
         contextEntries[rowIndex] = newEntry;
         return { ...prev, contextEntries };
       });
     },
-    [setExpression]
+    [setExpression, variables?.repository]
   );
 
   const cellComponentByColumnAccessor: BeeTableProps<ROWTYPE>["cellComponentByColumnAccessor"] = useMemo(() => {
@@ -195,7 +215,17 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
           { name: i18n.rowOperations.reset, type: BeeTableOperation.RowReset },
           { name: i18n.rowOperations.insertAbove, type: BeeTableOperation.RowInsertAbove },
           { name: i18n.rowOperations.insertBelow, type: BeeTableOperation.RowInsertBelow },
+          { name: i18n.insert, type: BeeTableOperation.RowInsertN },
           { name: i18n.rowOperations.delete, type: BeeTableOperation.RowDelete },
+        ],
+      },
+      {
+        group: i18n.terms.selection.toUpperCase(),
+        items: [
+          { name: i18n.terms.copy, type: BeeTableOperation.SelectionCopy },
+          { name: i18n.terms.cut, type: BeeTableOperation.SelectionCut },
+          { name: i18n.terms.paste, type: BeeTableOperation.SelectionPaste },
+          { name: i18n.terms.reset, type: BeeTableOperation.SelectionReset },
         ],
       },
     ];
@@ -240,11 +270,46 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
     [contextExpression]
   );
 
+  const addVariable = useCallback(
+    (
+      args: {
+        beforeIndex: number;
+      },
+      newContextEntries: ContextExpressionDefinitionEntry[],
+      prev: ContextExpressionDefinition,
+      newVariable: ContextExpressionDefinitionEntry
+    ) => {
+      const parentIndex = args.beforeIndex - 1;
+      let parentId = contextExpression.parentElementId;
+      if (parentIndex >= 0 && parentIndex < newContextEntries.length) {
+        parentId = newContextEntries[parentIndex].entryInfo.id;
+      }
+
+      let childId: undefined | string;
+      if (args.beforeIndex < newContextEntries.length) {
+        childId = newContextEntries[args.beforeIndex].entryInfo.id;
+      } else {
+        childId = prev.result.id;
+      }
+
+      variables?.repository.addVariableToContext(
+        newVariable.entryInfo.id,
+        newVariable.entryInfo.name,
+        parentId,
+        childId
+      );
+    },
+    [contextExpression.parentElementId, variables?.repository]
+  );
+
   const onRowAdded = useCallback(
     (args: { beforeIndex: number }) => {
       setExpression((prev: ContextExpressionDefinition) => {
         const newContextEntries = [...(prev.contextEntries ?? [])];
-        newContextEntries.splice(args.beforeIndex, 0, getDefaultContextEntry());
+        const defaultContextEntry = getDefaultContextEntry();
+        addVariable(args, newContextEntries, prev, defaultContextEntry);
+
+        newContextEntries.splice(args.beforeIndex, 0, defaultContextEntry);
 
         return {
           ...prev,
@@ -252,13 +317,16 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
         };
       });
     },
-    [getDefaultContextEntry, setExpression]
+    [addVariable, getDefaultContextEntry, setExpression]
   );
 
   const onRowDeleted = useCallback(
     (args: { rowIndex: number }) => {
       setExpression((prev: ContextExpressionDefinition) => {
         const newContextEntries = [...(prev.contextEntries ?? [])];
+
+        variables?.repository.removeVariable(prev.contextEntries[args.rowIndex].entryInfo.id);
+
         newContextEntries.splice(args.rowIndex, 1);
         return {
           ...prev,
@@ -266,7 +334,7 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
         };
       });
     },
-    [setExpression]
+    [setExpression, variables?.repository]
   );
 
   const onRowReset = useCallback(
@@ -298,6 +366,36 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
     [getDefaultContextEntry, setExpression]
   );
 
+  const allowedOperations = useCallback(
+    (conditions: BeeTableContextMenuAllowedOperationsConditions) => {
+      if (!conditions.selection.selectionStart || !conditions.selection.selectionEnd) {
+        return [];
+      }
+
+      const columnIndex = conditions.selection.selectionStart.columnIndex;
+      const rowIndex = conditions.selection.selectionStart.rowIndex;
+
+      return [
+        BeeTableOperation.SelectionCopy,
+        ...(columnIndex > 1
+          ? [BeeTableOperation.SelectionCut, BeeTableOperation.SelectionPaste, BeeTableOperation.SelectionReset]
+          : []),
+        ...(conditions.selection.selectionStart.rowIndex >= 0
+          ? [
+              BeeTableOperation.RowInsertAbove,
+              ...(rowIndex !== contextExpression.contextEntries.length ? [BeeTableOperation.RowInsertBelow] : []), // do not insert below <result>
+              ...(rowIndex !== contextExpression.contextEntries.length ? [BeeTableOperation.RowInsertN] : []), // Because we can't insert multiple lines below <result>
+              ...(contextExpression.contextEntries.length > 1 && rowIndex !== contextExpression.contextEntries.length
+                ? [BeeTableOperation.RowDelete]
+                : []), // do not delete <result>
+              BeeTableOperation.RowReset,
+            ]
+          : []),
+      ];
+    },
+    [contextExpression.contextEntries.length]
+  );
+
   return (
     <NestedExpressionContainerContext.Provider value={nestedExpressionContainerValue}>
       <div className={`context-expression ${contextExpression.id}`}>
@@ -311,6 +409,7 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
           rows={contextExpression.contextEntries}
           onColumnUpdates={onColumnUpdates}
           operationConfig={beeTableOperationConfig}
+          allowedOperations={allowedOperations}
           getRowKey={getRowKey}
           additionalRow={beeTableAdditionalRow}
           onRowAdded={onRowAdded}
@@ -320,6 +419,7 @@ export function ContextExpression(contextExpression: ContextExpressionDefinition
           shouldRenderRowIndexColumn={false}
           shouldShowRowsInlineControls={true}
           shouldShowColumnsInlineControls={false}
+          variables={variables}
         />
       </div>
     </NestedExpressionContainerContext.Provider>

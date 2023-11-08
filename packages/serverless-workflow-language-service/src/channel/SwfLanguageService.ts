@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import {
@@ -24,11 +27,12 @@ import {
 import {
   SwfCatalogSourceType,
   SwfServiceCatalogFunction,
+  SwfServiceCatalogEvent,
   SwfServiceCatalogFunctionSource,
   SwfServiceCatalogService,
   SwfServiceCatalogServiceType,
 } from "@kie-tools/serverless-workflow-service-catalog/dist/api";
-import { posix as posixPath } from "path";
+import { posix as posixPath } from "path-browserify";
 import { JSONSchema } from "vscode-json-languageservice";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { CodeLens, CompletionItem, Diagnostic, DiagnosticSeverity, Position, Range } from "vscode-languageserver-types";
@@ -120,6 +124,14 @@ export class SwfLanguageService implements IEditorLanguageService {
             operation: await this.getSwfCompletionItemServiceCatalogFunctionOperation(service, func, doc),
           }))
         ),
+        events: await Promise.all(
+          service.events?.map(async (event) => ({
+            ...event,
+            metadata: {
+              reference: await this.getSwfCompletionItemServiceCatalogEventReference(service, event, doc),
+            },
+          })) ?? []
+        ),
       }))
     );
 
@@ -207,6 +219,36 @@ export class SwfLanguageService implements IEditorLanguageService {
     this.els.dispose();
   }
 
+  private async createSwfCompletionItemServiceCatalogProperty(
+    containingService: SwfServiceCatalogService,
+    item: SwfServiceCatalogFunction | SwfServiceCatalogEvent,
+    dirRelativePosixPath: string
+  ): Promise<string> {
+    if (item.source.type === SwfCatalogSourceType.LOCAL_FS) {
+      const serviceFileName = posixPath.basename(item.source.serviceFileAbsolutePath);
+      const serviceFileRelativePosixPath = posixPath.join(dirRelativePosixPath, serviceFileName);
+      return `${serviceFileRelativePosixPath}#${item.name}`;
+    } else if (
+      (await this.args.config.shouldReferenceServiceRegistryFunctionsWithUrls()) &&
+      containingService.source.type === SwfCatalogSourceType.SERVICE_REGISTRY &&
+      item.source.type === SwfCatalogSourceType.SERVICE_REGISTRY
+    ) {
+      return `${containingService.source.url}#${item.name}`;
+    } else if (
+      containingService.source.type === SwfCatalogSourceType.SERVICE_REGISTRY &&
+      item.source.type === SwfCatalogSourceType.SERVICE_REGISTRY
+    ) {
+      const serviceFileName = await this.args.serviceCatalog.getServiceFileNameFromSwfServiceCatalogServiceId(
+        containingService.source.registry,
+        containingService.source.id
+      );
+      const serviceFileRelativePosixPath = posixPath.join(dirRelativePosixPath, serviceFileName);
+      return `${serviceFileRelativePosixPath}#${item.name}`;
+    } else {
+      throw new Error("Unknown Service Catalog source type");
+    }
+  }
+
   private async getSwfCompletionItemServiceCatalogFunctionOperation(
     containingService: SwfServiceCatalogService,
     func: SwfServiceCatalogFunction,
@@ -222,30 +264,19 @@ export class SwfLanguageService implements IEditorLanguageService {
     } else {
       dirRelativePosixPath = specsDirRelativePosixPath;
     }
+    return this.createSwfCompletionItemServiceCatalogProperty(containingService, func, dirRelativePosixPath);
+  }
 
-    if (func.source.type === SwfCatalogSourceType.LOCAL_FS) {
-      const serviceFileName = posixPath.basename(func.source.serviceFileAbsolutePath);
-      const serviceFileRelativePosixPath = posixPath.join(dirRelativePosixPath, serviceFileName);
-      return `${serviceFileRelativePosixPath}#${func.name}`;
-    } else if (
-      (await this.args.config.shouldReferenceServiceRegistryFunctionsWithUrls()) &&
-      containingService.source.type === SwfCatalogSourceType.SERVICE_REGISTRY &&
-      func.source.type === SwfCatalogSourceType.SERVICE_REGISTRY
-    ) {
-      return `${containingService.source.url}#${func.name}`;
-    } else if (
-      containingService.source.type === SwfCatalogSourceType.SERVICE_REGISTRY &&
-      func.source.type === SwfCatalogSourceType.SERVICE_REGISTRY
-    ) {
-      const serviceFileName = await this.args.serviceCatalog.getServiceFileNameFromSwfServiceCatalogServiceId(
-        containingService.source.registry,
-        containingService.source.id
-      );
-      const serviceFileRelativePosixPath = posixPath.join(dirRelativePosixPath, serviceFileName);
-      return `${serviceFileRelativePosixPath}#${func.name}`;
-    } else {
-      throw new Error("Unknown Service Catalog function source type");
-    }
+  private async getSwfCompletionItemServiceCatalogEventReference(
+    containingService: SwfServiceCatalogService,
+    event: SwfServiceCatalogEvent,
+    document: TextDocument
+  ): Promise<string> {
+    const { specsDirRelativePosixPath } = await this.args.config.getSpecsDirPosixPaths(document);
+
+    const dirRelativePosixPath = specsDirRelativePosixPath;
+
+    return this.createSwfCompletionItemServiceCatalogProperty(containingService, event, dirRelativePosixPath);
   }
 }
 

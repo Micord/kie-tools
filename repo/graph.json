@@ -45,19 +45,26 @@
       { "id": "@kie-tools-core/operating-system" },
       { "id": "@kie-tools/feel-input-component" },
       { "id": "@kie-tools-core/monaco-editor" },
+      { "id": "@kie-tools/dmn-language-service" },
       { "id": "@kie-tools/i18n-common-dictionary" },
+      { "id": "@kie-tools/bpmn-marshaller" },
+      { "id": "@kie-tools/xml-parser-ts-codegen" },
+      { "id": "@kie-tools/xml-parser-ts" },
       { "id": "bpmn-vscode-extension" },
       { "id": "@kie-tools/vscode-java-code-completion-extension-plugin" },
-      { "id": "@kie-tools/dmn-language-service" },
       { "id": "@kie-tools/pmml-editor-marshaller" },
       { "id": "@kie-tools/maven-config-setup-helper" },
       { "id": "@kie-tools/stunner-editors-dmn-loader" },
       { "id": "chrome-extension-pack-kogito-kie-editors" },
+      { "id": "@kie-tools/chrome-extension-test-helper" },
       { "id": "chrome-extension-serverless-workflow-editor" },
       { "id": "@kie-tools/serverless-workflow-diagram-editor-assets" },
       { "id": "@kie-tools/serverless-workflow-diagram-editor-envelope" },
-      { "id": "@kie-tools/serverless-workflow-mermaid-viewer" },
       { "id": "@kie-tools/serverless-workflow-text-editor" },
+      { "id": "@kie-tools/cors-proxy" },
+      { "id": "@kie-tools/cors-proxy-api" },
+      { "id": "@kie-tools/cors-proxy-image" },
+      { "id": "@kie-tools/image-builder" },
       { "id": "@kie-tools/dashbuilder" },
       { "id": "@kie-tools/dashbuilder-component-assembler" },
       { "id": "@kie-tools/dashbuilder-component-echarts" },
@@ -86,9 +93,10 @@
       { "id": "@kie-tools/dmn-dev-deployment-base-image" },
       { "id": "@kie-tools/dmn-dev-deployment-form-webapp" },
       { "id": "@kie-tools/dmn-dev-deployment-quarkus-app" },
-      { "id": "@kie-tools/dmn-dev-deployment-base-image-env" },
       { "id": "@kie-tools/form-dmn" },
       { "id": "@kie-tools/form" },
+      { "id": "@kie-tools/dmn-feel-antlr4-parser" },
+      { "id": "@kie-tools/dmn-marshaller" },
       { "id": "@kie-tools/dmn-runner" },
       { "id": "@kie-tools/extended-services-api" },
       { "id": "dmn-vscode-extension" },
@@ -96,7 +104,6 @@
       { "id": "@kie-tools/form-generation-tool" },
       { "id": "@kie-tools/uniforms-bootstrap4-codegen" },
       { "id": "@kie-tools/uniforms-patternfly-codegen" },
-      { "id": "@kie-tools/git-cors-proxy-image" },
       { "id": "@kie-tools/image-env-to-json" },
       { "id": "@kie-tools/import-java-classes-component" },
       { "id": "kie-editors-dev-vscode-extension" },
@@ -111,13 +118,23 @@
       { "id": "@kie-tools/kn-plugin-workflow" },
       { "id": "@kie-tools/unitables" },
       { "id": "pmml-vscode-extension" },
+      { "id": "@kie-tools/runtime-tools-components" },
+      { "id": "@kie-tools/runtime-tools-gateway-api" },
+      { "id": "@kie-tools/runtime-tools-enveloped-components" },
+      { "id": "@kie-tools/scesim-editor" },
+      { "id": "@kie-tools/scesim-marshaller" },
       { "id": "@kie-tools/serverless-logic-web-tools" },
       { "id": "@kie-tools/text-editor" },
+      { "id": "@kie-tools/yard-editor" },
       { "id": "@kie-tools/serverless-logic-web-tools-base-builder-image-env" },
       { "id": "@kie-tools/serverless-logic-web-tools-swf-builder-image-env" },
+      { "id": "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image-env" },
+      { "id": "@kie-tools/yard-language-service" },
       { "id": "@kie-tools/serverless-logic-web-tools-base-builder-image" },
       { "id": "@kie-tools/serverless-logic-web-tools-swf-builder-image" },
-      { "id": "@kie-tools/serverless-logic-web-tools-swf-deployment-webapp" },
+      { "id": "sonataflow-deployment-webapp" },
+      { "id": "@kie-tools/serverless-logic-web-tools-swf-deployment-quarkus-app" },
+      { "id": "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image" },
       { "id": "@kie-tools/serverless-workflow-diagram-editor" },
       { "id": "@kie-tools/serverless-workflow-language-service" },
       { "id": "@kie-tools/serverless-workflow-jq-expressions" },
@@ -126,7 +143,6 @@
       { "id": "vscode-extension-dashbuilder-editor" },
       { "id": "vscode-extension-kie-ba-bundle" },
       { "id": "vscode-extension-kogito-bundle" },
-      { "id": "@kie-tools/yard-editor" },
       { "id": "yard-vscode-extension" }
     ],
     "links": [
@@ -225,7 +241,6 @@
       { "source": "@kie-tools-examples/uniforms-patternfly", "target": "@kie-tools-core/patternfly-base", "weight": 1 },
       { "source": "@kie-tools-examples/uniforms-patternfly", "target": "@kie-tools/uniforms-patternfly", "weight": 1 },
       { "source": "@kie-tools-examples/uniforms-patternfly", "target": "@kie-tools-core/webpack-base", "weight": 1 },
-      { "source": "@kie-tools/uniforms-patternfly", "target": "@kie-tools-scripts/build-env", "weight": 1 },
       { "source": "@kie-tools/uniforms-patternfly", "target": "@kie-tools/eslint", "weight": 1 },
       { "source": "@kie-tools/uniforms-patternfly", "target": "@kie-tools/root-env", "weight": 1 },
       { "source": "@kie-tools/uniforms-patternfly", "target": "@kie-tools/tsconfig", "weight": 1 },
@@ -264,11 +279,6 @@
       },
       {
         "source": "@kie-tools/serverless-workflow-combined-editor",
-        "target": "@kie-tools/serverless-workflow-mermaid-viewer",
-        "weight": 1
-      },
-      {
-        "source": "@kie-tools/serverless-workflow-combined-editor",
         "target": "@kie-tools/serverless-workflow-text-editor",
         "weight": 1
       },
@@ -285,12 +295,19 @@
       { "source": "@kie-tools-core/operating-system", "target": "@kie-tools/tsconfig", "weight": 1 },
       { "source": "@kie-tools/feel-input-component", "target": "@kie-tools-core/monaco-editor", "weight": 1 },
       { "source": "@kie-tools/feel-input-component", "target": "@kie-tools-core/patternfly-base", "weight": 1 },
+      { "source": "@kie-tools/feel-input-component", "target": "@kie-tools/dmn-language-service", "weight": 1 },
       { "source": "@kie-tools/feel-input-component", "target": "@kie-tools/i18n-common-dictionary", "weight": 1 },
       { "source": "@kie-tools/feel-input-component", "target": "@kie-tools-core/webpack-base", "weight": 1 },
       { "source": "@kie-tools-core/monaco-editor", "target": "@kie-tools/eslint", "weight": 1 },
       { "source": "@kie-tools-core/monaco-editor", "target": "@kie-tools/root-env", "weight": 1 },
       { "source": "@kie-tools-core/monaco-editor", "target": "@kie-tools/tsconfig", "weight": 1 },
+      { "source": "@kie-tools/dmn-language-service", "target": "@kie-tools/dmn-feel-antlr4-parser", "weight": 1 },
       { "source": "@kie-tools/i18n-common-dictionary", "target": "@kie-tools-core/i18n", "weight": 1 },
+      { "source": "@kie-tools/bpmn-marshaller", "target": "@kie-tools/xml-parser-ts-codegen", "weight": 1 },
+      { "source": "@kie-tools/xml-parser-ts-codegen", "target": "@kie-tools/xml-parser-ts", "weight": 1 },
+      { "source": "@kie-tools/xml-parser-ts", "target": "@kie-tools/eslint", "weight": 1 },
+      { "source": "@kie-tools/xml-parser-ts", "target": "@kie-tools/root-env", "weight": 1 },
+      { "source": "@kie-tools/xml-parser-ts", "target": "@kie-tools/tsconfig", "weight": 1 },
       { "source": "bpmn-vscode-extension", "target": "@kie-tools-core/vscode-extension", "weight": 1 },
       { "source": "bpmn-vscode-extension", "target": "@kie-tools/kie-bc-editors", "weight": 1 },
       {
@@ -309,9 +326,6 @@
         "target": "@kie-tools/root-env",
         "weight": 1
       },
-      { "source": "@kie-tools/dmn-language-service", "target": "@kie-tools/eslint", "weight": 1 },
-      { "source": "@kie-tools/dmn-language-service", "target": "@kie-tools/root-env", "weight": 1 },
-      { "source": "@kie-tools/dmn-language-service", "target": "@kie-tools/tsconfig", "weight": 1 },
       { "source": "@kie-tools/pmml-editor-marshaller", "target": "@kie-tools/eslint", "weight": 1 },
       { "source": "@kie-tools/pmml-editor-marshaller", "target": "@kie-tools/root-env", "weight": 1 },
       { "source": "@kie-tools/pmml-editor-marshaller", "target": "@kie-tools/tsconfig", "weight": 1 },
@@ -331,10 +345,21 @@
         "weight": 1
       },
       { "source": "chrome-extension-pack-kogito-kie-editors", "target": "@kie-tools/kie-bc-editors", "weight": 1 },
+      {
+        "source": "chrome-extension-pack-kogito-kie-editors",
+        "target": "@kie-tools/chrome-extension-test-helper",
+        "weight": 1
+      },
       { "source": "chrome-extension-pack-kogito-kie-editors", "target": "@kie-tools/stunner-editors", "weight": 1 },
+      { "source": "@kie-tools/chrome-extension-test-helper", "target": "@kie-tools/tsconfig", "weight": 1 },
       {
         "source": "chrome-extension-serverless-workflow-editor",
         "target": "@kie-tools-core/chrome-extension",
+        "weight": 1
+      },
+      {
+        "source": "chrome-extension-serverless-workflow-editor",
+        "target": "@kie-tools/chrome-extension-test-helper",
         "weight": 1
       },
       {
@@ -352,12 +377,6 @@
         "target": "@kie-tools/kie-bc-editors",
         "weight": 1
       },
-      { "source": "@kie-tools/serverless-workflow-mermaid-viewer", "target": "@kie-tools-core/editor", "weight": 1 },
-      {
-        "source": "@kie-tools/serverless-workflow-mermaid-viewer",
-        "target": "@kie-tools-core/webpack-base",
-        "weight": 1
-      },
       { "source": "@kie-tools/serverless-workflow-text-editor", "target": "@kie-tools-core/editor", "weight": 1 },
       {
         "source": "@kie-tools/serverless-workflow-text-editor",
@@ -365,6 +384,13 @@
         "weight": 1
       },
       { "source": "@kie-tools/serverless-workflow-text-editor", "target": "@kie-tools-core/webpack-base", "weight": 1 },
+      { "source": "@kie-tools/cors-proxy", "target": "@kie-tools-core/webpack-base", "weight": 1 },
+      { "source": "@kie-tools/cors-proxy", "target": "@kie-tools/cors-proxy-api", "weight": 1 },
+      { "source": "@kie-tools/cors-proxy-api", "target": "@kie-tools/eslint", "weight": 1 },
+      { "source": "@kie-tools/cors-proxy-api", "target": "@kie-tools/root-env", "weight": 1 },
+      { "source": "@kie-tools/cors-proxy-api", "target": "@kie-tools/tsconfig", "weight": 1 },
+      { "source": "@kie-tools/cors-proxy-image", "target": "@kie-tools/cors-proxy", "weight": 1 },
+      { "source": "@kie-tools/cors-proxy-image", "target": "@kie-tools/image-builder", "weight": 1 },
       { "source": "@kie-tools/dashbuilder", "target": "@kie-tools/dashbuilder-component-assembler", "weight": 1 },
       { "source": "@kie-tools/dashbuilder", "target": "@kie-tools/maven-config-setup-helper", "weight": 1 },
       {
@@ -547,6 +573,7 @@
       { "source": "@kie-tools-core/workspaces-git-fs", "target": "@kie-tools-core/envelope-bus", "weight": 1 },
       { "source": "@kie-tools-core/workspaces-git-fs", "target": "@kie-tools-core/react-hooks", "weight": 1 },
       { "source": "@kie-tools-core/workspaces-git-fs", "target": "@kie-tools-core/workspace", "weight": 1 },
+      { "source": "@kie-tools-core/workspaces-git-fs", "target": "@kie-tools/cors-proxy-api", "weight": 1 },
       { "source": "@kie-tools-core/workspaces-git-fs", "target": "@kie-tools/kie-sandbox-fs", "weight": 1 },
       { "source": "@kie-tools-core/react-hooks", "target": "@kie-tools/eslint", "weight": 1 },
       { "source": "@kie-tools-core/react-hooks", "target": "@kie-tools/root-env", "weight": 1 },
@@ -575,11 +602,6 @@
         "weight": 1
       },
       {
-        "source": "@kie-tools/dmn-dev-deployment-base-image",
-        "target": "@kie-tools/dmn-dev-deployment-base-image-env",
-        "weight": 1
-      },
-      {
         "source": "@kie-tools/dmn-dev-deployment-form-webapp",
         "target": "@kie-tools-core/patternfly-base",
         "weight": 1
@@ -591,11 +613,13 @@
         "weight": 1
       },
       { "source": "@kie-tools/dmn-dev-deployment-quarkus-app", "target": "@kie-tools/root-env", "weight": 1 },
-      { "source": "@kie-tools/dmn-dev-deployment-base-image-env", "target": "@kie-tools/root-env", "weight": 1 },
       { "source": "@kie-tools/form-dmn", "target": "@kie-tools/form", "weight": 1 },
       { "source": "@kie-tools/form", "target": "@kie-tools/dmn-runner", "weight": 1 },
       { "source": "@kie-tools/form", "target": "@kie-tools/i18n-common-dictionary", "weight": 1 },
       { "source": "@kie-tools/form", "target": "@kie-tools-core/webpack-base", "weight": 1 },
+      { "source": "@kie-tools/dmn-feel-antlr4-parser", "target": "@kie-tools/dmn-marshaller", "weight": 1 },
+      { "source": "@kie-tools/dmn-marshaller", "target": "@kie-tools/xml-parser-ts-codegen", "weight": 1 },
+      { "source": "@kie-tools/dmn-runner", "target": "@kie-tools-core/react-hooks", "weight": 1 },
       { "source": "@kie-tools/dmn-runner", "target": "@kie-tools/extended-services-api", "weight": 1 },
       { "source": "@kie-tools/dmn-runner", "target": "@kie-tools/uniforms-patternfly", "weight": 1 },
       { "source": "@kie-tools/extended-services-api", "target": "@kie-tools-core/notifications", "weight": 1 },
@@ -616,7 +640,6 @@
       { "source": "@kie-tools/uniforms-patternfly-codegen", "target": "@kie-tools-core/webpack-base", "weight": 1 },
       { "source": "@kie-tools/uniforms-patternfly-codegen", "target": "@kie-tools/eslint", "weight": 1 },
       { "source": "@kie-tools/uniforms-patternfly-codegen", "target": "@kie-tools/tsconfig", "weight": 1 },
-      { "source": "@kie-tools/git-cors-proxy-image", "target": "@kie-tools/root-env", "weight": 1 },
       { "source": "@kie-tools/image-env-to-json", "target": "@kie-tools-core/webpack-base", "weight": 1 },
       { "source": "@kie-tools/image-env-to-json", "target": "@kie-tools/eslint", "weight": 1 },
       { "source": "@kie-tools/image-env-to-json", "target": "@kie-tools/tsconfig", "weight": 1 },
@@ -650,6 +673,7 @@
       { "source": "@kie-tools/pmml-editor", "target": "@kie-tools/pmml-editor-marshaller", "weight": 1 },
       { "source": "@kie-tools/pmml-editor", "target": "@kie-tools-core/webpack-base", "weight": 1 },
       { "source": "@kie-tools/vscode-extension-common-test-helpers", "target": "@kie-tools/tsconfig", "weight": 1 },
+      { "source": "@kie-tools/kie-sandbox-distribution", "target": "@kie-tools/cors-proxy-image", "weight": 1 },
       {
         "source": "@kie-tools/kie-sandbox-distribution",
         "target": "@kie-tools/kie-sandbox-extended-services-image",
@@ -661,38 +685,70 @@
         "target": "@kie-tools/extended-services",
         "weight": 1
       },
+      { "source": "@kie-tools/kie-sandbox-extended-services-image", "target": "@kie-tools/image-builder", "weight": 1 },
       { "source": "@kie-tools/kie-sandbox-image", "target": "@kie-tools/image-env-to-json", "weight": 1 },
       { "source": "@kie-tools/kie-sandbox-image", "target": "@kie-tools/online-editor", "weight": 1 },
+      { "source": "@kie-tools/kie-sandbox-image", "target": "@kie-tools/image-builder", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools-core/kubernetes-bridge", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools-core/workspaces-git-fs", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools/form-dmn", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools/kie-bc-editors", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools/pmml-editor", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools/unitables-dmn", "weight": 1 },
-      { "source": "@kie-tools/online-editor", "target": "@kie-tools/dmn-dev-deployment-base-image-env", "weight": 1 },
+      { "source": "@kie-tools/online-editor", "target": "@kie-tools/cors-proxy", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools/extended-services", "weight": 1 },
-      { "source": "@kie-tools/online-editor", "target": "@kie-tools/git-cors-proxy-image", "weight": 1 },
       { "source": "@kie-tools/online-editor", "target": "@kie-tools/stunner-editors", "weight": 1 },
-      { "source": "@kie-tools-core/kubernetes-bridge", "target": "@kie-tools/eslint", "weight": 1 },
-      { "source": "@kie-tools-core/kubernetes-bridge", "target": "@kie-tools/root-env", "weight": 1 },
-      { "source": "@kie-tools-core/kubernetes-bridge", "target": "@kie-tools/tsconfig", "weight": 1 },
+      { "source": "@kie-tools-core/kubernetes-bridge", "target": "@kie-tools/cors-proxy-api", "weight": 1 },
       { "source": "@kie-tools/unitables-dmn", "target": "@kie-tools/unitables", "weight": 1 },
       { "source": "@kie-tools/kn-plugin-workflow", "target": "@kie-tools/root-env", "weight": 1 },
-      { "source": "@kie-tools/unitables", "target": "@kie-tools-core/react-hooks", "weight": 1 },
       { "source": "@kie-tools/unitables", "target": "@kie-tools/boxed-expression-component", "weight": 1 },
       { "source": "@kie-tools/unitables", "target": "@kie-tools/dmn-runner", "weight": 1 },
       { "source": "pmml-vscode-extension", "target": "@kie-tools-core/vscode-extension", "weight": 1 },
       { "source": "pmml-vscode-extension", "target": "@kie-tools/pmml-editor", "weight": 1 },
-      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools-core/kubernetes-bridge", "weight": 1 },
-      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools-core/workspaces-git-fs", "weight": 1 },
-      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools/dashbuilder-editor", "weight": 1 },
-      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools/i18n-common-dictionary", "weight": 1 },
+      { "source": "@kie-tools/runtime-tools-components", "target": "@kie-tools-core/editor", "weight": 1 },
+      { "source": "@kie-tools/runtime-tools-components", "target": "@kie-tools-core/monaco-editor", "weight": 1 },
+      { "source": "@kie-tools/runtime-tools-components", "target": "@kie-tools/i18n-common-dictionary", "weight": 1 },
       {
-        "source": "@kie-tools/serverless-logic-web-tools",
+        "source": "@kie-tools/runtime-tools-components",
+        "target": "@kie-tools/json-yaml-language-service",
+        "weight": 1
+      },
+      {
+        "source": "@kie-tools/runtime-tools-components",
+        "target": "@kie-tools/runtime-tools-gateway-api",
+        "weight": 1
+      },
+      { "source": "@kie-tools/runtime-tools-components", "target": "@kie-tools/uniforms-patternfly", "weight": 1 },
+      { "source": "@kie-tools/runtime-tools-components", "target": "@kie-tools-core/webpack-base", "weight": 1 },
+      { "source": "@kie-tools/runtime-tools-gateway-api", "target": "@kie-tools/eslint", "weight": 1 },
+      { "source": "@kie-tools/runtime-tools-gateway-api", "target": "@kie-tools/root-env", "weight": 1 },
+      { "source": "@kie-tools/runtime-tools-gateway-api", "target": "@kie-tools/tsconfig", "weight": 1 },
+      {
+        "source": "@kie-tools/runtime-tools-enveloped-components",
+        "target": "@kie-tools/runtime-tools-components",
+        "weight": 1
+      },
+      {
+        "source": "@kie-tools/runtime-tools-enveloped-components",
         "target": "@kie-tools/serverless-workflow-combined-editor",
         "weight": 1
       },
+      { "source": "@kie-tools/scesim-editor", "target": "@kie-tools-core/patternfly-base", "weight": 1 },
+      { "source": "@kie-tools/scesim-editor", "target": "@kie-tools/i18n-common-dictionary", "weight": 1 },
+      { "source": "@kie-tools/scesim-editor", "target": "@kie-tools-core/webpack-base", "weight": 1 },
+      { "source": "@kie-tools/scesim-editor", "target": "@kie-tools/scesim-marshaller", "weight": 1 },
+      { "source": "@kie-tools/scesim-marshaller", "target": "@kie-tools/xml-parser-ts-codegen", "weight": 1 },
+      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools-core/kubernetes-bridge", "weight": 1 },
+      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools-core/workspaces-git-fs", "weight": 1 },
+      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools/cors-proxy", "weight": 1 },
+      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools/dashbuilder-editor", "weight": 1 },
+      {
+        "source": "@kie-tools/serverless-logic-web-tools",
+        "target": "@kie-tools/runtime-tools-enveloped-components",
+        "weight": 1
+      },
       { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools/text-editor", "weight": 1 },
+      { "source": "@kie-tools/serverless-logic-web-tools", "target": "@kie-tools/yard-editor", "weight": 1 },
       {
         "source": "@kie-tools/serverless-logic-web-tools",
         "target": "@kie-tools/dashbuilder-viewer-image-env",
@@ -708,7 +764,16 @@
         "target": "@kie-tools/serverless-logic-web-tools-swf-builder-image-env",
         "weight": 1
       },
+      {
+        "source": "@kie-tools/serverless-logic-web-tools",
+        "target": "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image-env",
+        "weight": 1
+      },
       { "source": "@kie-tools/text-editor", "target": "@kie-tools-core/editor", "weight": 1 },
+      { "source": "@kie-tools/yard-editor", "target": "@kie-tools-core/editor", "weight": 1 },
+      { "source": "@kie-tools/yard-editor", "target": "@kie-tools/i18n-common-dictionary", "weight": 1 },
+      { "source": "@kie-tools/yard-editor", "target": "@kie-tools/yard-language-service", "weight": 1 },
+      { "source": "@kie-tools/yard-editor", "target": "@kie-tools-core/webpack-base", "weight": 1 },
       {
         "source": "@kie-tools/serverless-logic-web-tools-base-builder-image-env",
         "target": "@kie-tools/root-env",
@@ -720,13 +785,14 @@
         "weight": 1
       },
       {
-        "source": "@kie-tools/serverless-logic-web-tools-base-builder-image",
-        "target": "@kie-tools/serverless-logic-web-tools-base-builder-image-env",
+        "source": "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image-env",
+        "target": "@kie-tools/root-env",
         "weight": 1
       },
+      { "source": "@kie-tools/yard-language-service", "target": "@kie-tools/json-yaml-language-service", "weight": 1 },
       {
-        "source": "@kie-tools/serverless-logic-web-tools-swf-builder-image",
-        "target": "@kie-tools/dashbuilder-swf-monitoring-dashboard",
+        "source": "@kie-tools/serverless-logic-web-tools-base-builder-image",
+        "target": "@kie-tools/serverless-logic-web-tools-base-builder-image-env",
         "weight": 1
       },
       {
@@ -736,22 +802,33 @@
       },
       {
         "source": "@kie-tools/serverless-logic-web-tools-swf-builder-image",
-        "target": "@kie-tools/serverless-logic-web-tools-swf-deployment-webapp",
+        "target": "sonataflow-deployment-webapp",
+        "weight": 1
+      },
+      { "source": "sonataflow-deployment-webapp", "target": "@kie-tools-core/react-hooks", "weight": 1 },
+      {
+        "source": "sonataflow-deployment-webapp",
+        "target": "@kie-tools/runtime-tools-enveloped-components",
         "weight": 1
       },
       {
-        "source": "@kie-tools/serverless-logic-web-tools-swf-deployment-webapp",
-        "target": "@kie-tools-core/patternfly-base",
+        "source": "@kie-tools/serverless-logic-web-tools-swf-deployment-quarkus-app",
+        "target": "@kie-tools/maven-config-setup-helper",
         "weight": 1
       },
       {
-        "source": "@kie-tools/serverless-logic-web-tools-swf-deployment-webapp",
-        "target": "@kie-tools/i18n-common-dictionary",
+        "source": "@kie-tools/serverless-logic-web-tools-swf-deployment-quarkus-app",
+        "target": "@kie-tools/root-env",
         "weight": 1
       },
       {
-        "source": "@kie-tools/serverless-logic-web-tools-swf-deployment-webapp",
-        "target": "@kie-tools-core/webpack-base",
+        "source": "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image",
+        "target": "@kie-tools/serverless-logic-web-tools-swf-deployment-quarkus-app",
+        "weight": 1
+      },
+      {
+        "source": "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image",
+        "target": "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image-env",
         "weight": 1
       },
       {
@@ -787,7 +864,7 @@
         "weight": 1
       },
       { "source": "swf-vscode-extension", "target": "@kie-tools/serverless-workflow-language-service", "weight": 1 },
-      { "source": "swf-vscode-extension", "target": "@kie-tools/serverless-workflow-mermaid-viewer", "weight": 1 },
+      { "source": "swf-vscode-extension", "target": "@kie-tools-core/webpack-base", "weight": 1 },
       {
         "source": "swf-vscode-extension",
         "target": "@kie-tools/serverless-workflow-diagram-editor-assets",
@@ -812,8 +889,6 @@
       { "source": "vscode-extension-kogito-bundle", "target": "@kie-tools-core/webpack-base", "weight": 1 },
       { "source": "vscode-extension-kogito-bundle", "target": "@kie-tools/eslint", "weight": 1 },
       { "source": "vscode-extension-kogito-bundle", "target": "@kie-tools/tsconfig", "weight": 1 },
-      { "source": "@kie-tools/yard-editor", "target": "@kie-tools-core/editor", "weight": 1 },
-      { "source": "@kie-tools/yard-editor", "target": "@kie-tools/boxed-expression-component", "weight": 1 },
       { "source": "yard-vscode-extension", "target": "@kie-tools-core/vscode-extension", "weight": 1 },
       { "source": "yard-vscode-extension", "target": "@kie-tools/yard-editor", "weight": 1 },
       { "source": "yard-vscode-extension", "target": "@kie-tools/vscode-extension-common-test-helpers", "weight": 1 }
@@ -834,10 +909,15 @@
     ["@kie-tools-examples/webapp", "examples/webapp"],
     ["@kie-tools-core/backend", "packages/backend"],
     ["@kie-tools/boxed-expression-component", "packages/boxed-expression-component"],
+    ["@kie-tools/bpmn-marshaller", "packages/bpmn-marshaller"],
     ["bpmn-vscode-extension", "packages/bpmn-vscode-extension"],
     ["@kie-tools-core/chrome-extension", "packages/chrome-extension"],
     ["chrome-extension-pack-kogito-kie-editors", "packages/chrome-extension-pack-kogito-kie-editors"],
     ["chrome-extension-serverless-workflow-editor", "packages/chrome-extension-serverless-workflow-editor"],
+    ["@kie-tools/chrome-extension-test-helper", "packages/chrome-extension-test-helper"],
+    ["@kie-tools/cors-proxy", "packages/cors-proxy"],
+    ["@kie-tools/cors-proxy-api", "packages/cors-proxy-api"],
+    ["@kie-tools/cors-proxy-image", "packages/cors-proxy-image"],
     ["@kie-tools/dashbuilder", "packages/dashbuilder"],
     ["@kie-tools/dashbuilder-client", "packages/dashbuilder-client"],
     ["@kie-tools/dashbuilder-component-api", "packages/dashbuilder-component-api"],
@@ -859,10 +939,11 @@
     ["@kie-tools/dashbuilder-viewer-image", "packages/dashbuilder-viewer-image"],
     ["@kie-tools/dashbuilder-viewer-image-env", "packages/dashbuilder-viewer-image-env"],
     ["@kie-tools/dmn-dev-deployment-base-image", "packages/dmn-dev-deployment-base-image"],
-    ["@kie-tools/dmn-dev-deployment-base-image-env", "packages/dmn-dev-deployment-base-image-env"],
     ["@kie-tools/dmn-dev-deployment-form-webapp", "packages/dmn-dev-deployment-form-webapp"],
     ["@kie-tools/dmn-dev-deployment-quarkus-app", "packages/dmn-dev-deployment-quarkus-app"],
+    ["@kie-tools/dmn-feel-antlr4-parser", "packages/dmn-feel-antlr4-parser"],
     ["@kie-tools/dmn-language-service", "packages/dmn-language-service"],
+    ["@kie-tools/dmn-marshaller", "packages/dmn-marshaller"],
     ["@kie-tools/dmn-runner", "packages/dmn-runner"],
     ["dmn-vscode-extension", "packages/dmn-vscode-extension"],
     ["@kie-tools-core/editor", "packages/editor"],
@@ -875,9 +956,9 @@
     ["@kie-tools/form", "packages/form"],
     ["@kie-tools/form-dmn", "packages/form-dmn"],
     ["@kie-tools/form-generation-tool", "packages/form-generation-tool"],
-    ["@kie-tools/git-cors-proxy-image", "packages/git-cors-proxy-image"],
     ["@kie-tools-core/i18n", "packages/i18n"],
     ["@kie-tools/i18n-common-dictionary", "packages/i18n-common-dictionary"],
+    ["@kie-tools/image-builder", "packages/image-builder"],
     ["@kie-tools/image-env-to-json", "packages/image-env-to-json"],
     ["@kie-tools/import-java-classes-component", "packages/import-java-classes-component"],
     ["@kie-tools/json-yaml-language-service", "packages/json-yaml-language-service"],
@@ -902,6 +983,11 @@
     ["pmml-vscode-extension", "packages/pmml-vscode-extension"],
     ["@kie-tools-core/react-hooks", "packages/react-hooks"],
     ["@kie-tools/root-env", "packages/root-env"],
+    ["@kie-tools/runtime-tools-components", "packages/runtime-tools-components"],
+    ["@kie-tools/runtime-tools-enveloped-components", "packages/runtime-tools-enveloped-components"],
+    ["@kie-tools/runtime-tools-gateway-api", "packages/runtime-tools-gateway-api"],
+    ["@kie-tools/scesim-editor", "packages/scesim-editor"],
+    ["@kie-tools/scesim-marshaller", "packages/scesim-marshaller"],
     ["@kie-tools/serverless-logic-web-tools", "packages/serverless-logic-web-tools"],
     [
       "@kie-tools/serverless-logic-web-tools-base-builder-image",
@@ -920,8 +1006,16 @@
       "packages/serverless-logic-web-tools-swf-builder-image-env"
     ],
     [
-      "@kie-tools/serverless-logic-web-tools-swf-deployment-webapp",
-      "packages/serverless-logic-web-tools-swf-deployment-webapp"
+      "@kie-tools/serverless-logic-web-tools-swf-deployment-quarkus-app",
+      "packages/serverless-logic-web-tools-swf-deployment-quarkus-app"
+    ],
+    [
+      "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image",
+      "packages/serverless-logic-web-tools-swf-dev-mode-image"
+    ],
+    [
+      "@kie-tools/serverless-logic-web-tools-swf-dev-mode-image-env",
+      "packages/serverless-logic-web-tools-swf-dev-mode-image-env"
     ],
     ["@kie-tools/serverless-workflow-combined-editor", "packages/serverless-workflow-combined-editor"],
     ["@kie-tools/serverless-workflow-diagram-editor", "packages/serverless-workflow-diagram-editor"],
@@ -929,11 +1023,11 @@
     ["@kie-tools/serverless-workflow-diagram-editor-envelope", "packages/serverless-workflow-diagram-editor-envelope"],
     ["@kie-tools/serverless-workflow-jq-expressions", "packages/serverless-workflow-jq-expressions"],
     ["@kie-tools/serverless-workflow-language-service", "packages/serverless-workflow-language-service"],
-    ["@kie-tools/serverless-workflow-mermaid-viewer", "packages/serverless-workflow-mermaid-viewer"],
     ["@kie-tools/serverless-workflow-service-catalog", "packages/serverless-workflow-service-catalog"],
     ["@kie-tools/serverless-workflow-standalone-editor", "packages/serverless-workflow-standalone-editor"],
     ["@kie-tools/serverless-workflow-text-editor", "packages/serverless-workflow-text-editor"],
     ["swf-vscode-extension", "packages/serverless-workflow-vscode-extension"],
+    ["sonataflow-deployment-webapp", "packages/sonataflow-deployment-webapp"],
     ["@kie-tools/stunner-editors", "packages/stunner-editors"],
     ["@kie-tools/stunner-editors-dmn-loader", "packages/stunner-editors-dmn-loader"],
     ["@kie-tools/text-editor", "packages/text-editor"],
@@ -956,8 +1050,11 @@
     ["@kie-tools-core/webpack-base", "packages/webpack-base"],
     ["@kie-tools-core/workspace", "packages/workspace"],
     ["@kie-tools-core/workspaces-git-fs", "packages/workspaces-git-fs"],
+    ["@kie-tools/xml-parser-ts", "packages/xml-parser-ts"],
+    ["@kie-tools/xml-parser-ts-codegen", "packages/xml-parser-ts-codegen"],
     ["@kie-tools/yaml-language-server", "packages/yaml-language-server"],
     ["@kie-tools/yard-editor", "packages/yard-editor"],
+    ["@kie-tools/yard-language-service", "packages/yard-language-service"],
     ["yard-vscode-extension", "packages/yard-vscode-extension"],
     ["@kie-tools-scripts/bootstrap", "scripts/bootstrap"],
     ["@kie-tools-scripts/build-env", "scripts/build-env"],

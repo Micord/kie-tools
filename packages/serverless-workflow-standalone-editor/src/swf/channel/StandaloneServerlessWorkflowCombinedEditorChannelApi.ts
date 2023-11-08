@@ -1,24 +1,25 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import {
   ServerlessWorkflowCombinedEditorChannelApi,
   SwfStaticEnvelopeContentProviderChannelApi,
-  SwfFeatureToggle,
-  SwfFeatureToggleChannelApi,
   SwfPreviewOptions,
   SwfPreviewOptionsChannelApi,
 } from "@kie-tools/serverless-workflow-combined-editor/dist/api";
@@ -51,7 +52,6 @@ export class StandaloneServerlessWorkflowCombinedEditorChannelApi
 {
   constructor(
     private readonly defaultApiImpl: KogitoEditorChannelApi,
-    private readonly swfFeatureToggleApiImpl?: SwfFeatureToggleChannelApi,
     private readonly swfServiceCatalogApiImpl?: SwfServiceCatalogChannelApi,
     private readonly swfLanguageServiceChannelApiImpl?: SwfLanguageServiceChannelApi,
     private readonly swfPreviewOptionsChannelApiImpl?: SwfPreviewOptionsChannelApi,
@@ -161,14 +161,6 @@ export class StandaloneServerlessWorkflowCombinedEditorChannelApi
     this.swfServiceCatalogApiImpl?.kogitoSwfServiceCatalog_setupServiceRegistriesSettings();
   }
 
-  public kogitoSwfFeatureToggle_get(): SharedValueProvider<SwfFeatureToggle> {
-    return (
-      this.swfFeatureToggleApiImpl?.kogitoSwfFeatureToggle_get() ?? {
-        defaultValue: { stunnerEnabled: true },
-      }
-    );
-  }
-
   kogitoSwfPreviewOptions_get(): SharedValueProvider<SwfPreviewOptions> {
     return (
       this.swfPreviewOptionsChannelApiImpl?.kogitoSwfPreviewOptions_get() ?? {
@@ -185,14 +177,6 @@ export class StandaloneServerlessWorkflowCombinedEditorChannelApi
     );
   }
 
-  public kogitoSwfGetMermaidEnvelopeContent(): SharedValueProvider<string> {
-    return (
-      this.swfStaticEnvelopeContentProviderChannelApi?.kogitoSwfGetMermaidEnvelopeContent() ?? {
-        defaultValue: "",
-      }
-    );
-  }
-
   public kogitoSwfGetTextEditorEnvelopeContent(): SharedValueProvider<string> {
     return (
       this.swfStaticEnvelopeContentProviderChannelApi?.kogitoSwfGetTextEditorEnvelopeContent() ?? {
@@ -201,7 +185,7 @@ export class StandaloneServerlessWorkflowCombinedEditorChannelApi
     );
   }
 
-  public kogitoSwfCombinedEditor_moveCursorToPosition(_position: MonacoPosition): void {
+  kogitoSwfCombinedEditor_combinedEditorReady(): void {
     // no-op
   }
 }

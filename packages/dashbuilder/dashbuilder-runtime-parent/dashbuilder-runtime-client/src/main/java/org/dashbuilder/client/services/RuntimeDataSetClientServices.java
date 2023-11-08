@@ -1,20 +1,26 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 package org.dashbuilder.client.services;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -26,7 +32,6 @@ import org.dashbuilder.client.RuntimeClientLoader;
 import org.dashbuilder.client.error.DefaultRuntimeErrorCallback;
 import org.dashbuilder.client.error.ErrorResponseVerifier;
 import org.dashbuilder.client.external.ExternalDataSetClientProvider;
-import org.dashbuilder.client.marshalling.ClientDataSetMetadataJSONMarshaller;
 import org.dashbuilder.dataprovider.DataSetProviderType;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.DataSetMetadata;
@@ -44,9 +49,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 public class RuntimeDataSetClientServices implements DataSetClientServices {
 
     @Inject
-    ClientDataSetMetadataJSONMarshaller dataSetMetadataJsonMarshaller;
-
-    @Inject
     ErrorResponseVerifier verifier;
 
     @Inject
@@ -61,6 +63,9 @@ public class RuntimeDataSetClientServices implements DataSetClientServices {
     @Inject
     ExternalDataSetClientProvider externalDataSetClientProvider;
 
+    @Inject
+    JoinDataSetsService joinDataSetsService;
+
     public RuntimeDataSetClientServices() {
         // empty
     }
@@ -72,7 +77,7 @@ public class RuntimeDataSetClientServices implements DataSetClientServices {
 
     @Override
     public void fetchMetadata(String uuid, DataSetMetadataCallback listener) throws Exception {
-        // empty
+        // empty        
     }
 
     @Override
@@ -84,16 +89,20 @@ public class RuntimeDataSetClientServices implements DataSetClientServices {
     @Override
     public void lookupDataSet(DataSetDef def, DataSetLookup lookup, DataSetReadyCallback listener) throws Exception {
         var clientDataSet = clientDataSetManager.lookupDataSet(lookup);
-        if (!isAccumulate(lookup.getDataSetUUID()) && clientDataSet != null) {
+        var uuid = lookup.getDataSetUUID();
+        if (!isAccumulate(uuid) && clientDataSet != null) {
             listener.callback(clientDataSet);
             return;
         }
 
-        externalDataSetClientProvider.fetchAndRegister(lookup.getDataSetUUID(), lookup, listener);
-    }
+        var join = getJoin(uuid);
+        if (!join.isEmpty()) {
+            var externalDef = externalDataSetClientProvider.get(uuid).get();
+            joinDataSetsService.joinDataSets(externalDef, lookup, listener);
+            return;
+        }
 
-    private boolean isAccumulate(String uuid) {
-        return externalDataSetClientProvider.get(uuid).map(def -> def.isAccumulate()).orElse(false);
+        externalDataSetClientProvider.fetchAndRegister(uuid, lookup, listener);
     }
 
     @Override
@@ -128,6 +137,17 @@ public class RuntimeDataSetClientServices implements DataSetClientServices {
             clientDataSetManager.removeDataSet(uuid);
         }
 
+    }
+
+    private Collection<String> getJoin(String uuid) {
+        return externalDataSetClientProvider.get(uuid).filter(def -> def.getJoin() != null)
+                .map(def -> def.getJoin())
+                .orElse(Collections.emptyList());
+
+    }
+
+    private boolean isAccumulate(String uuid) {
+        return externalDataSetClientProvider.get(uuid).map(def -> def.isAccumulate()).orElse(false);
     }
 
 }

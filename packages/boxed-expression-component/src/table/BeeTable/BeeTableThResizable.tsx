@@ -1,22 +1,25 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { PopoverPosition } from "@patternfly/react-core/dist/js/components/Popover";
 import * as React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as ReactTable from "react-table";
 import { ExpressionDefinition } from "../../api";
 import { ExpressionDefinitionHeaderMenu } from "../../expressions/ExpressionDefinitionHeaderMenu";
@@ -74,6 +77,8 @@ export function BeeTableThResizable<R extends object>({
   forwardRef,
 }: BeeTableThResizableProps<R>) {
   const columnKey = useMemo(() => getColumnKey(column), [column, getColumnKey]);
+
+  const headerCellRef = useRef<HTMLDivElement>(null);
 
   const cssClasses = useMemo(() => {
     const cssClasses = [columnKey, "data-header-cell"];
@@ -160,6 +165,10 @@ export function BeeTableThResizable<R extends object>({
     };
   }, [columnIndex, rowIndex, forwardRef, editorRef]);
 
+  const getAppendToElement = useCallback(() => {
+    return headerCellRef.current!;
+  }, [headerCellRef, headerCellRef.current]);
+
   return (
     <BeeTableTh<R>
       forwardRef={forwardRef}
@@ -187,13 +196,14 @@ export function BeeTableThResizable<R extends object>({
       shouldShowColumnsInlineControls={shouldShowColumnsInlineControls}
       column={column}
     >
-      <div className="header-cell" data-ouia-component-type="expression-column-header">
+      <div className="header-cell" data-ouia-component-type="expression-column-header" ref={headerCellRef}>
         {column.dataType && isEditableHeader ? (
           <ExpressionDefinitionHeaderMenu
             position={PopoverPosition.bottom}
             selectedExpressionName={column.label}
             selectedDataType={column.dataType}
             onExpressionHeaderUpdated={onExpressionHeaderUpdated}
+            appendTo={getAppendToElement}
           >
             {headerCellInfo}
           </ExpressionDefinitionHeaderMenu>

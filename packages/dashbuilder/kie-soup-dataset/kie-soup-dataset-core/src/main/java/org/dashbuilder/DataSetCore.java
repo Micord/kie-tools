@@ -1,27 +1,29 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 package org.dashbuilder;
 
 import org.dashbuilder.dataprovider.DataSetProviderRegistry;
 import org.dashbuilder.dataprovider.StaticDataSetProvider;
 import org.dashbuilder.dataset.AbstractDataSetCore;
-import org.dashbuilder.dataset.DataSetDefDeployer;
 import org.dashbuilder.dataset.IntervalBuilderDynamicDate;
 import org.dashbuilder.dataset.def.DataSetDefRegistry;
-import org.dashbuilder.dataset.json.DataSetDefJSONMarshaller;
 import org.dashbuilder.scheduler.Scheduler;
 
 /**
@@ -55,13 +57,9 @@ public abstract class DataSetCore extends AbstractDataSetCore {
 
     public abstract DataSetProviderRegistry getDataSetProviderRegistry();
 
-    public abstract DataSetDefDeployer getDataSetDefDeployer();
-
     public abstract StaticDataSetProvider getStaticDataSetProvider();
 
     public abstract IntervalBuilderDynamicDate getIntervalBuilderDynamicDate();
-
-    public abstract DataSetDefJSONMarshaller getDataSetDefJSONMarshaller();
 
     public abstract void setDataSetPushEnabled(boolean dataSetPushEnabled);
 
@@ -73,13 +71,8 @@ public abstract class DataSetCore extends AbstractDataSetCore {
 
     public abstract void setDataSetProviderRegistry(DataSetProviderRegistry dataSetProviderRegistry);
 
-    public abstract void setDataSetDefDeployer(DataSetDefDeployer dataSetDefDeployer);
-
     public abstract void setStaticDataSetProvider(StaticDataSetProvider staticDataSetProvider);
 
     public abstract void setIntervalBuilderDynamicDate(IntervalBuilderDynamicDate intervalBuilderDynamicDate);
 
-    public abstract void setDataSetDefJSONMarshaller(DataSetDefJSONMarshaller dataSetDefJSONMarshaller);
 }
-
-

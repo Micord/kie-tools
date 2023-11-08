@@ -1,27 +1,30 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
 
 package org.kie.workbench.common.dmn.webapp.kogito.common.client.services;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Stream.of;
-import static org.kie.workbench.common.dmn.client.widgets.codecompletion.MonacoFEELInitializer.FEEL_RESERVED_KEYWORDS;
 
 /**
  * <p>It provides a light validation for variable names, respect to the FEEL syntax</p>
@@ -35,6 +38,11 @@ public class FEELSyntaxLightValidator {
             '!', '@', '#', '$', '$', '%', '&', '^', '(', ')', '\"', '°', '§', '←', '→', '↓', '¢', 'µ',
             '{', '}', '[', ']', '|', '\\', '=', '<', '>', ';', ':', ',', '¶', '«', '»', '”', '“'
     };
+
+    public static final List<String> FEEL_RESERVED_KEYWORDS = Arrays.asList(
+            "for", "return", "if", "then", "else", "some", "every", "satisfies", "instance", "of", "in",
+            "function", "external", "or", "and", "between", "not", "null", "true", "false"
+    );
 
     private static final Character[] ALLOWED_SEPARATORS = {'-', '.', '/', '\'', '*', '+'};
 

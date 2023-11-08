@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
 
 .pf-c-page__header {
@@ -296,17 +299,17 @@
   padding-right: 12px;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-footer {
+.kogito--editor__extended-services-modal-footer {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-footer-alert {
+.kogito--editor__extended-services-modal-footer-alert {
   width: 100%;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-footer-alert-success {
+.kogito--editor__extended-services-modal-footer-alert-success {
   display: flex;
   justify-content: space-between;
 }
@@ -340,7 +343,7 @@
   animation: staticAnimation 10s infinite;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-initial {
+.kogito--editor__extended-services-modal-initial {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -349,24 +352,24 @@
   margin-left: 20px;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-initial-center {
+.kogito--editor__extended-services-modal-initial-center {
   margin: 0 auto;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-initial img {
+.kogito--editor__extended-services-modal-initial img {
   border: 1px solid #eee;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-initial-content {
+.kogito--editor__extended-services-modal-initial-content {
   display: flex;
   flex-direction: row;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-initial-title {
+.kogito--editor__extended-services-modal-initial-title {
   margin: 20px 20px 0px;
 }
 
-.kogito--editor__kie-sandbox-extended-services-modal-initial-margin {
+.kogito--editor__extended-services-modal-initial-margin {
   margin: 10px;
 }
 
@@ -448,15 +451,15 @@
   }
 }
 
-.kogito--editor__kie-sandbox-extended-services-dropdown-icon-outdated {
+.kogito--editor__extended-services-dropdown-icon-outdated {
   color: var(--pf-global--warning-color--100);
 }
 
-.kogito--editor__kie-sandbox-extended-services-dropdown-icon-outdated:focus {
+.kogito--editor__extended-services-dropdown-icon-outdated:focus {
   outline: none;
 }
 
-.kogito--editor__kie-sandbox-extended-services-dropdown-icon-connected {
+.kogito--editor__extended-services-dropdown-icon-connected {
   color: var(--pf-global--palette--green-300);
 }
 

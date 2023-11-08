@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { createWorkspaceServices } from "@kie-tools-core/workspaces-git-fs/dist/worker/createWorkspaceServices";
@@ -20,20 +23,20 @@ import { setupWorkerConnection } from "@kie-tools-core/workspaces-git-fs/dist/wo
 import { ENV_FILE_PATH } from "../../env/EnvConstants";
 import { APP_NAME } from "../../AppConstants";
 import { isModel, isEditable } from "../../extension";
-import { EnvVars } from "../../env/EnvContext";
+import { EnvJson } from "../../env/EnvJson";
 import { EditorEnvelopeLocatorFactory } from "../../envelopeLocator/EditorEnvelopeLocatorFactory";
 
 declare const importScripts: any;
 importScripts("fsMain.js");
 
-async function gitCorsProxyUrl(): Promise<string> {
+async function corsProxyUrl(): Promise<string> {
   const envFilePath = `../../${ENV_FILE_PATH}`; // Needs to go back two dirs, since this file is at `workspaces/worker`.
-  const env = (await (await fetch(envFilePath)).json()) as EnvVars;
-  return env.SERVERLESS_LOGIC_WEB_TOOLS_GIT_CORS_PROXY_URL ?? process.env.WEBPACK_REPLACE__gitCorsProxyUrl ?? "";
+  const env = (await (await fetch(envFilePath)).json()) as EnvJson;
+  return env.SERVERLESS_LOGIC_WEB_TOOLS_CORS_PROXY_URL;
 }
 
 const editorEnvelopeLocator = new EditorEnvelopeLocatorFactory().create({ targetOrigin: "" });
-const workspaceServices = createWorkspaceServices({ gitCorsProxyUrl: gitCorsProxyUrl() });
+const workspaceServices = createWorkspaceServices({ corsProxyUrl: corsProxyUrl() });
 
 // shared worker connection
 

@@ -1,18 +1,22 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.kie.workbench.common.stunner.client.yaml.mapper.api.internal.deser;
 
@@ -20,9 +24,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.amihaiemil.eoyaml.YamlMapping;
-import com.amihaiemil.eoyaml.YamlNode;
 import org.kie.workbench.common.stunner.client.yaml.mapper.api.YAMLDeserializer;
+import org.kie.workbench.common.stunner.client.yaml.mapper.api.node.YamlMapping;
+import org.kie.workbench.common.stunner.client.yaml.mapper.api.node.YamlNode;
+import org.kie.workbench.common.stunner.client.yaml.mapper.api.node.YamlScalar;
 
 /**
  * Base implementation of {@link YAMLDeserializer} for dates.
@@ -35,7 +40,7 @@ public abstract class BaseDateYAMLDeserializer<D extends Date> implements YAMLDe
   /** {@inheritDoc} */
   @Override
   public D deserialize(YamlMapping yaml, String key, YAMLDeserializationContext ctx) {
-    return deserialize(yaml.value(key), ctx);
+    return deserialize(yaml.getNode(key), ctx);
   }
 
   /** Default implementation of {@link BaseDateYAMLDeserializer} for {@link Date} */
@@ -48,7 +53,8 @@ public abstract class BaseDateYAMLDeserializer<D extends Date> implements YAMLDe
       if (date == null) {
         return null;
       }
-      return new Date(Long.valueOf(date.asScalar().value()));
+      YamlScalar<String> scalar = date.asScalar();
+      return new Date(Long.parseLong(scalar.value()));
     }
   }
 
@@ -65,7 +71,8 @@ public abstract class BaseDateYAMLDeserializer<D extends Date> implements YAMLDe
       if (date == null) {
         return null;
       }
-      return new java.sql.Date(Long.valueOf(date.asScalar().value()));
+      YamlScalar<String> scalar = date.asScalar();
+      return new java.sql.Date(Long.parseLong(scalar.value()));
     }
   }
 
@@ -76,7 +83,8 @@ public abstract class BaseDateYAMLDeserializer<D extends Date> implements YAMLDe
 
     @Override
     public Time deserialize(YamlNode date, YAMLDeserializationContext ctx) {
-      return Time.valueOf(date.asScalar().value());
+      YamlScalar<String> scalar = date.asScalar();
+      return Time.valueOf(scalar.value());
     }
   }
 
@@ -88,7 +96,8 @@ public abstract class BaseDateYAMLDeserializer<D extends Date> implements YAMLDe
 
     @Override
     public Timestamp deserialize(YamlNode date, YAMLDeserializationContext ctx) {
-      return Timestamp.valueOf(date.asScalar().value());
+      YamlScalar<String> scalar = date.asScalar();
+      return Timestamp.valueOf(scalar.value());
     }
   }
 }

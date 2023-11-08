@@ -1,6 +1,6 @@
 {
   "name": "@kie-tools/kie-editors-standalone",
-  "version": "0.28.2-micord.3",
+  "version": "0.32.0-micord.1",
   "description": "",
   "license": "Apache-2.0",
   "keywords": [],
@@ -43,6 +43,9 @@
     "test": "run-script-if --ignore-errors \"$(build-env tests.ignoreFailures)\" --bool \"$(build-env tests.run)\" --then \"jest --silent --verbose --passWithNoTests\"",
     "test:it": "run-script-if --ignore-errors \"$(build-env integrationTests.ignoreFailures)\" --bool \"$(build-env integrationTests.run)\" --then \"pnpm rimraf ./dist-it-tests\" \"pnpm start-server-and-test start:it http-get://0.0.0.0:$(build-env standaloneEditors.dev.port) cy:run\" \"pnpm postreport\""
   },
+  "dependencies": {
+    "@kie-tools/kie-bc-editors": "workspace:*"
+  },
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
@@ -56,19 +59,18 @@
     "@kie-tools-core/webpack-base": "workspace:*",
     "@kie-tools-core/workspace": "workspace:*",
     "@kie-tools/eslint": "workspace:*",
-    "@kie-tools/kie-bc-editors": "workspace:*",
     "@kie-tools/root-env": "workspace:*",
     "@kie-tools/stunner-editors": "workspace:*",
     "@kie-tools/tsconfig": "workspace:*",
     "@types/jest": "^26.0.23",
     "@types/jest-when": "^2.7.4",
-    "@types/minimatch": "^3.0.4",
+    "@types/minimatch": "^3.0.5",
     "@types/react": "^17.0.6",
     "@types/react-dom": "^17.0.5",
     "@types/react-router-dom": "^5.1.7",
     "@types/underscore": "^1.11.2",
     "copy-webpack-plugin": "^11.0.0",
-    "cypress": "^12.11.0",
+    "cypress": "^13.2.0",
     "cypress-file-upload": "^5.0.8",
     "cypress-iframe": "^1.0.1",
     "cypress-log-to-output": "^1.1.2",
@@ -77,7 +79,7 @@
     "jest-junit": "^14.0.0",
     "jest-when": "^3.5.0",
     "junit-report-merger": "^4.0.0",
-    "minimatch": "^3.0.4",
+    "minimatch": "^3.0.5",
     "raw-loader": "^4.0.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -88,9 +90,9 @@
     "ts-jest": "^26.5.6",
     "typescript": "^4.6.2",
     "underscore": "^1.13.1",
-    "webpack": "^5.36.2",
+    "webpack": "^5.88.2",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.7.3",
-    "webpack-merge": "^5.8.0"
+    "webpack-dev-server": "^4.15.1",
+    "webpack-merge": "^5.9.0"
   }
 }

@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
@@ -27,7 +30,9 @@ import { DmnUnitablesI18n } from "./i18n";
 import { DmnUnitablesJsonSchemaBridge } from "./uniforms/DmnUnitablesJsonSchemaBridge";
 import * as ReactTable from "react-table";
 import {
+  BeeTableContextMenuAllowedOperationsConditions,
   BeeTableHeaderVisibility,
+  BeeTableOperation,
   BeeTableOperationConfig,
   DmnBuiltInDataType,
   generateUuid,
@@ -58,11 +63,16 @@ export function DmnRunnerOutputsTable({ i18n, jsonSchemaBridge, results, scrolla
     outputErrorBoundaryRef.current?.reset();
   }, [outputsPropertiesMap]);
 
+  const numberOfResults = useMemo(
+    () => results?.reduce((acc, result) => acc + (result?.length ?? 0), 0) ?? 0,
+    [results]
+  );
+
   return (
     <>
       {outputError ? (
         outputError
-      ) : Array.from(outputsPropertiesMap).length > 0 ? (
+      ) : numberOfResults > 0 ? (
         <ErrorBoundary ref={outputErrorBoundaryRef} setHasError={setOutputError} error={<OutputError />}>
           <OutputsBeeTable
             scrollableParentRef={scrollableParentRef}
@@ -125,8 +135,8 @@ function OutputsBeeTable({ id, i18n, outputsPropertiesMap, results, scrollablePa
   const beeTableOperationConfig = useMemo<BeeTableOperationConfig>(
     () => [
       {
-        group: i18n.rows,
-        items: [],
+        group: i18n.terms.selection.toUpperCase(),
+        items: [{ name: i18n.terms.copy, type: BeeTableOperation.SelectionCopy }],
       },
     ],
     [i18n]
@@ -194,6 +204,19 @@ function OutputsBeeTable({ id, i18n, outputsPropertiesMap, results, scrollablePa
 
         if (value !== null && !Array.isArray(value) && typeof value === "object") {
           return deepFlattenObjectRow(value, myKey, acc);
+        }
+        if (value !== null && Array.isArray(value)) {
+          return value.reduce((acc, v, index) => {
+            if (v !== null && !Array.isArray(v) && typeof v === "object") {
+              return { ...acc, ...deepFlattenObjectRow(v, `${myKey}-${index}`, acc) };
+            } else {
+              const rowValue = getRowValue(v);
+              if (rowValue) {
+                acc[`${myKey}-${index}`] = rowValue;
+              }
+              return acc;
+            }
+          }, acc);
         }
         const rowValue = getRowValue(value);
         if (rowValue) {
@@ -372,9 +395,14 @@ function OutputsBeeTable({ id, i18n, outputsPropertiesMap, results, scrollablePa
     return row.original.id;
   }, []);
 
+  const allowedOperations = useCallback((conditions: BeeTableContextMenuAllowedOperationsConditions) => {
+    return [BeeTableOperation.SelectionCopy];
+  }, []);
+
   return (
     <StandaloneBeeTable
       scrollableParentRef={scrollableParentRef}
+      allowedOperations={allowedOperations}
       getColumnKey={getColumnKey}
       getRowKey={getRowKey}
       tableId={id}

@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 declare namespace Cypress {
@@ -39,6 +42,18 @@ declare namespace Cypress {
      * @param opts optional - config object
      */
     ouia<S = any>(locator: { ouiaType?: string; ouiaId?: string }, opts?: Record<string, any>): Chainable<S>;
+
+    /**
+     * Go to a link in the sidebar menu
+     * @param locator component id according to OUIA specification
+     */
+    goToSidebarLink(locator: { ouiaId: string }): void;
+
+    /**
+     * Type into a DOM element using '{ force: true }' option.
+     * @param text Text to be typed.
+     */
+    forceType(text: string): Chainable<any>;
   }
 }
 
@@ -65,7 +80,7 @@ Cypress.Commands.add("moveToPosition", { prevSubject: true }, (subject, row, col
   }
 
   // move to the beginning of the textarea and move to the destination
-  return cy.wrap(subject).type("{ctrl}{home}").type(path);
+  return cy.wrap(subject).forceType("{ctrl}{home}").forceType(path);
 });
 
 Cypress.Commands.add("ouia", { prevSubject: "optional" }, (subject, locator, options = {}) => {
@@ -84,4 +99,18 @@ Cypress.Commands.add("ouia", { prevSubject: "optional" }, (subject, locator, opt
   } else {
     cy.get(selector, options);
   }
+});
+
+Cypress.Commands.add("goToSidebarLink", { prevSubject: false }, (locator) => {
+  cy.get("#page-sidebar").then((pageSidebar) => {
+    if (!pageSidebar.is(":visible")) {
+      cy.get("#nav-toggle").click();
+    }
+    cy.ouia({ ouiaId: locator.ouiaId }).click();
+    cy.get("#nav-toggle").click();
+  });
+});
+
+Cypress.Commands.add("forceType", { prevSubject: "element" }, (subject, text) => {
+  return cy.wrap(subject).type(text, { force: true });
 });

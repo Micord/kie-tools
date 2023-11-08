@@ -1,6 +1,6 @@
 {
   "name": "@kie-tools/yard-editor",
-  "version": "0.0.0",
+  "version": "0.32.0",
   "description": "Core module of the YARD editor, Yet Another Rule Definition editor",
   "license": "Apache-2.0",
   "keywords": [],
@@ -29,24 +29,28 @@
   },
   "dependencies": {
     "@kie-tools-core/editor": "workspace:*",
+    "@kie-tools-core/envelope": "workspace:*",
     "@kie-tools-core/envelope-bus": "workspace:*",
     "@kie-tools-core/i18n": "workspace:*",
     "@kie-tools-core/notifications": "workspace:*",
     "@kie-tools-core/operating-system": "workspace:*",
     "@kie-tools-core/patternfly-base": "workspace:*",
     "@kie-tools-core/workspace": "workspace:*",
-    "@kie-tools/boxed-expression-component": "workspace:*",
     "@kie-tools/i18n-common-dictionary": "workspace:*",
+    "@kie-tools/yard-language-service": "workspace:*",
     "@patternfly/react-core": "^4.276.6",
     "@patternfly/react-icons": "^4.93.6",
     "@types/js-yaml": "^4.0.5",
     "csstype": "^3.0.11",
     "js-yaml": "^4.1.0",
     "json-schema": "^0.4.0",
-    "monaco-editor": "^0.33.0",
-    "monaco-yaml": "^4.0.0",
+    "monaco-editor": "^0.39.0",
+    "monaco-yaml": "^4.0.4",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "react-zoom-pan-pinch": "^3.1.0",
+    "reaflow": "5.1.2",
+    "vscode-languageserver-types": "^3.16.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
@@ -72,9 +76,9 @@
     "start-server-and-test": "^1.12.1",
     "ts-jest": "^26.5.6",
     "typescript": "^4.6.2",
-    "webpack": "^5.36.2",
+    "webpack": "^5.88.2",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.7.3",
-    "webpack-merge": "^5.8.0"
+    "webpack-dev-server": "^4.15.1",
+    "webpack-merge": "^5.9.0"
   }
 }

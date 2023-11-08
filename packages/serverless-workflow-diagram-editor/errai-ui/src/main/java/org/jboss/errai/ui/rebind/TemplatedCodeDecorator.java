@@ -1,18 +1,22 @@
 /*
- * Copyright (C) 2013 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
+
 
 package org.jboss.errai.ui.rebind;
 
@@ -435,9 +439,9 @@ public class TemplatedCodeDecorator extends IOCDecoratorExtension<Templated> {
 
     for (final String dataFieldName : targetDataFieldNames) {
       final ObjectBuilder listener = ObjectBuilder
-        .newInstanceOf(org.jboss.errai.common.client.dom.EventListener.class)
+        .newInstanceOf(elemental2.dom.EventListener.class)
         .extend()
-        .publicOverridesMethod("call", Parameter.of(org.jboss.errai.common.client.dom.Event.class, "event"))
+        .publicOverridesMethod("call", Parameter.of(elemental2.dom.Event.class, "event"))
           .append(InjectUtil
                   .invokePublicOrPrivateMethod(controller,
                                                method,
@@ -458,7 +462,7 @@ public class TemplatedCodeDecorator extends IOCDecoratorExtension<Templated> {
         elementStmt = loadVariable(dataFieldElementsVarName).invoke("get", dataFieldName);
       }
       final String listenerVarName = "listenerFor" + eventType.getName() + "Calling" + capitalize(method.getName());
-      initStmts.add(declareFinalVariable(listenerVarName, org.jboss.errai.common.client.dom.EventListener.class, listener));
+      initStmts.add(declareFinalVariable(listenerVarName, elemental2.dom.EventListener.class, listener));
       for (final String browserEventType : browserEventTypes) {
         initStmts.add(invokeStatic(TemplateUtil.class, "setupBrowserEventListener", instance, elementStmt,
                 loadVariable(listenerVarName), loadLiteral(browserEventType)));

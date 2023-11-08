@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
  */
 
 package pkg
@@ -19,8 +22,6 @@ package pkg
 import (
 	"bufio"
 	"context"
-	"crypto/tls"
-	"net"
 
 	"encoding/json"
 	"fmt"
@@ -42,12 +43,11 @@ import (
 )
 
 type Proxy struct {
-	View               *Systray
-	Started            bool
-	URL                string
-	Port               string
-	RunnerPort         string
-	InsecureSkipVerify bool
+	View       *Systray
+	Started    bool
+	URL        string
+	Port       string
+	RunnerPort string
 
 	cmd             *exec.Cmd
 	jitexecutorPath string
@@ -56,10 +56,9 @@ type Proxy struct {
 
 func NewProxy(port string, jitexecutor []byte) *Proxy {
 	return &Proxy{
-		jitexecutorPath:    createJitExecutor(jitexecutor),
-		Started:            false,
-		Port:               port,
-		InsecureSkipVerify: false,
+		jitexecutorPath: createJitExecutor(jitexecutor),
+		Started:         false,
+		Port:            port,
 	}
 }
 
@@ -71,7 +70,7 @@ func (p *Proxy) Start() {
 	p.RunnerPort = strconv.Itoa(port)
 	p.URL = "http://127.0.0.1:" + p.RunnerPort
 
-	p.cmd = exec.Command(p.jitexecutorPath, "-Dquarkus.http.port="+p.RunnerPort)
+	p.cmd = exec.Command(p.jitexecutorPath, "-Dquarkus.http.port="+p.RunnerPort, "-Dquarkus.http.cors=true", "-Dquarkus.http.cors.origins=/.*/")
 	stdout, _ := p.cmd.StdoutPipe()
 	go func() {
 		scanner := bufio.NewScanner(stdout)
@@ -87,7 +86,6 @@ func (p *Proxy) Start() {
 	}
 
 	router := mux.NewRouter()
-	router.PathPrefix("/cors-proxy").HandlerFunc(p.corsProxyHandler())
 	router.PathPrefix("/ping").HandlerFunc(p.pingHandler())
 	router.PathPrefix("/").HandlerFunc(p.jitExecutorHandler())
 
@@ -158,54 +156,6 @@ func (p *Proxy) Refresh() {
 	p.View.Refresh()
 }
 
-func (p *Proxy) corsProxyHandler() func(rw http.ResponseWriter, req *http.Request) {
-	return func(rw http.ResponseWriter, req *http.Request) {
-		if req.Method == "OPTIONS" {
-			rw.Header().Set("Access-Control-Allow-Origin", "*")
-			rw.Header().Set("Access-Control-Allow-Methods", "*")
-			rw.Header().Set("Access-Control-Allow-Headers", "*")
-			return
-		}
-
-		targetUrl, err := url.Parse(req.Header.Get("Target-Url"))
-		if err != nil {
-			log.Fatal(err)
-		}
-		emptyUrl, _ := url.Parse("")
-		req.URL = emptyUrl
-		req.Host = req.URL.Host
-
-		req.Header.Del("Origin")
-
-		proxy := httputil.NewSingleHostReverseProxy(targetUrl)
-
-		// tolerate p-signed certificates
-		proxy.Transport = &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
-			DialContext: (&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}).DialContext,
-			ForceAttemptHTTP2:     true,
-			MaxIdleConns:          10,
-			IdleConnTimeout:       60 * time.Second,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ExpectContinueTimeout: 1 * time.Second,
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: p.InsecureSkipVerify,
-			},
-		}
-
-		proxy.ModifyResponse = func(resp *http.Response) error {
-			resp.Header.Set("Access-Control-Allow-Origin", "*")
-			resp.Header.Set("Access-Control-Allow-Methods", "*")
-			resp.Header.Set("Access-Control-Allow-Headers", "*")
-			return nil
-		}
-		proxy.ServeHTTP(rw, req)
-	}
-}
-
 func (p *Proxy) jitExecutorHandler() func(rw http.ResponseWriter, req *http.Request) {
 	return func(rw http.ResponseWriter, req *http.Request) {
 		if req.Method == "OPTIONS" {
@@ -231,7 +181,7 @@ func (p *Proxy) pingHandler() func(rw http.ResponseWriter, req *http.Request) {
 		rw.Header().Set("Access-Control-Allow-Origin", "*")
 		rw.Header().Set("Access-Control-Allow-Methods", "GET")
 
-		conf := GetPingResponse(p.InsecureSkipVerify, p.Started)
+		conf := GetPingResponse(p.Started)
 		rw.WriteHeader(http.StatusOK)
 		json, _ := json.Marshal(conf)
 		_, err := rw.Write(json)

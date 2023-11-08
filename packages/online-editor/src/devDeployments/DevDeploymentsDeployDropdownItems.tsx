@@ -1,26 +1,29 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { DropdownItem } from "@patternfly/react-core/dist/js/components/Dropdown";
 import * as React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDevDeployments as useDevDeployments } from "./DevDeploymentsContext";
-import { FeatureDependentOnKieSandboxExtendedServices } from "../kieSandboxExtendedServices/FeatureDependentOnKieSandboxExtendedServices";
-import { DependentFeature, useExtendedServices } from "../kieSandboxExtendedServices/KieSandboxExtendedServicesContext";
-import { KieSandboxExtendedServicesStatus } from "../kieSandboxExtendedServices/KieSandboxExtendedServicesStatus";
+import { FeatureDependentOnExtendedServices } from "../extendedServices/FeatureDependentOnExtendedServices";
+import { DependentFeature, useExtendedServices } from "../extendedServices/ExtendedServicesContext";
+import { ExtendedServicesStatus } from "../extendedServices/ExtendedServicesStatus";
 import { ActiveWorkspace } from "@kie-tools-core/workspaces-git-fs/dist/model/ActiveWorkspace";
 import { Flex, FlexItem } from "@patternfly/react-core/dist/js/layouts/Flex";
 import { FileLabel } from "../filesList/FileLabel";
@@ -58,7 +61,7 @@ export function useDevDeploymentsDeployDropdownItems(workspace: ActiveWorkspace 
   }, [authSessions, suggestedAuthSessionForDeployment]);
 
   const isExtendedServicesRunning = useMemo(
-    () => extendedServices.status === KieSandboxExtendedServicesStatus.RUNNING,
+    () => extendedServices.status === ExtendedServicesStatus.RUNNING,
     [extendedServices.status]
   );
 
@@ -75,7 +78,7 @@ export function useDevDeploymentsDeployDropdownItems(workspace: ActiveWorkspace 
     return [
       <React.Fragment key={"dmn-dev-deployment-dropdown-items"}>
         {workspace && (
-          <FeatureDependentOnKieSandboxExtendedServices isLight={false} position="left">
+          <FeatureDependentOnExtendedServices isLight={false} position="left">
             <div style={{ padding: "8px 16px" }}>
               <AuthSessionSelect
                 position={SelectPosition.right}
@@ -124,7 +127,7 @@ export function useDevDeploymentsDeployDropdownItems(workspace: ActiveWorkspace 
                 </Flex>
               )}
             </DropdownItem>
-          </FeatureDependentOnKieSandboxExtendedServices>
+          </FeatureDependentOnExtendedServices>
         )}
       </React.Fragment>,
     ];

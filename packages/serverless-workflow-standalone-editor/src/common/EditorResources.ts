@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as fs from "fs";
@@ -19,6 +22,7 @@ import * as fs from "fs";
 export interface JsResource {
   path: string;
   content: string;
+  userAgentCondition?: string;
 }
 
 export interface CssResource {
@@ -42,6 +46,7 @@ export interface ReferencedResource {
   path: string;
   prefix?: string;
   suffix?: string;
+  userAgentCondition?: string;
 }
 
 export interface EditorResources {
@@ -83,7 +88,11 @@ export abstract class BaseEditorResources {
       });
     }
 
-    return { path: resource.path, content: (resource.prefix ?? "") + content + (resource.suffix ?? "") };
+    return {
+      path: resource.path,
+      content: (resource.prefix ?? "") + content + (resource.suffix ?? ""),
+      userAgentCondition: resource.userAgentCondition,
+    };
   }
 
   public createFontSource(path: string) {
@@ -97,5 +106,21 @@ export abstract class BaseEditorResources {
 
   public getBase64FromFile(path: string) {
     return Buffer.from(fs.readFileSync(path)).toString("base64");
+  }
+
+  public getUserAgentCondition(editorDirPath: string, gwtJsFileName: string) {
+    const compilationMapping = fs.readFileSync(`${editorDirPath}/compilation-mappings.txt`).toString();
+    const regex = new RegExp(gwtJsFileName + "\\nuser.agent (\\w+)");
+    const match = regex.exec(compilationMapping);
+    if (match) {
+      const userAgent = match[1];
+      if (userAgent === "gecko1_8") {
+        return "navigator.userAgent.toLowerCase().indexOf('webkit') == -1 && (navigator.userAgent.toLowerCase().indexOf('gecko') != -1 || document.documentMode >= 11)";
+      }
+      if (userAgent === "safari") {
+        return "navigator.userAgent.toLowerCase().indexOf('webkit') != -1";
+      }
+    }
+    return undefined;
   }
 }

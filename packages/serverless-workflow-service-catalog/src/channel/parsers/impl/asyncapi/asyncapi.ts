@@ -1,27 +1,33 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import {
   SwfServiceCatalogFunction,
+  SwfServiceCatalogEvent,
   SwfServiceCatalogFunctionArgumentType,
   SwfServiceCatalogFunctionSource,
   SwfServiceCatalogFunctionType,
   SwfServiceCatalogService,
   SwfServiceCatalogServiceSource,
   SwfServiceCatalogServiceType,
+  SwfServiceCatalogEventType,
+  SwfServiceCatalogEventKind,
 } from "../../../../api";
 import { convertSource } from "../convertSource";
 import * as AsyncApi from "./types";
@@ -35,12 +41,14 @@ export function parseAsyncApi(
   serviceAsyncApiDocument: AsyncApi.AsyncAPIDocument
 ): SwfServiceCatalogService {
   const swfServiceCatalogFunctions = extractFunctions(serviceAsyncApiDocument, convertSource(args.source));
+  const swfServiceCatalogEvents = extractEvents(serviceAsyncApiDocument, convertSource(args.source));
 
   return {
     name: serviceAsyncApiDocument.info.title ?? args.serviceFileName,
     type: SwfServiceCatalogServiceType.asyncapi,
     source: args.source,
     functions: swfServiceCatalogFunctions,
+    events: swfServiceCatalogEvents,
     rawContent: args.serviceFileContent,
   } as SwfServiceCatalogService;
 }
@@ -54,6 +62,7 @@ export function extractFunctions(
       return extractChannelItemFunctions(channelItem, endpoint, serviceAsyncApiDocument, source);
     }
   );
+
   return [].concat.apply([], swfServiceCatalogFunctions);
 }
 
@@ -167,4 +176,61 @@ function resolveArgumentType(type: string): SwfServiceCatalogFunctionArgumentTyp
       return SwfServiceCatalogFunctionArgumentType.array;
   }
   return SwfServiceCatalogFunctionArgumentType.object;
+}
+
+export function extractEvents(
+  serviceAsyncApiDocument: AsyncApi.AsyncAPIDocument,
+  source: SwfServiceCatalogFunctionSource
+): SwfServiceCatalogEvent[] {
+  const swfServiceCatalogEvents = Object.entries(serviceAsyncApiDocument.channels).map(
+    ([endpoint, channelItem]: [string, AsyncApi.ChannelsObject]) => {
+      return extractChannelItemEvents(channelItem, endpoint, serviceAsyncApiDocument, source);
+    }
+  );
+
+  return [].concat.apply([], swfServiceCatalogEvents);
+}
+
+function extractChannelItemEvents(
+  channelItem: any,
+  endpoint: string,
+  serviceAsyncApiDocument: AsyncApi.AsyncAPIDocument,
+  source: SwfServiceCatalogFunctionSource
+): SwfServiceCatalogEvent[] {
+  const swfServiceCatalogEvents: SwfServiceCatalogEvent[] = [];
+
+  const eventArguments: Record<string, SwfServiceCatalogFunctionArgumentType> = {};
+
+  // Looking at operation params
+  if (channelItem.parameters) {
+    extractFunctionArgumentsFromParams(channelItem?.parameters, eventArguments);
+  }
+  Object.values(channelItem)
+    .filter((channelOperation: AsyncApi.OperationObject) => channelOperation.operationId)
+    .forEach((channelOperation: any) => {
+      const body = channelOperation.message;
+      const name = channelOperation.operationId as string;
+      let eventKind: SwfServiceCatalogEventKind;
+      const operation = Object.keys(channelItem).find((key) => channelItem[key] === channelOperation);
+      if (operation === "subscribe") {
+        eventKind = SwfServiceCatalogEventKind.CONSUMED;
+      } else if (operation === "publish") {
+        eventKind = SwfServiceCatalogEventKind.PRODUCED;
+      }
+      // Looking only at application/json mime types, we might consider others.
+      if (body) {
+        extractFunctionArgumentsFromRequestBody(body ?? {}, serviceAsyncApiDocument, eventArguments);
+      }
+
+      const swfServiceCatalogEvent: SwfServiceCatalogEvent = {
+        source,
+        name,
+        type: SwfServiceCatalogEventType.asyncapi,
+        kind: eventKind!,
+        eventSource: "",
+        eventType: "",
+      };
+      swfServiceCatalogEvents.push(swfServiceCatalogEvent);
+    });
+  return swfServiceCatalogEvents;
 }

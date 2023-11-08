@@ -1,23 +1,31 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import * as ReactTable from "react-table";
-import { BeeTableHeaderVisibility, LiteralExpressionDefinition } from "../../api";
+import {
+  BeeTableContextMenuAllowedOperationsConditions,
+  BeeTableHeaderVisibility,
+  BeeTableOperation,
+  LiteralExpressionDefinition,
+} from "../../api";
 import { useNestedExpressionContainer } from "../../resizing/NestedExpressionContainerContext";
 import { LITERAL_EXPRESSION_EXTRA_WIDTH, LITERAL_EXPRESSION_MIN_WIDTH } from "../../resizing/WidthConstants";
 import { BeeTable, BeeTableCellUpdate, BeeTableColumnUpdate, BeeTableRef } from "../../table/BeeTable";
@@ -30,12 +38,13 @@ import {
 import "./LiteralExpression.css";
 import { DEFAULT_EXPRESSION_NAME } from "../ExpressionDefinitionHeaderMenu";
 import { ResizerStopBehavior } from "../../resizing/ResizingWidthsContext";
+import { useBoxedExpressionEditorI18n } from "../../i18n";
 
 type ROWTYPE = any;
 
 export function LiteralExpression(literalExpression: LiteralExpressionDefinition & { isNested: boolean }) {
   const { setExpression } = useBoxedExpressionEditorDispatch();
-  const { decisionNodeId } = useBoxedExpressionEditor();
+  const { decisionNodeId, variables } = useBoxedExpressionEditor();
 
   const getValue = useCallback(() => {
     return literalExpression.content ?? "";
@@ -152,8 +161,33 @@ export function LiteralExpression(literalExpression: LiteralExpressionDefinition
     return row.id;
   }, []);
 
+  const { i18n } = useBoxedExpressionEditorI18n();
+
   const beeTableOperationConfig = useMemo(() => {
-    return [];
+    return [
+      {
+        group: i18n.terms.selection.toUpperCase(),
+        items: [
+          { name: i18n.terms.copy, type: BeeTableOperation.SelectionCopy },
+          { name: i18n.terms.cut, type: BeeTableOperation.SelectionCut },
+          { name: i18n.terms.paste, type: BeeTableOperation.SelectionPaste },
+          { name: i18n.terms.reset, type: BeeTableOperation.SelectionReset },
+        ],
+      },
+    ];
+  }, [i18n.terms.copy, i18n.terms.cut, i18n.terms.paste, i18n.terms.reset, i18n.terms.selection]);
+
+  const allowedOperations = useCallback((conditions: BeeTableContextMenuAllowedOperationsConditions) => {
+    if (!conditions.selection.selectionStart || !conditions.selection.selectionEnd) {
+      return [];
+    }
+
+    return [
+      BeeTableOperation.SelectionCopy,
+      ...(conditions.selection.selectionStart.rowIndex === 0
+        ? [BeeTableOperation.SelectionCut, BeeTableOperation.SelectionPaste, BeeTableOperation.SelectionReset]
+        : []),
+    ];
   }, []);
 
   return (
@@ -170,10 +204,12 @@ export function LiteralExpression(literalExpression: LiteralExpressionDefinition
           onColumnUpdates={onColumnUpdates}
           onCellUpdates={onCellUpdates}
           operationConfig={beeTableOperationConfig}
+          allowedOperations={allowedOperations}
           onColumnResizingWidthChange={onColumnResizingWidthChange}
           shouldRenderRowIndexColumn={false}
           shouldShowRowsInlineControls={false}
           shouldShowColumnsInlineControls={false}
+          variables={variables}
         ></BeeTable>
       </div>
     </div>

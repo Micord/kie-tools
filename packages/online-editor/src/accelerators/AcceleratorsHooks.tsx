@@ -1,17 +1,20 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import React, { useCallback, useMemo, useState } from "react";
@@ -60,6 +63,7 @@ export function useAvailableAccelerators() {
 }
 
 export function useAcceleratorsDispatch(workspace: ActiveWorkspace) {
+  const { env } = useEnv();
   const workspaces = useWorkspaces();
   const history = useHistory();
   const routes = useRoutes();
@@ -165,7 +169,7 @@ export function useAcceleratorsDispatch(workspace: ActiveWorkspace) {
         // Commit moved files to moved files branch (this commit will never be pushed, as this branch will be deleted)
         await workspaces.commit({
           workspaceId,
-          commitMessage: `KIE Sandbox: Backup files before applying ${accelerator.name} Accelerator`,
+          commitMessage: `${env.KIE_SANDBOX_APP_NAME}: Backup files before applying ${accelerator.name} Accelerator`,
           targetBranch: BACKUP_BRANCH_NAME,
         });
 
@@ -216,7 +220,7 @@ export function useAcceleratorsDispatch(workspace: ActiveWorkspace) {
         // Commit moved files to moved files branch (this commit will never be pushed, as this branch will be deleted)
         await workspaces.commit({
           workspaceId,
-          commitMessage: `KIE Sandbox: Moving files to apply ${accelerator.name} Accelerator.`,
+          commitMessage: `${env.KIE_SANDBOX_APP_NAME}: Moving files to apply ${accelerator.name} Accelerator.`,
           targetBranch: MOVED_FILES_BRANCH_NAME,
         });
 
@@ -284,7 +288,7 @@ export function useAcceleratorsDispatch(workspace: ActiveWorkspace) {
 
         // Add Accelerator YAML config
         const content = `# This file was automatically created by ${
-          i18n.names.businessModeler.online
+          env.KIE_SANDBOX_APP_NAME
         }. Please don't modify it.\n${yaml.dump({ ...accelerator, appliedAt: new Date().toISOString() })}`;
         configFile = await workspaces.addFile({
           workspaceId,
@@ -303,7 +307,7 @@ export function useAcceleratorsDispatch(workspace: ActiveWorkspace) {
         await workspaces.createSavePoint({
           workspaceId,
           gitConfig,
-          commitMessage: i18n.accelerators.commitMessage(accelerator.name),
+          commitMessage: i18n.accelerators.commitMessage(env.KIE_SANDBOX_APP_NAME, accelerator.name),
           forceHasChanges: true,
         });
 
@@ -367,10 +371,10 @@ export function useAcceleratorsDispatch(workspace: ActiveWorkspace) {
       applyAcceleratorFailAlert,
       applyAcceleratorSuccessAlert,
       attemptToDeleteTemporaryBranches,
+      env.KIE_SANDBOX_APP_NAME,
       gitConfig,
       history,
       i18n.accelerators,
-      i18n.names.businessModeler.online,
       routes.workspaceWithFilePath,
       workspace.descriptor.workspaceId,
       workspaces,

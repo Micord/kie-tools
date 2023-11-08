@@ -1,17 +1,20 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { ReferenceDictionary, Wrapped } from "@kie-tools-core/i18n/dist/core";
@@ -51,7 +54,7 @@ interface OnlineDictionary extends ReferenceDictionary {
     error: {
       title: string;
       explanation: string;
-      message: Array<string | Wrapped<"issues">>;
+      message: Array<string | Wrapped<"jira">>;
     };
   };
   editorToolbar: {
@@ -71,7 +74,7 @@ interface OnlineDictionary extends ReferenceDictionary {
     embed: string;
   };
   accelerators: {
-    commitMessage: (acceleratorName: string) => string;
+    commitMessage: (appName: string, acceleratorName: string) => string;
     loadingAlert: (acceleratorName: string) => string;
     successAlert: (acceleratorName: string) => string;
     failAlert: (acceleratorName: string) => string;
@@ -123,6 +126,8 @@ interface OnlineDictionary extends ReferenceDictionary {
       hostInfo: string;
       namespaceInfo: string;
       tokenInfo: string;
+      insecurelyDisableTlsCertificateValidation: string;
+      insecurelyDisableTlsCertificateValidationInfo: string;
       validationError: string;
       connectionError: string;
       missingPermissions: string;
@@ -306,6 +311,8 @@ interface OnlineDictionary extends ReferenceDictionary {
       seeConnectedAccounts: string;
       continue: string;
     };
+    insecurelyDisableTlsCertificateValidation: string;
+    insecurelyDisableTlsCertificateValidationInfo: string;
   };
   commitModal: {
     title: string;
@@ -334,7 +341,6 @@ interface OnlineDictionary extends ReferenceDictionary {
       description: string;
     };
     dropdown: {
-      getHub: string;
       onlineForum: string;
     };
     bpmnCard: {
@@ -373,7 +379,7 @@ interface OnlineDictionary extends ReferenceDictionary {
     error: {
       title: string;
       explanation: string;
-      message: Array<string | Wrapped<"issues">>;
+      message: Array<string | Wrapped<"jira">>;
     };
     table: DmnUnitablesI18n;
     modal: {
@@ -402,7 +408,7 @@ interface OnlineDictionary extends ReferenceDictionary {
           start: {
             stopped: {
               startInstruction: string;
-              launchKieSandboxExtendedServices: Array<string | Wrapped<"file">>;
+              launchExtendedServices: Array<string | Wrapped<"file">>;
             };
             firstTime: {
               title: string;
@@ -412,7 +418,7 @@ interface OnlineDictionary extends ReferenceDictionary {
               openInstruction: Array<string | Wrapped<"file" | "again">>;
             };
             alreadyRanBefore: string;
-            launchKieSandboxExtendedServices: Array<string | Wrapped<"file">>;
+            launchExtendedServices: Array<string | Wrapped<"file">>;
             advanced: {
               title: string;
               runFollowingCommand: string;
@@ -427,7 +433,7 @@ interface OnlineDictionary extends ReferenceDictionary {
           start: {
             stopped: {
               startInstruction: string;
-              launchKieSandboxExtendedServices: Array<string | Wrapped<"file">>;
+              launchExtendedServices: Array<string | Wrapped<"file">>;
             };
             firstTime: {
               title: string;
@@ -435,7 +441,7 @@ interface OnlineDictionary extends ReferenceDictionary {
               runAnyway: string;
             };
             alreadyRanBefore: string;
-            launchKieSandboxExtendedServices: Array<string | Wrapped<"file">>;
+            launchExtendedServices: Array<string | Wrapped<"file">>;
             advanced: {
               title: string;
               runFollowingCommand: string;
@@ -486,7 +492,7 @@ interface OnlineDictionary extends ReferenceDictionary {
       expandAll: string;
     };
   };
-  kieSandboxExtendedServices: {
+  extendedServices: {
     dropdown: {
       shortConnected: (port: string) => string;
       tooltip: {

@@ -1,17 +1,20 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import React, { useCallback } from "react";
@@ -31,15 +34,17 @@ import {
   DescriptionListGroup,
   DescriptionListDescription,
 } from "@patternfly/react-core/dist/js/components/DescriptionList";
+import { useEnv } from "../env/hooks/EnvContext";
 
 export const AboutButton: React.FunctionComponent = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const { env } = useEnv();
   const routes = useRoutes();
   const buildInfo = process.env.WEBPACK_REPLACE__buildInfo;
-  const kogitoVersion = process.env.WEBPACK_REPLACE__kogitoRuntimeVersion;
+  const kogitoRuntimesVersion = process.env.WEBPACK_REPLACE__kogitoRuntimeVersion;
   const quarkusVersion = process.env.WEBPACK_REPLACE__quarkusPlatformVersion;
-  const dmnImage = process.env.WEBPACK_REPLACE__dmnDevDeployment_baseImageFullUrl;
-  const extendedVersion = process.env.WEBPACK_REPLACE__kieSandboxExtendedServicesCompatibleVersion;
+  const dmnDevDeploymentsBaseImageUrl = env.KIE_SANDBOX_DMN_DEV_DEPLOYMENT_BASE_IMAGE_URL;
+  const extendedServicesVersion = process.env.WEBPACK_REPLACE__extendedServicesCompatibleVersion;
   const commitSha = process.env.WEBPACK_REPLACE__commitHash;
 
   const handleModalToggle = useCallback(() => {
@@ -49,6 +54,7 @@ export const AboutButton: React.FunctionComponent = () => {
   return (
     <React.Fragment>
       <Button
+        style={{ marginTop: "2px" }}
         variant={ButtonVariant.plain}
         onClick={handleModalToggle}
         className={"kie-tools--masthead-hoverable-dark"}
@@ -60,18 +66,9 @@ export const AboutButton: React.FunctionComponent = () => {
           <MastheadBrand style={{ textDecoration: "none" }}>
             <Flex alignItems={{ default: "alignItemsCenter" }}>
               <FlexItem style={{ display: "flex", alignItems: "center" }}>
-                <Brand
-                  src={routes.static.images.kieHorizontalLogoDefault.path({})}
-                  alt={"Logo"}
-                  heights={{ default: "80px" }}
-                >
-                  <source srcSet={routes.static.images.kieHorizontalLogoDefault.path({})} />
+                <Brand src={routes.static.images.appLogoDefault.path({})} alt={"Logo"} heights={{ default: "80px" }}>
+                  <source srcSet={routes.static.images.appLogoDefault.path({})} />
                 </Brand>
-              </FlexItem>
-              <FlexItem style={{ display: "flex", alignItems: "center" }}>
-                <TextContent>
-                  <Text component={TextVariants.h2}>Sandbox</Text>
-                </TextContent>
               </FlexItem>
             </Flex>
           </MastheadBrand>
@@ -92,7 +89,7 @@ export const AboutButton: React.FunctionComponent = () => {
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>Kogito Runtimes Version: </DescriptionListTerm>
-              <DescriptionListDescription>{kogitoVersion}</DescriptionListDescription>
+              <DescriptionListDescription>{kogitoRuntimesVersion}</DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>Quarkus Version: </DescriptionListTerm>
@@ -100,11 +97,11 @@ export const AboutButton: React.FunctionComponent = () => {
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>DMN Dev deployments image URL: </DescriptionListTerm>
-              <DescriptionListDescription>{dmnImage}</DescriptionListDescription>
+              <DescriptionListDescription>{dmnDevDeploymentsBaseImageUrl}</DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>Extended Services version: </DescriptionListTerm>
-              <DescriptionListDescription>{extendedVersion}</DescriptionListDescription>
+              <DescriptionListDescription>{extendedServicesVersion}</DescriptionListDescription>
             </DescriptionListGroup>
             <DescriptionListGroup>
               <DescriptionListTerm>Commit SHA: </DescriptionListTerm>

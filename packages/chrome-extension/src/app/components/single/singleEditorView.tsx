@@ -1,17 +1,20 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { Dependencies } from "../../Dependencies";
@@ -21,6 +24,7 @@ import {
   extractOpenFilePath,
   iframeFullscreenContainer,
   removeAllChildren,
+  waitForElementToBeReady,
 } from "../../utils";
 import * as ReactDOM from "react-dom";
 import { Globals, Main } from "../common/Main";
@@ -39,7 +43,9 @@ export interface FileInfo {
   gitRef: string;
 }
 
-export function renderSingleEditorReadonlyApp(args: Globals & { fileInfo: FileInfo }) {
+export async function renderSingleEditorReadonlyApp(args: Globals & { fileInfo: FileInfo }) {
+  // wait for the dom element to be ready before rendering
+  await waitForElementToBeReady("textarea[id='read-only-cursor-text-area']");
   // Checking whether this text editor exists is a good way to determine if the page is "ready",
   // because that would mean that the user could see the default GitHub page.
   if (!args.dependencies.singleView.githubTextEditorToReplaceElement()) {
@@ -123,27 +129,27 @@ function cleanup(id: string, dependencies: Dependencies) {
 
 function toolbarContainer(id: string, dependencies: Dependencies) {
   const element = () => document.querySelector(`.${KOGITO_TOOLBAR_CONTAINER_CLASS}.${id}`)!;
-
-  if (!element()) {
-    dependencies.singleView
-      .toolbarContainerTarget()!
-      .insertAdjacentHTML(
-        "beforebegin",
-        `<div class="${KOGITO_TOOLBAR_CONTAINER_CLASS} ${id} view d-flex flex-column flex-items-start flex-md-row"></div>`
-      );
+  if (element) {
+    element()?.remove();
   }
+  dependencies.singleView
+    .toolbarContainerTarget()!
+    .insertAdjacentHTML(
+      "beforebegin",
+      `<div class="${KOGITO_TOOLBAR_CONTAINER_CLASS} ${id} view d-flex flex-column flex-items-start flex-md-row"></div>`
+    );
 
   return element() as HTMLElement;
 }
 
-function iframeContainer(id: string, dependencies: Dependencies) {
+export function iframeContainer(id: string, dependencies: Dependencies) {
   const element = () => document.querySelector(`.${KOGITO_IFRAME_CONTAINER_CLASS}.${id}`)!;
-
-  if (!element()) {
-    dependencies.singleView
-      .iframeContainerTarget()!
-      .insertAdjacentHTML("afterend", `<div class="${KOGITO_IFRAME_CONTAINER_CLASS} ${id} view"></div>`);
+  if (element) {
+    element()?.remove();
   }
+  dependencies.singleView
+    .iframeContainerTarget()!
+    .insertAdjacentHTML("afterend", `<div class="${KOGITO_IFRAME_CONTAINER_CLASS} ${id} view"></div>`);
 
   return element() as HTMLElement;
 }

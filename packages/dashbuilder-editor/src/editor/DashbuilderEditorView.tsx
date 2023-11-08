@@ -1,32 +1,31 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-import {
-  Editor,
-  EditorApi,
-  EditorInitArgs,
-  EditorTheme,
-  KogitoEditorEnvelopeContextType,
-} from "@kie-tools-core/editor/dist/api";
+import { EditorInitArgs, EditorTheme, KogitoEditorEnvelopeContextType } from "@kie-tools-core/editor/dist/api";
 import { Notification } from "@kie-tools-core/notifications/dist/api";
 import * as React from "react";
 import { DashbuilderEditor } from "./DashbuilderEditor";
 import { DashbuilderEditorChannelApi } from "../api/DashbuilderEditorChannelApi";
+import { DashbuilderEditorApi } from "../api/DashbuilderEditorApi";
+import { Position } from "monaco-editor";
 
-export class DashbuilderEditorView implements Editor {
-  private readonly editorRef: React.RefObject<EditorApi>;
+export class DashbuilderEditorView implements DashbuilderEditorApi {
+  private readonly editorRef: React.RefObject<DashbuilderEditorApi>;
   public af_isReact = true;
   public af_componentId: "dashbuilder-editor";
   public af_componentTitle: "Dashbuilder Editor";
@@ -35,7 +34,7 @@ export class DashbuilderEditorView implements Editor {
     private readonly envelopeContext: KogitoEditorEnvelopeContextType<DashbuilderEditorChannelApi>,
     private readonly initArgs: EditorInitArgs
   ) {
-    this.editorRef = React.createRef<EditorApi>();
+    this.editorRef = React.createRef<DashbuilderEditorApi>();
   }
 
   public setContent(path: string, content: string): Promise<void> {
@@ -83,5 +82,9 @@ export class DashbuilderEditorView implements Editor {
 
   public async setTheme(theme: EditorTheme) {
     return this.editorRef.current!.setTheme(theme);
+  }
+
+  public moveCursorToPosition(position: Position): void {
+    this.editorRef.current!.moveCursorToPosition(position);
   }
 }

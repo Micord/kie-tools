@@ -1,17 +1,20 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import { SwfYamlLanguageService } from "@kie-tools/serverless-workflow-language-service/dist/channel";
@@ -302,6 +305,129 @@ functions:
           title: "+ Add function...",
           command: "editor.ls.commands.OpenCompletionItems",
           arguments: [{ newCursorPosition: { character: 0, line: 2 } }],
+        },
+      } as CodeLens);
+    });
+
+    test("login to service registries with events", async () => {
+      const ls = new SwfYamlLanguageService({
+        fs: {},
+        serviceCatalog: defaultServiceCatalogConfig,
+        config: { ...defaultConfig, shouldServiceRegistriesLogIn: () => true },
+        jqCompletions: defaultJqCompletionsConfig,
+      });
+
+      const { content } = trim(`
+---
+events:
+  - name: 'wait'
+    source: ''
+    type: ''
+    kind: consumed
+    metadata:
+      reference: 'specs/test (1).yaml#wait' `);
+
+      const codeLenses = await ls.getCodeLenses({ uri: documentUri, content });
+
+      expect(codeLenses).toHaveLength(2);
+      expect(codeLenses[1]).toStrictEqual({
+        range: { start: { line: 2, character: 2 }, end: { line: 2, character: 2 } },
+        command: {
+          command: "swf.ls.commands.LogInServiceRegistries",
+          title: "↪ Log in Service Registries...",
+          arguments: [{ position: { character: 2, line: 2 } }],
+        },
+      });
+      expect(codeLenses[0]).toStrictEqual({
+        range: { start: { line: 2, character: 2 }, end: { line: 2, character: 2 } },
+        command: {
+          title: "+ Add event...",
+          command: "editor.ls.commands.OpenCompletionItems",
+          arguments: [{ newCursorPosition: { character: 2, line: 2 } }],
+        },
+      } as CodeLens);
+    });
+
+    test("setup service registries with events", async () => {
+      const ls = new SwfYamlLanguageService({
+        fs: {},
+        serviceCatalog: defaultServiceCatalogConfig,
+        config: {
+          ...defaultConfig,
+          shouldConfigureServiceRegistries: () => true,
+        },
+        jqCompletions: defaultJqCompletionsConfig,
+      });
+
+      const { content } = trim(`
+---
+events:
+  - name: 'wait'
+    source: ''
+    type: ''
+    kind: consumed
+    metadata:
+      reference: 'specs/test (1).yaml#wait' `);
+
+      const codeLenses = await ls.getCodeLenses({ uri: documentUri, content });
+
+      expect(codeLenses).toHaveLength(2);
+      expect(codeLenses[1]).toStrictEqual({
+        range: { start: { line: 2, character: 2 }, end: { line: 2, character: 2 } },
+        command: {
+          command: "swf.ls.commands.OpenServiceRegistriesConfig",
+          title: "↪ Setup Service Registries...",
+          arguments: [{ position: { character: 2, line: 2 } }],
+        },
+      });
+      expect(codeLenses[0]).toStrictEqual({
+        range: { start: { line: 2, character: 2 }, end: { line: 2, character: 2 } },
+        command: {
+          title: "+ Add event...",
+          command: "editor.ls.commands.OpenCompletionItems",
+          arguments: [{ newCursorPosition: { character: 2, line: 2 } }],
+        },
+      } as CodeLens);
+    });
+
+    test("refresh service registries with events", async () => {
+      const ls = new SwfYamlLanguageService({
+        fs: {},
+        serviceCatalog: defaultServiceCatalogConfig,
+        config: {
+          ...defaultConfig,
+          canRefreshServices: () => true,
+        },
+        jqCompletions: defaultJqCompletionsConfig,
+      });
+
+      const { content } = trim(`
+---
+events:
+  - name: 'wait'
+    source: ''
+    type: ''
+    kind: consumed
+    metadata:
+      reference: 'specs/test (1).yaml#wait' `);
+
+      const codeLenses = await ls.getCodeLenses({ uri: documentUri, content });
+
+      expect(codeLenses).toHaveLength(2);
+      expect(codeLenses[1]).toStrictEqual({
+        range: { start: { line: 2, character: 2 }, end: { line: 2, character: 2 } },
+        command: {
+          command: "swf.ls.commands.RefreshServiceRegistries",
+          title: "↺ Refresh Service Registries...",
+          arguments: [{ position: { character: 2, line: 2 } }],
+        },
+      });
+      expect(codeLenses[0]).toStrictEqual({
+        range: { start: { line: 2, character: 2 }, end: { line: 2, character: 2 } },
+        command: {
+          title: "+ Add event...",
+          command: "editor.ls.commands.OpenCompletionItems",
+          arguments: [{ newCursorPosition: { character: 2, line: 2 } }],
         },
       } as CodeLens);
     });

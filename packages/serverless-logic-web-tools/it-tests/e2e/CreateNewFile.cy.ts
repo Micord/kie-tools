@@ -1,18 +1,22 @@
 /*
- * Copyright 2022 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 describe("Serverless Logic Web Tools - Create and edit test", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -23,12 +27,11 @@ describe("Serverless Logic Web Tools - Create and edit test", () => {
     cy.ouia({ ouiaId: "new-sw.json-button" }).should("have.text", "JSON");
     cy.ouia({ ouiaId: "new-sw.yaml-button" }).should("have.text", "YAML");
 
-    cy.ouia({ ouiaId: "Decision-card" }).find("button").should("have.length", 2);
-    cy.ouia({ ouiaId: "new-yard.json-button" }).should("have.text", "JSON");
+    cy.ouia({ ouiaId: "Decision-card" }).find("button").should("have.length", 1);
     cy.ouia({ ouiaId: "new-yard.yaml-button" }).should("have.text", "YAML");
 
     cy.ouia({ ouiaId: "Dashboard-card" }).find("button").should("have.length", 1);
-    cy.ouia({ ouiaId: "new-dash.yaml-button" }).should("have.text", "New Dashboard");
+    cy.ouia({ ouiaId: "new-dash.yaml-button" }).should("have.text", "YAML");
   });
 
   it("should create a new JSON serverless workflow", () => {
@@ -47,7 +50,7 @@ describe("Serverless Logic Web Tools - Create and edit test", () => {
 
         // check basic workflow parameters
         cy.get(".monaco-editor textarea")
-          .should("contain.value", '"id": "Workflow unique identifier",')
+          .should("contain.value", '"id": "workflow_unique_identifier",')
           .should("contain.value", '"name": "Workflow name",')
           .should("contain.value", '"start": "StartState",');
 
@@ -86,7 +89,7 @@ describe("Serverless Logic Web Tools - Create and edit test", () => {
 
         // check basic workflow parameters
         cy.get(".monaco-editor textarea")
-          .should("contain.value", "id: 'Workflow unique identifier'")
+          .should("contain.value", "id: 'workflow_unique_identifier'")
           .should("contain.value", "name: 'Workflow name'")
           .should("contain.value", "start: 'StartState'");
 
@@ -120,9 +123,9 @@ describe("Serverless Logic Web Tools - Create and edit test", () => {
     // insert text and check dashbuilder editor and diagram
     cy.getEditor().within(() => {
       cy.get(".monaco-editor textarea")
-        .type("pages:\n")
-        .type("- components:\n")
-        .type('    - html: <b data-ouia-component-id="hello-text">Hello</b> Dashbuilder!')
+        .forceType("pages:\n")
+        .forceType("- components:\n")
+        .forceType('    - html: <b data-ouia-component-id="hello-text">Hello</b> Dashbuilder!')
         .should("contain.value", "pages:")
         .should("contain.value", "- components")
         .should("contain.value", '- html: <b data-ouia-component-id="hello-text">Hello</b> Dashbuilder!');

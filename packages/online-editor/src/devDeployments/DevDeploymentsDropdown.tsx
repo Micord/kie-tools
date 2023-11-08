@@ -1,17 +1,20 @@
 /*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import * as React from "react";
@@ -25,8 +28,8 @@ import { Title } from "@patternfly/react-core/dist/js/components/Title";
 import { Bullseye } from "@patternfly/react-core/dist/js/layouts/Bullseye";
 import { ResponsiveDropdown } from "../ResponsiveDropdown/ResponsiveDropdown";
 import { ResponsiveDropdownToggle } from "../ResponsiveDropdown/ResponsiveDropdownToggle";
-import { DependentFeature, useExtendedServices } from "../kieSandboxExtendedServices/KieSandboxExtendedServicesContext";
-import { KieSandboxExtendedServicesStatus } from "../kieSandboxExtendedServices/KieSandboxExtendedServicesStatus";
+import { DependentFeature, useExtendedServices } from "../extendedServices/ExtendedServicesContext";
+import { ExtendedServicesStatus } from "../extendedServices/ExtendedServicesStatus";
 import CaretDownIcon from "@patternfly/react-icons/dist/js/icons/caret-down-icon";
 import { AuthSessionSelect } from "../authSessions/AuthSessionSelect";
 import { SelectPosition } from "@patternfly/react-core/dist/js/components/Select";
@@ -219,12 +222,10 @@ export function DevDeploymentsDropdown() {
             className={"kie-tools--masthead-hoverable-dark"}
           >
             <PficonSatelliteIcon
-              color={extendedServices.status !== KieSandboxExtendedServicesStatus.RUNNING ? "gray" : undefined}
+              color={extendedServices.status !== ExtendedServicesStatus.RUNNING ? "gray" : undefined}
             />
             &nbsp;&nbsp; Dev deployments &nbsp;&nbsp;
-            <CaretDownIcon
-              color={extendedServices.status !== KieSandboxExtendedServicesStatus.RUNNING ? "gray" : undefined}
-            />
+            <CaretDownIcon color={extendedServices.status !== ExtendedServicesStatus.RUNNING ? "gray" : undefined} />
           </ResponsiveDropdownToggle>
         }
         isOpen={devDeployments.isDeploymentsDropdownOpen}
@@ -232,7 +233,7 @@ export function DevDeploymentsDropdown() {
         className="kogito--editor__dev-deployments-dropdown"
         title="Dev deployments"
         dropdownItems={
-          extendedServices.status !== KieSandboxExtendedServicesStatus.RUNNING
+          extendedServices.status !== ExtendedServicesStatus.RUNNING
             ? [
                 <DropdownItem
                   key="setup-extended-services"
@@ -256,7 +257,7 @@ export function DevDeploymentsDropdown() {
                           whiteSpace: "break-spaces",
                         }}
                       >
-                        {`Please setup KIE Sandbox Extended Services to be able to see your Dev deployments`}
+                        {`Please setup Extended Services to be able to see your Dev deployments`}
                       </Title>
                       <br />
                       <Button variant={ButtonVariant.link}>Setup...</Button>

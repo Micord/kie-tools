@@ -1,28 +1,28 @@
 /*
- * Copyright 2023 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import React, { useMemo, useState } from "react";
 import { EmptyState, EmptyStateIcon } from "@patternfly/react-core/dist/js/components/EmptyState";
 import { KubernetesInstanceStatus } from "./KubernetesInstanceStatus";
-import {
-  DependentFeature,
-  useExtendedServices,
-} from "../../kieSandboxExtendedServices/KieSandboxExtendedServicesContext";
+import { DependentFeature, useExtendedServices } from "../../extendedServices/ExtendedServicesContext";
 import { ConnectToKubernetesSimple } from "./ConnectToKubernetesSimple";
-import { KieSandboxExtendedServicesStatus } from "../../kieSandboxExtendedServices/KieSandboxExtendedServicesStatus";
+import { ExtendedServicesStatus } from "../../extendedServices/ExtendedServicesStatus";
 import { AccountsDispatchActionKind, AccountsSection, useAccounts, useAccountsDispatch } from "../AccountsContext";
 import { Button, ButtonVariant } from "@patternfly/react-core/dist/js/components/Button";
 import { KubernetesAuthSession } from "../../authSessions/AuthSessionApi";
@@ -48,7 +48,7 @@ export function ConnectToKubernetesSection() {
   const [mode, setMode] = useState(KubernetesSettingsTabMode.SIMPLE);
   const [newAuthSession, setNewAuthSession] = useState<KubernetesAuthSession>();
   const [status, setStatus] = useState(
-    extendedServices.status === KieSandboxExtendedServicesStatus.RUNNING
+    extendedServices.status === ExtendedServicesStatus.RUNNING
       ? KubernetesInstanceStatus.DISCONNECTED
       : KubernetesInstanceStatus.UNAVAILABLE
   );
@@ -96,7 +96,7 @@ export function ConnectToKubernetesSection() {
                   whiteSpace: "break-spaces",
                 }}
               >
-                {`Please setup KIE Sandbox Extended Services to be able to connect to Kubernetes.`}
+                {`Please setup Extended Services to be able to connect to Kubernetes.`}
               </Title>
               <br />
               <Button

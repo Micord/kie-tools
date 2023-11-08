@@ -1,33 +1,34 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License. 
+ */
+
 package org.dashbuilder.dataset.json;
 
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.dashbuilder.dataprovider.DataSetProvider;
-import org.dashbuilder.dataprovider.DataSetProviderRegistry;
 import org.dashbuilder.dataprovider.DataSetProviderType;
 import org.dashbuilder.dataprovider.DefaultProviderType;
 import org.dashbuilder.dataset.def.DataSetDef;
 import org.dashbuilder.dataset.def.ExternalDataSetDef;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -40,37 +41,16 @@ public class DataSetDefJsonTest {
 
     private static final DataSetProviderType CUSTOM_PROVIDER_TYPE = new DefaultProviderType("CUSTOM");
 
-    static DataSetDefJSONMarshaller jsonMarshaller = new DataSetDefJSONMarshaller(new DataSetProviderRegistry() {
-
-        @Override
-        public void registerDataProvider(DataSetProvider dataProvider) {
-
-        }
-
-        @Override
-        public DataSetProvider getDataSetProvider(DataSetProviderType type) {
-            return null;
-        }
-
-        @Override
-        public DataSetProviderType getProviderTypeByName(String name) {
-            switch (name) {
-                case "EXTERNAL":
-                    return DataSetProviderType.EXTERNAL;
-                case "CUSTOM":
-                    return CUSTOM_PROVIDER_TYPE;
-            }
-            return null;
-        }
-
-        @Override
-        public Set<DataSetProviderType> getAvailableTypes() {
-            return new HashSet<>(Arrays.asList(DataSetProviderType.EXTERNAL));
-        }
-    });
+    DataSetDefJSONMarshaller jsonMarshaller;
+    
+    @Before
+    public void init() {
+        jsonMarshaller = new DataSetDefJSONMarshaller(CUSTOM_PROVIDER_TYPE);
+    }
 
     @Test
     public void testExternal() throws Exception {
+        jsonMarshaller = new DataSetDefJSONMarshaller(DataSetProviderType.EXTERNAL);
         var json = getFileAsString(EXTERNAL_DEF_PATH);
         var def = (ExternalDataSetDef) jsonMarshaller.fromJson(json);
         assertEquals("http://datasets.com/dataset", def.getUrl());

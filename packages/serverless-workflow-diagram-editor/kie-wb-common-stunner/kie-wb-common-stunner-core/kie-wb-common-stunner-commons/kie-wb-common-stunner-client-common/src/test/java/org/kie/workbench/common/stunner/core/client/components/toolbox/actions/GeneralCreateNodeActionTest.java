@@ -1,18 +1,22 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 
 package org.kie.workbench.common.stunner.core.client.components.toolbox.actions;
 
@@ -23,7 +27,10 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.stunner.core.api.JsDefinitionManager;
 import org.kie.workbench.common.stunner.core.client.api.ClientFactoryManager;
+import org.kie.workbench.common.stunner.core.client.api.JsStunnerEditor;
+import org.kie.workbench.common.stunner.core.client.api.JsWindow;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvas;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.command.AddConnectorCommand;
@@ -44,12 +51,15 @@ import org.kie.workbench.common.stunner.core.diagram.Diagram;
 import org.kie.workbench.common.stunner.core.diagram.Metadata;
 import org.kie.workbench.common.stunner.core.graph.Edge;
 import org.kie.workbench.common.stunner.core.graph.Element;
+import org.kie.workbench.common.stunner.core.graph.Graph;
 import org.kie.workbench.common.stunner.core.graph.Node;
 import org.kie.workbench.common.stunner.core.graph.content.Bounds;
 import org.kie.workbench.common.stunner.core.graph.content.view.MagnetConnection;
 import org.kie.workbench.common.stunner.core.graph.content.view.Point2D;
 import org.kie.workbench.common.stunner.core.graph.content.view.View;
 import org.kie.workbench.common.stunner.core.graph.processing.index.Index;
+import org.kie.workbench.common.stunner.core.graph.store.GraphNodeStore;
+import org.kie.workbench.common.stunner.core.graph.store.GraphNodeStoreImpl;
 import org.kie.workbench.common.stunner.core.util.DefinitionUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -57,6 +67,7 @@ import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.stubs.ManagedInstanceStub;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -85,6 +96,24 @@ public class GeneralCreateNodeActionTest {
     @Mock
     private SessionCommandManager<AbstractCanvasHandler> sessionCommandManager;
 
+    @Mock
+    private JsDefinitionManager jsDefinitionManager;
+
+    @Mock
+    private AbstractCanvas canvas;
+
+    @Mock
+    private AbstractCanvasHandler canvasHandler;
+
+    @Mock
+    private Diagram diagram;
+
+    @Mock
+    Graph graph;
+
+    @Mock
+    private Metadata metadata;
+
     private ManagedInstanceStub<DefaultCanvasCommandFactory> canvasCommandFactories;
     private DefaultCanvasCommandFactory canvasCommandFactory;
 
@@ -92,6 +121,11 @@ public class GeneralCreateNodeActionTest {
 
     @Before
     public void setUp() throws Exception {
+        doReturn(canvas).when(canvasHandler).getCanvas();
+        doReturn(canvas).when(canvasHandler).getAbstractCanvas();
+        doReturn(diagram).when(canvasHandler).getDiagram();
+        doReturn(metadata).when(diagram).getMetadata();
+        when(canvasHandler.getDiagram().getGraph()).thenReturn(graph);
 
         canvasCommandFactory = new CanvasCommandFactoryStub();
         canvasCommandFactories = new ManagedInstanceStub<>(canvasCommandFactory);
@@ -104,22 +138,17 @@ public class GeneralCreateNodeActionTest {
                                                        canvasCommandFactories) {
 
         };
+
+        JsWindow.editor = new JsStunnerEditor();
+        JsWindow.editor.definitions = jsDefinitionManager;
     }
 
     @Test
     public void testExecuteAction() {
-        final AbstractCanvasHandler canvasHandler = mock(AbstractCanvasHandler.class);
         final String sourceNodeId = "src-id";
         final String targetNodeId = "dest-id";
         final String connectorId = "edge-id";
 
-        final AbstractCanvas canvas = mock(AbstractCanvas.class);
-        doReturn(canvas).when(canvasHandler).getCanvas();
-        doReturn(canvas).when(canvasHandler).getAbstractCanvas();
-        final Diagram diagram = mock(Diagram.class);
-        doReturn(diagram).when(canvasHandler).getDiagram();
-        final Metadata metadata = mock(Metadata.class);
-        doReturn(metadata).when(diagram).getMetadata();
         final String shapeSetId = "shape-set-id";
         doReturn(shapeSetId).when(metadata).getShapeSetId();
 
@@ -149,6 +178,8 @@ public class GeneralCreateNodeActionTest {
         doReturn(connectorElement).when(clientFactoryManager).newElement(anyString(), eq(connectorId));
         final Edge connectorEdge = mock(Edge.class);
         doReturn(connectorEdge).when(connectorElement).asEdge();
+
+        when(JsWindow.editor.definitions.getName(any())).thenReturn("State");
 
         when(canvasLayoutUtils.getNext(eq(canvasHandler),
                                        eq(sourceNode),
@@ -183,7 +214,8 @@ public class GeneralCreateNodeActionTest {
         Assertions.assertThat(connectorEdge).isEqualTo(setTargetNodeCommand.getEdge());
         Assertions.assertThat(targetNode).isEqualTo(setTargetNodeCommand.getNode());
         Assertions.assertThat(targetNode).isEqualTo(updateElementPositionCommand.getElement());
-        Assertions.assertThat(new Point2D(100d, 500d)).isEqualTo(updateElementPositionCommand.getLocation());
+        Assertions.assertThat(new Point2D(10d, 200d)).isEqualTo(updateElementPositionCommand.getLocation());
+
         final ArgumentCaptor<CanvasSelectionEvent> eventArgumentCaptor = ArgumentCaptor.forClass(CanvasSelectionEvent.class);
         verify(selectionEvent).fire(eventArgumentCaptor.capture());
 
@@ -192,6 +224,7 @@ public class GeneralCreateNodeActionTest {
 
         final CanvasSelectionEvent eCaptured = eventArgumentCaptor.getValue();
         Assertions.assertThat(targetNodeUuid).isEqualTo(eCaptured.getIdentifiers().iterator().next());
+
         Assertions.assertThat(addConnectorCommand.getConnection()).isInstanceOf(MagnetConnection.class);
         Assertions.assertThat(((MagnetConnection) addConnectorCommand.getConnection()).getMagnetIndex().getAsInt())
                 .isEqualTo(MagnetConnection.MAGNET_LEFT);
@@ -205,5 +238,56 @@ public class GeneralCreateNodeActionTest {
 
         final Orientation actual = createNodeAction.getNodeOrientation(mock(Node.class));
         assertEquals(CanvasLayoutUtils.DEFAULT_NEW_NODE_ORIENTATION, actual);
+    }
+
+    @Test
+    public void testGetAvailableNodeNameEmptyGraph() {
+        final String nodeName = "State";
+        int counter = 0;
+
+        String availableNodeName = GeneralCreateNodeAction.getAvailableNodeName(canvasHandler, nodeName, counter);
+
+        assertEquals(nodeName, availableNodeName);
+    }
+
+    @Test
+    public void testGetAvailableNodeNameAvailable() {
+        final String currNodeName = "State";
+        final String nodeName1 = "SomeState";
+        int counter = 0;
+        GraphNodeStore<Node> nodeStore = new GraphNodeStoreImpl();
+        Node node1 = mock(Node.class);
+        View content1 = mock(View.class);
+
+        nodeStore.add(node1);
+        when(node1.getContent()).thenReturn(content1);
+        when(jsDefinitionManager.getName(any())).thenReturn(nodeName1);
+        when(graph.nodes()).thenReturn(nodeStore);
+
+        String availableNodeName = GeneralCreateNodeAction.getAvailableNodeName(canvasHandler, currNodeName, counter);
+
+        // Node name must remain the same
+        assertEquals(currNodeName, availableNodeName);
+    }
+
+    @Test
+    public void testGetAvailableNodeNameNotAvailable() {
+        final String currNodeName = "State";
+        final String nodeName1 = "State";
+        final String nextNodeName = "State_1";
+        int counter = 0;
+        GraphNodeStore<Node> nodeStore = new GraphNodeStoreImpl();
+        Node node1 = mock(Node.class);
+        View content1 = mock(View.class);
+
+        nodeStore.add(node1);
+        when(node1.getContent()).thenReturn(content1);
+        when(jsDefinitionManager.getName(any())).thenReturn(nodeName1);
+        when(graph.nodes()).thenReturn(nodeStore);
+
+        String availableNodeName = GeneralCreateNodeAction.getAvailableNodeName(canvasHandler, currNodeName, counter);
+
+        // Node name should change
+        assertEquals(nextNodeName, availableNodeName);
     }
 }

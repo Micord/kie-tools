@@ -1,18 +1,22 @@
 /*
- * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 package org.kie.workbench.common.stunner.sw.client.editor;
 
 import java.util.ArrayList;
@@ -27,13 +31,13 @@ import javax.inject.Inject;
 import com.ait.lienzo.client.core.types.JsCanvas;
 import com.ait.lienzo.client.widget.panel.impl.ScrollablePanel;
 import com.ait.lienzo.client.widget.panel.util.PanelTransformUtils;
-import com.google.gwt.user.client.ui.IsWidget;
 import elemental2.core.JsRegExp;
 import elemental2.core.RegExpResult;
 import elemental2.dom.DomGlobal;
 import elemental2.promise.Promise;
 import jsinterop.base.Js;
 import org.appformer.kogito.bridge.client.diagramApi.DiagramApi;
+import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.kie.workbench.common.stunner.client.lienzo.canvas.wires.WiresCanvas;
 import org.kie.workbench.common.stunner.client.lienzo.components.mediators.preview.TogglePreviewEvent;
 import org.kie.workbench.common.stunner.client.widgets.canvas.ScrollableLienzoPanel;
@@ -60,7 +64,6 @@ import org.kie.workbench.common.stunner.core.graph.Node;
 import org.kie.workbench.common.stunner.core.graph.content.view.View;
 import org.kie.workbench.common.stunner.sw.SWDomainInitializer;
 import org.kie.workbench.common.stunner.sw.client.services.ClientDiagramService;
-import org.kie.workbench.common.stunner.sw.client.services.IncrementalMarshaller;
 import org.kie.workbench.common.stunner.sw.marshall.DocType;
 import org.kie.workbench.common.stunner.sw.marshall.Message;
 import org.kie.workbench.common.stunner.sw.marshall.ParseResult;
@@ -87,24 +90,24 @@ public class DiagramEditor {
     private final Promises promises;
     private final StunnerEditor stunnerEditor;
     private final ClientDiagramService diagramService;
-    private final IncrementalMarshaller incrementalMarshaller;
     private final CanvasFileExport canvasFileExport;
     private final Event<TogglePreviewEvent> togglePreviewEvent;
     private final DiagramApi diagramApi;
     private DocType currentDocType = DocType.JSON;
 
     @Inject
+    private TranslationService translationService;
+
+    @Inject
     public DiagramEditor(Promises promises,
                          StunnerEditor stunnerEditor,
                          ClientDiagramService diagramService,
-                         IncrementalMarshaller incrementalMarshaller,
                          CanvasFileExport canvasFileExport,
                          final Event<TogglePreviewEvent> togglePreviewEvent,
                          final DiagramApi diagramApi) {
         this.promises = promises;
         this.stunnerEditor = stunnerEditor;
         this.diagramService = diagramService;
-        this.incrementalMarshaller = incrementalMarshaller;
         this.canvasFileExport = canvasFileExport;
         this.togglePreviewEvent = togglePreviewEvent;
         this.diagramApi = diagramApi;
@@ -118,9 +121,6 @@ public class DiagramEditor {
         stunnerEditor.setReadOnly(true);
     }
 
-    public IsWidget asWidget() {
-        return stunnerEditor.getView();
-    }
 
     @SuppressWarnings("all")
     public Promise<String> getPreview() {
@@ -150,10 +150,10 @@ public class DiagramEditor {
     }
 
     public Promise<Void> setContent(final String path, final String value) {
-        if(value == null || value.trim().isEmpty()) {
+        if (value == null || value.trim().isEmpty()) {
             return setContent(path, "{}", DocType.JSON);
         }
-        if(value.trim().charAt(0) == '{') {
+        if (value.trim().charAt(0) == '{') {
             return setContent(path, value, DocType.JSON);
         }
         return setContent(path, value, DocType.YAML);
@@ -199,7 +199,7 @@ public class DiagramEditor {
                                                                    scaleToFitWorkflow(stunnerEditor);
                                                                    if (parseResult.getMessages().length > 0) {
                                                                        for (Message m : parseResult.getMessages()) {
-                                                                           stunnerEditor.addError(m.toString());
+                                                                           stunnerEditor.addError(m.translateMessage(translationService));
                                                                        }
                                                                    }
                                                                    success.onInvoke((Void) null);
@@ -247,7 +247,7 @@ public class DiagramEditor {
                                              updateDiagram(parseResult.getDiagram());
                                              if (parseResult.getMessages().length > 0) {
                                                  for (Message m : parseResult.getMessages()) {
-                                                     stunnerEditor.addError(m.toString());
+                                                     stunnerEditor.addError(m.translateMessage(translationService));
                                                  }
                                              }
                                              success.onInvoke((Void) null);
@@ -386,7 +386,6 @@ public class DiagramEditor {
         String title = metadata.getTitle();
         Path path = PathFactory.newPath(title, "/" + title + ".sw");
         metadata.setPath(path);
-        incrementalMarshaller.run(diagramService.getMarshaller());
     }
 
     @SuppressWarnings("all")
