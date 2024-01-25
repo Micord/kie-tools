@@ -53,6 +53,7 @@ public class Id implements BPMNProperty {
     }
 
     public void setValue(final String value) {
+        DiagramSet.setProcessId(value);
         this.value = value;
     }
 
