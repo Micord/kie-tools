@@ -204,7 +204,7 @@ public class DiagramSet implements BaseDiagramSet {
 
     public void setId(Id id) {
         this.id = id;
-        updateProcessId(id.getValue());
+        updateParentProcessId(id.getValue());
     }
 
     @Override
@@ -279,8 +279,8 @@ public class DiagramSet implements BaseDiagramSet {
         this.slaDueDate = slaDueDate;
     }
 
-    public static native String updateProcessId(String processId)/*-{
-        if (id !== undefined && id !== null) {
+    public static native String updateParentProcessId(String processId)/*-{
+        if (processId !== undefined && processId !== null) {
            return parent.parent.processId = processId;
         }
 

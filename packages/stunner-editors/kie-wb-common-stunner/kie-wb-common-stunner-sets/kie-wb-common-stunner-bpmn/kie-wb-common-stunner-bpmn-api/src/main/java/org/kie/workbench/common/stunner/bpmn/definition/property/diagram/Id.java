@@ -46,7 +46,6 @@ public class Id implements BPMNProperty {
 
     public Id(final String value) {
         this.value = value;
-        DiagramSet.updateProcessId(value);
     }
 
     public String getValue() {
@@ -55,7 +54,6 @@ public class Id implements BPMNProperty {
 
     public void setValue(final String value) {
         this.value = value;
-        DiagramSet.updateProcessId(value);
     }
 
     @Override
