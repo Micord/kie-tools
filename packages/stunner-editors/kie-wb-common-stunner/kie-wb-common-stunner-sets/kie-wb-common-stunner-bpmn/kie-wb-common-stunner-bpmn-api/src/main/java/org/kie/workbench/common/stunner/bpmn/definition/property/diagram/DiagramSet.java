@@ -279,12 +279,10 @@ public class DiagramSet implements BaseDiagramSet {
         this.slaDueDate = slaDueDate;
     }
 
-    public static native String updateParentProcessId(String processId)/*-{
-        if (processId !== undefined && processId !== null) {
-           return parent.parent.processId = processId;
+    public static native void updateParentProcessId(String processId)/*-{
+        if (parent?.parent?.processId !== undefined) {
+            parent.parent.processId = processId;
         }
-
-        return parent.parent.processId;
     }-*/;
 
     @Override
