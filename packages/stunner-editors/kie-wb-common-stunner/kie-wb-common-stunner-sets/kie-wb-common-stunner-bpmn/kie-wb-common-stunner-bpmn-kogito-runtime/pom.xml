@@ -560,7 +560,7 @@
           <noServer>false</noServer>
           <logLevel>WARN</logLevel>
           <disableCastChecking>true</disableCastChecking>
-          <optimizationLevel>9</optimizationLevel>
+          <optimizationLevel>5</optimizationLevel>
           <draftCompile>false</draftCompile>
           <strict>true</strict>
           <style>OBFUSCATED</style>
