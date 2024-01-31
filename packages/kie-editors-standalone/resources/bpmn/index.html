@@ -60,7 +60,7 @@
       var savedSvg = {};
       var nodeElementType;
       var nodeElementName;
-      var processId;
+      var processId = {};
       var processName = b64DecodeUnicode(encodeFile[1]);
       var projectName = encodeFile[2];
       var contentURI = `${window.location.origin}/${projectName}-resources/${b64DecodeUnicode(encodeFile[0])}`;
@@ -108,6 +108,12 @@
         },
       });
 
+      var proxyProcessId = new Proxy(processId, {
+        set: function (target, key, value) {
+          target[key] = value;
+          return true;
+        },
+      });
       function getContent(contentURI) {
         return fetch(contentURI).then((response) => {
           return response.text();
