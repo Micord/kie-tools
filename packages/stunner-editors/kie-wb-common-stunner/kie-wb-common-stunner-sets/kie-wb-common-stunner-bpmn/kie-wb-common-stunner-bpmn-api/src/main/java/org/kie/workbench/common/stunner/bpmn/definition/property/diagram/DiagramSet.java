@@ -204,7 +204,7 @@ public class DiagramSet implements BaseDiagramSet {
 
     public void setId(Id id) {
         this.id = id;
-        updateParentProcessId(id.getValue());
+        updateEditorProcessId(id.getValue());
     }
 
     @Override
@@ -279,7 +279,7 @@ public class DiagramSet implements BaseDiagramSet {
         this.slaDueDate = slaDueDate;
     }
 
-    public static native void updateParentProcessId(String processId)/*-{
+    public static native void updateEditorProcessId(String processId)/*-{
         if (parent && parent.parent && parent.parent.processId) {
             parent.parent.processId = processId;
         }
