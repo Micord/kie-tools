@@ -280,8 +280,7 @@ public class DiagramSet implements BaseDiagramSet {
     }
 
     public static native void updateParentProcessId(String processId)/*-{
-        if (parent !== undefined &&
-         parent.parent !== undefined && parent.parent.processId !== undefined) {
+        if (parent && parent.parent && parent.parent.processId) {
             parent.parent.processId = processId;
         }
     }-*/;
