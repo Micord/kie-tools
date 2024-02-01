@@ -203,8 +203,14 @@ public class DiagramSet implements BaseDiagramSet {
     }
 
     public void setId(Id id) {
-        this.id = id;
-        updateEditorProcessId(id.getValue());
+        if (id != null && id.getValue() != null && !id.getValue().isEmpty()) {
+            final String trimmedProcessId = id.getValue().trim();
+            if (!trimmedProcessId.isEmpty()) {
+                id.setValue(trimmedProcessId);
+                this.id = id;
+                updateEditorProcessId(id.getValue());
+            }
+        }
     }
 
     @Override
