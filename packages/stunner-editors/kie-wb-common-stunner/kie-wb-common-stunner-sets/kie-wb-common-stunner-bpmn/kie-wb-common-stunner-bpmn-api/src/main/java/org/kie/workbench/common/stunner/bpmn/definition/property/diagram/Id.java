@@ -45,7 +45,9 @@ public class Id implements BPMNProperty {
     }
 
     public Id(final String value) {
-        this.value = value;
+        if (value != null && !value.trim().isEmpty()) {
+            this.value = value.trim();
+        }
     }
 
     public String getValue() {
@@ -53,7 +55,9 @@ public class Id implements BPMNProperty {
     }
 
     public void setValue(final String value) {
-        this.value = value;
+        if (value != null && !value.trim().isEmpty()) {
+            this.value = value.trim();
+        }
     }
 
     @Override
