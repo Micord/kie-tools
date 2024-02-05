@@ -281,6 +281,7 @@ public class DiagramSet implements BaseDiagramSet {
 
     public static native void updateEditorProcessId(String processId)/*-{
         if (processId && parent && parent.parent && parent.parent.processId) {
+            parent.parent.processId = processId;
             parent.parent.proxyProcessId.processId = processId;
         }
     }-*/;
