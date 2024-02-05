@@ -124,7 +124,7 @@ public class FontHandler<W, V extends ShapeView> implements ShapeViewHandler<W, 
             final Map<Enum, Double> margins = marginsProvider.apply(element);
 
             if (fontFamily != null && fontFamily.trim().length() > 0) {
-                hasTitle.setTitleFontFamily(fontFamily);
+                hasTitle.setTitleFontFamily("Open Sans");
             }
             if (fontColor != null && fontColor.trim().length() > 0) {
                 hasTitle.setTitleFontColor(fontColor);

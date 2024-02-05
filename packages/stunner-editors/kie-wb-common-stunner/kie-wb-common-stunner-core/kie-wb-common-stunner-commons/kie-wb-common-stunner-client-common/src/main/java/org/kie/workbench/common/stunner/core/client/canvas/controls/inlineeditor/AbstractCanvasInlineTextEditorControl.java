@@ -280,7 +280,7 @@ public abstract class AbstractCanvasInlineTextEditorControl
                 && isPositionYValid(floatingViewPositionY)) {
             enableShapeEdit();
 
-            getTextEditorBox().setFontFamily(fontFamily);
+            getTextEditorBox().setFontFamily("Open Sans");
             getTextEditorBox().setFontSize((fontSize + fontSizeCorrection) * zoomFactor);
             getTextEditorBox().setTextBoxInternalAlignment(editorBoxAlign);
             getTextEditorBox().setMultiline(isMultiline);

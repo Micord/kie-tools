@@ -39,7 +39,7 @@ public class FontFamily implements DMNProperty {
     }
 
     public FontFamily(final String value) {
-        this.value = value;
+        this.value = "Open Sans";
     }
 
     public String getValue() {
@@ -47,7 +47,7 @@ public class FontFamily implements DMNProperty {
     }
 
     public void setValue(final String value) {
-        this.value = value;
+        this.value = "Open Sans";
     }
 
     @Override

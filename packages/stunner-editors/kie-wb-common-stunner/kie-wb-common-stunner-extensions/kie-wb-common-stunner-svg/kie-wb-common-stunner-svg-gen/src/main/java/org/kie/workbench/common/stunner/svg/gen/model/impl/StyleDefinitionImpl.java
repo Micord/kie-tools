@@ -89,7 +89,7 @@ public class StyleDefinitionImpl implements StyleDefinition {
 
     @Override
     public String getFontFamily() {
-        return fontFamily;
+        return "Open Sans";
     }
 
     @Override

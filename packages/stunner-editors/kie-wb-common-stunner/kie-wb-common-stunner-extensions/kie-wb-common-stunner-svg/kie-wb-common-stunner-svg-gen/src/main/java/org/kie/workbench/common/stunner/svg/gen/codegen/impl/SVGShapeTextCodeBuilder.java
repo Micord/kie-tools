@@ -49,7 +49,7 @@ public class SVGShapeTextCodeBuilder {
             result += viewInstanceName + AbstractGenerator.formatDouble(TITLE_ALPHA,
                                                                         alpha);
         }
-        final String fontFamily = null != customStyle ? customStyle.getFontFamily() : globalStyle.getFontFamily();
+        final String fontFamily = null != customStyle ? globalStyle.getFontFamily() : globalStyle.getFontFamily();
         if (null != fontFamily) {
             result += viewInstanceName + AbstractGenerator.formatString(TITLE_FONT_FAMILY,
                                                                         fontFamily);
