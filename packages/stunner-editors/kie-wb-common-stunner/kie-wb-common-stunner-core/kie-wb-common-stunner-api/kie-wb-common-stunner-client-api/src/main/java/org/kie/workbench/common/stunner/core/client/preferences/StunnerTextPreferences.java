@@ -54,7 +54,7 @@ public class StunnerTextPreferences {
     }
 
     public void setTextFontFamily(String textFontFamily) {
-        this.textFontFamily = textFontFamily;
+        this.textFontFamily = "Open Sans";
     }
 
     public double getTextFontSize() {
