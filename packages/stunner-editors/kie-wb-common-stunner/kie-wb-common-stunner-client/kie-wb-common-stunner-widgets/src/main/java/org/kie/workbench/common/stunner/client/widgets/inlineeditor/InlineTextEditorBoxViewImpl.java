@@ -127,11 +127,12 @@ public class InlineTextEditorBoxViewImpl
 
     @Override
     public void setFontFamily(final String fontFamily) {
-        this.fontFamily = fontFamily;
+        this.fontFamily = "Open Sans";
     }
 
     @Override
     public void show(final String name, final double width, final double height) {
+        //maybe here
         editNameBox.getStyle().setCssText("width: " + width + "px;" +
                                                   "height: " + height + "px;");
         nameField.setAttribute("style", buildStyle(width, height));
@@ -171,8 +172,8 @@ public class InlineTextEditorBoxViewImpl
         style.append("max-width: " + width + "px;" +
                              "max-height: " + height + "px;" +
                              "width: " + width + "px;");
-        style.append("font-family: \"" + fontFamily + "\";" +
-                             "font-size: " + fontSize + "px;");
+        style.append("font-family: \"" + "Open Sans" + "\";" +
+                             "font-size: " + 20 + "px;");
 
         return style.toString();
     }
