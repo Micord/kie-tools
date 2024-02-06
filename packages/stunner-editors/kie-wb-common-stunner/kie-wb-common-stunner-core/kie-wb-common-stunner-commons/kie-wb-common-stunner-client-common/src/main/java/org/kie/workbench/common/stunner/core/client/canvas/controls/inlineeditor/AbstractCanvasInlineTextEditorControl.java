@@ -73,7 +73,7 @@ public abstract class AbstractCanvasInlineTextEditorControl
     public static final String ORIENTATION_VERTICAL = "VERTICAL";
     public static final String ORIENTATION_HORIZONTAL = "HORIZONTAL";
     public static final double DEFAULT_MARGIN_X = 0d;
-    public static final double DEFAULT_FONT_SIZE = 14d;
+    public static final double DEFAULT_FONT_SIZE = 18d;
     public static final String DEFAULT_FONT_FAMILY = "Open Sans";
 
     private String uuid;
@@ -280,7 +280,7 @@ public abstract class AbstractCanvasInlineTextEditorControl
                 && isPositionYValid(floatingViewPositionY)) {
             enableShapeEdit();
 
-            getTextEditorBox().setFontFamily("Open Sans");
+            getTextEditorBox().setFontFamily(DEFAULT_FONT_FAMILY);
             getTextEditorBox().setFontSize((fontSize + fontSizeCorrection) * zoomFactor);
             getTextEditorBox().setTextBoxInternalAlignment(editorBoxAlign);
             getTextEditorBox().setMultiline(isMultiline);
@@ -369,8 +369,8 @@ public abstract class AbstractCanvasInlineTextEditorControl
             orientation = hasTitle.getOrientation();
             fontAlignment = hasTitle.getFontAlignment();
             marginX = hasTitle.getMarginX();
-            fontSize = hasTitle.getTitleFontSize();
-            fontFamily = hasTitle.getTitleFontFamily();
+            fontSize = DEFAULT_FONT_SIZE;
+            fontFamily = DEFAULT_FONT_FAMILY;
         } else {
             titlePosition = POSITION_INSIDE;
             orientation = ORIENTATION_HORIZONTAL;

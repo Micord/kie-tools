@@ -92,7 +92,7 @@ public abstract class AbstractInlineTextEditorBox implements InlineEditorBoxView
 
     @Override
     public void setFontFamily(final String fontFamily) {
-        getView().setFontFamily(fontFamily);
+        getView().setFontFamily("Open Sans");
     }
 
     @Override
