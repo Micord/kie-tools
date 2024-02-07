@@ -69,7 +69,7 @@ public class DefaultTextPropertyProviderImpl implements TextPropertyProvider {
         if (null != nameField) {
             final CanvasCommand<AbstractCanvasHandler> command = canvasCommandFactory.updatePropertyValue(element,
                                                                                                           nameField,
-                                                                                                          text);
+                                                                                                          text + "B");
             commandManager.execute(canvasHandler,
                                    command);
         }

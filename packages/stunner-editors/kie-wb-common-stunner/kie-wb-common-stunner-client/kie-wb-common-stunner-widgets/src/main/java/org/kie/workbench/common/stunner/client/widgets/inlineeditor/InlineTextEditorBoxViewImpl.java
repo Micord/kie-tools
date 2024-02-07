@@ -97,7 +97,7 @@ public class InlineTextEditorBoxViewImpl
         isMultiline = true;
         placeholder = translationService.getTranslation(StunnerWidgetsConstants.NameEditBoxWidgetViewImp_name);
         fontSize = DEFAULT_FONT_SIZE;
-        fontFamily = DEFAULT_FONT_FAMILY;
+        //fontFamily = DEFAULT_FONT_FAMILY;
     }
 
     @Override
@@ -132,7 +132,6 @@ public class InlineTextEditorBoxViewImpl
 
     @Override
     public void show(final String name, final double width, final double height) {
-        //maybe here
         editNameBox.getStyle().setCssText("width: " + width + "px;" +
                                                   "height: " + height + "px;");
         nameField.setAttribute("style", buildStyle(width, height));
@@ -172,6 +171,8 @@ public class InlineTextEditorBoxViewImpl
         style.append("max-width: " + width + "px;" +
                              "max-height: " + height + "px;" +
                              "width: " + width + "px;");
+
+        style.append("font-size: " + 7 + "px;");
         return style.toString();
     }
 

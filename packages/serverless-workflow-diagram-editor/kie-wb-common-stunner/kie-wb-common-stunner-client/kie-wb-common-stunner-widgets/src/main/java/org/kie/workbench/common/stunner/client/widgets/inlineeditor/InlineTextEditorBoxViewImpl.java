@@ -171,8 +171,6 @@ public class InlineTextEditorBoxViewImpl
         style.append("max-width: " + width + "px;" +
                              "max-height: " + height + "px;" +
                              "width: " + width + "px;");
-        style.append("font-family: \"" + fontFamily + "\";" +
-                             "font-size: " + fontSize + "px;");
 
         return style.toString();
     }
