@@ -317,7 +317,6 @@ public class BPMNShapeFactory
         final StunnerTextPreferences preferences = preferencesRegistries.get(definitionSetId, StunnerTextPreferences.class);
         return new BPMNShapeViewHandlers.FontHandlerBuilder<W, V>()
                 .alpha(c -> preferences.getTextAlpha())
-                .fontFamily(c -> preferences.getTextFontFamily())
                 .fontSize(c -> preferences.getTextFontSize())
                 .fontColor(c -> preferences.getTextFillColor())
                 .strokeColor(c -> preferences.getTextStrokeColor())
