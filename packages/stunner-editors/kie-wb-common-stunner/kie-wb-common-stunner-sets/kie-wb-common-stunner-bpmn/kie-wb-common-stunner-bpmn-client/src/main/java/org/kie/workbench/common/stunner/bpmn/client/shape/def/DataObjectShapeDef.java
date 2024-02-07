@@ -38,6 +38,8 @@ public class DataObjectShapeDef extends BaseDimensionedShapeDef
     @Override
     public FontHandler<DataObject, SVGShapeView> newFontHandler() {
         return newFontHandlerBuilder()
+                .fontFamily(bean -> "Arial")
+                .fontColor(bean -> "red")
                 .verticalAlignment(bean -> HasTitle.VerticalAlignment.BOTTOM)
                 .horizontalAlignment(bean -> HasTitle.HorizontalAlignment.LEFT)
                 .referencePosition(bean -> HasTitle.ReferencePosition.OUTSIDE)
