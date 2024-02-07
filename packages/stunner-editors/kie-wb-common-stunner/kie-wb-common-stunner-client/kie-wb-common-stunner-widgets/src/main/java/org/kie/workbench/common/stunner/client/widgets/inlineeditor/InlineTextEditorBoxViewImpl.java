@@ -137,6 +137,8 @@ public class InlineTextEditorBoxViewImpl
         nameField.setAttribute("style", buildStyle(width, height));
         presenter.onChangeName(name);
         final CSSStyleDeclaration style = ((HTMLElement) editNameBox.getParentElement()).getStyle();
+        style.removeProperty("font-family");
+        nameField.getStyle().removeProperty("font-family");
 
         Scheduler.get().scheduleDeferred(() -> {
             style.removeProperty("z-index");
