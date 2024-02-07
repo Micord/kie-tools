@@ -39,10 +39,10 @@ public class DataObjectShapeDef extends BaseDimensionedShapeDef
     public FontHandler<DataObject, SVGShapeView> newFontHandler() {
         return newFontHandlerBuilder()
                 .verticalAlignment(bean -> HasTitle.VerticalAlignment.BOTTOM)
-                .horizontalAlignment(bean -> HasTitle.HorizontalAlignment.CENTER)
+                .horizontalAlignment(bean -> HasTitle.HorizontalAlignment.LEFT)
                 .referencePosition(bean -> HasTitle.ReferencePosition.OUTSIDE)
-                .textSizeConstraints(bean -> new HasTitle.Size(400, 100, HasTitle.Size.SizeType.PERCENTAGE))
-                .margin(HasTitle.VerticalAlignment.BOTTOM, 5d)
+                .textSizeConstraints(bean -> new HasTitle.Size(500, 250, HasTitle.Size.SizeType.PERCENTAGE))
+                .margin(HasTitle.VerticalAlignment.BOTTOM, 1d)
                 .build();
     }
 
