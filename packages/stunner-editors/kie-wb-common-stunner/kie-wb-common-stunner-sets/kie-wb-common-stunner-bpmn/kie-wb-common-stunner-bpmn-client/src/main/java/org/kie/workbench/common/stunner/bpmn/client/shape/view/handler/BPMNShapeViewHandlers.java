@@ -39,7 +39,7 @@ public class BPMNShapeViewHandlers {
             extends FontHandler.Builder<W, V> {
 
         public FontHandlerBuilder() {
-            this.fontFamily(bean -> bean.getFontSet().getFontFamily().getValue())
+            this.fontFamily(bean -> "asqwpokqrkas")
                     .fontColor(bean -> "green")
                     .fontSize(bean -> bean.getFontSet().getFontSize().getValue())
                     .strokeColor(bean -> bean.getFontSet().getFontBorderColor().getValue())
