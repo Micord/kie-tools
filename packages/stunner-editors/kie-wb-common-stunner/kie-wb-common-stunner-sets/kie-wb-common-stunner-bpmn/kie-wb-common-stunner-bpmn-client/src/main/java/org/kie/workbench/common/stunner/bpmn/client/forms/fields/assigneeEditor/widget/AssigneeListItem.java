@@ -64,7 +64,7 @@ public class AssigneeListItem {
 
         liveSearchDropDown.init(liveSearchService, searchSelectionHandler);
 
-        if (getRolesFromProject() != null) {
+        if (type == AssigneeType.GROUP && getRolesFromProject() != null) {
             liveSearchDropDown.initForRoles();
         }
 
