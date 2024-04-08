@@ -99,7 +99,7 @@ public class AssigneeListItem {
 
     private static native String getRolesFromProject()/*-{
         if (Object.keys(parent.parent.projectRoles).length !== 0) {
-            return parent.parent.projectRoles.projectRoles;
+            return parent.parent.proxyRoles.projectRoles;
         }
         return null;
     }-*/;
