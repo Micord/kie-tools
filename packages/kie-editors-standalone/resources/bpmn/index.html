@@ -79,42 +79,7 @@
         },
       });
 
-      var proxyResourcesPaths = new Proxy(resourcesPaths, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-      });
-
-      var proxyRoles = new Proxy(projectRoles, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-        get: function (target, prop, receiver) {
-          if (prop === 'projectRoles') {
-            updateProjectRoles();
-            return target.projectRoles;
-          }
-          return  Reflect.get(...arguments);
-        }
-      });
-
-      var proxySavedContent = new Proxy(savedContent, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-      });
-
       var proxyProcessNotSave = new Proxy(processNotSave, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-      });
-
-      var proxySavedSvg = new Proxy(savedSvg, {
         set: function (target, key, value) {
           target[key] = value;
           return true;
@@ -161,23 +126,25 @@
       });
 
       document.getElementById("save").addEventListener("click", () => {
-        putProcess();
+        if (processPath !== undefined) {
+          editor.getContent().then((content) => {
+            editor.getPreview().then((preview) => {
+              saveProcess(content, preview);
+            });
+          });
+        }
       });
 
       document.addEventListener("DOMContentLoaded", () => {
-        updateProcesses();
-        updateProjectRoles();
+        loadProcesses();
+        loadRoles();
       });
 
       editor.subscribeToContentChanges((isDirty) => {
         proxyProcessNotSave.processNotSave = !isDirty;
       });
 
-      function updateProcesses() {
-        getProcesses().then(data => resourcesPaths = data);
-      }
-
-      function getProcesses() {
+      function loadProcesses() {
         if (processPath !== undefined) {
           const params = new URLSearchParams();
           params.append('processPath', processPath);
@@ -190,18 +157,17 @@
                   .then(response => response.json())
                   .then(data => {
                     console.log(data);
-                    return data;
+                    resourcesPaths = data;
                   })
-                  .catch(error => console.error(error));
+                  .catch(error => {
+                    console.error(error);
+                    alert(error);
+                  });
         }
         return {};
       }
 
-      function updateProjectRoles() {
-        getProjectRoles().then(data => projectRoles.projectRoles = data);
-      }
-
-      function getProjectRoles() {
+      function loadRoles() {
         if (projectPath !== undefined) {
           const params = new URLSearchParams();
           params.append('projectPath', projectPath);
@@ -214,38 +180,37 @@
                   .then(response => response.text())
                   .then(data => {
                     console.log(data);
-                    return data;
+                    projectRoles.projectRoles = data;
                   })
-                  .catch(error => console.error(error));
+                  .catch(error => {
+                    console.error(error);
+                    alert(error);
+                  });
         }
         return '';
       }
 
-      function putProcess() {
-        if (processPath !== undefined) {
-          editor.getPreview().then((preview) => {
-            editor.getContent().then((content) => {
+      function saveProcess(content, svg) {
+        const params = new URLSearchParams();
+        params.append('processPath', processPath);
+        params.append('processContent', content);
+        params.append('svgContent', svg);
 
-              const params = new URLSearchParams();
-              params.append('processPath', processPath);
-              params.append('processContent', content);
-              params.append('svgContent', preview);
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+          },
+          body: params
+        };
 
-              const requestOptions = {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
-                },
-                body: params
-              };
-
-              fetch(processSaveURL, requestOptions)
-                      .then(response => console.log(response))
-                      .catch(error => console.error(error));
-              editor.markAsSaved();
-            });
-          });
-        }
+        fetch(processSaveURL, requestOptions)
+                .then(response => console.log(response))
+                .catch(error => {
+                  console.error(error);
+                  alert(error);
+                });
+        editor.markAsSaved();
       }
     </script>
   </body>
