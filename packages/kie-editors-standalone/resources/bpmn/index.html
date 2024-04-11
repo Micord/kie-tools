@@ -56,12 +56,10 @@
       //Получение URL с помощью "const urlParams = new URLSearchParams(queryString);" работает некорректно
       var urlParameters = query.split("?q=")[1].split("&");
 
-      var savedContent = {};
       var projectRoles = {};
       var resourcesPaths = {};
       var nodeElementId = {};
       var processNotSave = {};
-      var savedSvg = {};
       var nodeElementType;
       var nodeElementName;
       var processId = {};
@@ -205,12 +203,14 @@
         };
 
         fetch(processSaveURL, requestOptions)
-                .then(response => console.log(response))
+                .then(response => {
+                  console.log(response);
+                  editor.markAsSaved();
+                })
                 .catch(error => {
                   console.error(error);
                   alert(error);
                 });
-        editor.markAsSaved();
       }
     </script>
   </body>
