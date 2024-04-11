@@ -48,9 +48,13 @@
     </div>
     <div id="bpmn-editor-container" />
     <script>
+      const processesURL = `${window.location.origin}/jbpm-designer-backend/processes`;
+      const processSaveURL = `${window.location.origin}/jbpm-designer-backend/process`;
+      const rolesURL = `${window.location.origin}/jbpm-designer-backend/roles`;
+
       const query = window.location.search;
       //Получение URL с помощью "const urlParams = new URLSearchParams(queryString);" работает некорректно
-      var encodeFile = query.split("?q=")[1].split("&");
+      var urlParameters = query.split("?q=")[1].split("&");
 
       var savedContent = {};
       var projectRoles = {};
@@ -61,33 +65,14 @@
       var nodeElementType;
       var nodeElementName;
       var processId = {};
-      var processName = b64DecodeUnicode(encodeFile[1]);
-      var projectName = encodeFile[2];
-      var contentURI = `${window.location.origin}/${projectName}-resources/${b64DecodeUnicode(encodeFile[0])}`;
+      var processName = b64DecodeUnicode(urlParameters[1]);
+      var projectName = urlParameters[2];
+      var processPath = b64DecodeUnicode(urlParameters[3]);
+      var projectPath = b64DecodeUnicode(urlParameters[4]);
+      var contentURI = `${window.location.origin}/${projectName}-resources/${b64DecodeUnicode(urlParameters[0])}`;
       var content = getContent(contentURI);
 
       var proxyElementId = new Proxy(nodeElementId, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-      });
-
-      var proxyResourcesPaths = new Proxy(resourcesPaths, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-      });
-
-      var proxyRoles = new Proxy(projectRoles, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-      });
-
-      var proxySavedContent = new Proxy(savedContent, {
         set: function (target, key, value) {
           target[key] = value;
           return true;
@@ -101,19 +86,13 @@
         },
       });
 
-      var proxySavedSvg = new Proxy(savedSvg, {
-        set: function (target, key, value) {
-          target[key] = value;
-          return true;
-        },
-      });
-
       var proxyProcessId = new Proxy(processId, {
         set: function (target, key, value) {
           target[key] = value;
           return true;
         },
       });
+
       function getContent(contentURI) {
         return fetch(contentURI).then((response) => {
           return response.text();
@@ -147,20 +126,92 @@
       });
 
       document.getElementById("save").addEventListener("click", () => {
-        if (processName !== undefined) {
-          editor.getPreview().then((preview) => {
-            proxySavedSvg.savedSvg = preview;
-          });
+        if (processPath !== undefined) {
           editor.getContent().then((content) => {
-            proxySavedContent.savedContent = content;
-            editor.markAsSaved();
+            editor.getPreview().then((preview) => {
+              saveProcess(content, preview);
+            });
           });
         }
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadProcesses();
+        loadRoles();
       });
 
       editor.subscribeToContentChanges((isDirty) => {
         proxyProcessNotSave.processNotSave = !isDirty;
       });
+
+      function loadProcesses() {
+        if (processPath !== undefined) {
+          const params = new URLSearchParams();
+          params.append('processPath', processPath);
+
+          const requestOptions = {
+            method: 'GET'
+          };
+
+          return fetch(processesURL + `?${params}`, requestOptions)
+                  .then(response => response.json())
+                  .then(data => {
+                    console.log(data);
+                    resourcesPaths = data;
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    alert(error);
+                  });
+        }
+        return {};
+      }
+
+      function loadRoles() {
+        if (projectPath !== undefined) {
+          const params = new URLSearchParams();
+          params.append('projectPath', projectPath);
+
+          const requestOptions = {
+            method: 'GET'
+          };
+
+          return fetch(rolesURL + `?${params}`, requestOptions)
+                  .then(response => response.text())
+                  .then(data => {
+                    console.log(data);
+                    projectRoles.projectRoles = data;
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    alert(error);
+                  });
+        }
+        return '';
+      }
+
+      function saveProcess(content, svg) {
+        const params = new URLSearchParams();
+        params.append('processPath', processPath);
+        params.append('processContent', content);
+        params.append('svgContent', svg);
+
+        const requestOptions = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+          },
+          body: params
+        };
+
+        fetch(processSaveURL, requestOptions)
+                .then(response => console.log(response))
+                .catch(error => {
+                  console.error(error);
+                  alert(error);
+                });
+        editor.markAsSaved();
+      }
     </script>
   </body>
 </html>
