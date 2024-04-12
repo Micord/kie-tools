@@ -56,10 +56,12 @@
       //Получение URL с помощью "const urlParams = new URLSearchParams(queryString);" работает некорректно
       var urlParameters = query.split("?q=")[1].split("&");
 
+      var savedContent = {};
       var projectRoles = {};
       var resourcesPaths = {};
       var nodeElementId = {};
       var processNotSave = {};
+      var savedSvg = {};
       var nodeElementType;
       var nodeElementName;
       var processId = {};
@@ -71,6 +73,12 @@
       var content = getContent(contentURI);
 
       var proxyElementId = new Proxy(nodeElementId, {
+        set: function (target, key, value) {
+          target[key] = value;
+          return true;
+        },
+      });
+      var proxySavedContent = new Proxy(savedContent, {
         set: function (target, key, value) {
           target[key] = value;
           return true;
