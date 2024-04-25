@@ -169,7 +169,7 @@
           return fetch(processesURL + `?${params}`, requestOptions)
                   .then(response => response.json())
                   .then(json => {
-                    console.log(json);
+                    console.debug(json);
                     if (json.data) {
                       resourcesPaths = json.data;
                     }
@@ -195,7 +195,7 @@
           return fetch(rolesURL + `?${params}`, requestOptions)
                   .then(response => response.json())
                   .then(json => {
-                    console.log(json);
+                    console.debug(json);
                     if (json.data) {
                       projectRoles.projectRoles = json.data;
                     }
@@ -236,7 +236,7 @@
         fetch(processSaveURL, requestOptions)
                 .then(response => response.json())
                 .then(json => {
-                  console.log(json);
+                  console.debug(json);
                   if (!json.errors) {
                     editor.markAsSaved();
                   }
