@@ -132,13 +132,7 @@
       });
 
       document.getElementById("save").addEventListener("click", () => {
-        if (processPath !== undefined) {
-          editor.getContent().then((content) => {
-            editor.getPreview().then((preview) => {
-              saveProcess(content, preview);
-            });
-          });
-        }
+        clickSaveProcess();
       });
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -146,9 +140,21 @@
         loadRoles();
       });
 
+      document.addEventListener("keydown", (event) => {
+        keydownListenerFunction(event);
+      });
+
       editor.subscribeToContentChanges((isDirty) => {
         proxyProcessNotSave.processNotSave = !isDirty;
       });
+
+      function keydownListenerFunction(event) {
+        if (event.ctrlKey && event.code === 'KeyS') {
+          // Prevent the Save dialog to open
+          event.preventDefault();
+          clickSaveProcess();
+        }
+      }
 
       function loadProcesses() {
         if (processPath !== undefined) {
@@ -161,9 +167,12 @@
 
           return fetch(processesURL + `?${params}`, requestOptions)
                   .then(response => response.json())
-                  .then(data => {
-                    console.log(data);
-                    resourcesPaths = data;
+                  .then(json => {
+                    console.debug(json);
+                    if (json.data) {
+                      resourcesPaths = json.data;
+                    }
+                    logResponse(json);
                   })
                   .catch(error => {
                     console.error(error);
@@ -183,10 +192,13 @@
           };
 
           return fetch(rolesURL + `?${params}`, requestOptions)
-                  .then(response => response.text())
-                  .then(data => {
-                    console.log(data);
-                    projectRoles.projectRoles = data;
+                  .then(response => response.json())
+                  .then(json => {
+                    console.debug(json);
+                    if (json.data) {
+                      projectRoles.projectRoles = json.data;
+                    }
+                    logResponse(json);
                   })
                   .catch(error => {
                     console.error(error);
@@ -194,6 +206,16 @@
                   });
         }
         return '';
+      }
+
+      function clickSaveProcess() {
+        if (processPath !== undefined) {
+          editor.getContent().then((content) => {
+            editor.getPreview().then((preview) => {
+              saveProcess(content, preview);
+            });
+          });
+        }
       }
 
       function saveProcess(content, svg) {
@@ -211,14 +233,34 @@
         };
 
         fetch(processSaveURL, requestOptions)
-                .then(response => {
-                  console.log(response);
-                  editor.markAsSaved();
+                .then(response => response.json())
+                .then(json => {
+                  console.debug(json);
+                  if (!json.errors) {
+                    editor.markAsSaved();
+                  }
+                  logResponse(json);
                 })
                 .catch(error => {
                   console.error(error);
                   alert(error);
                 });
+      }
+
+      function logResponse(response) {
+        if (response.errors) {
+          for (const element of response.errors) {
+            console.log('ERROR: ' + element);
+          }
+        }
+        if (response.warns) {
+          for (const element of response.warns) {
+            console.log('WARN: ' + element);
+          }
+        }
+        if (response.alert) {
+          alert(response.alert);
+        }
       }
     </script>
   </body>
