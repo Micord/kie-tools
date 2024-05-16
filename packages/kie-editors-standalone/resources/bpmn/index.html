@@ -26,10 +26,41 @@
 
       .toolbar {
         height: 30px;
+        display: flex;
+        align-items: center;
+        margin: 0px 0px 5px 0px;
       }
 
       .hidden {
         display: none;
+      }
+
+      .webbpm-button {
+        height: 30px;
+        width: 30px;
+        border: 1px solid #0202;
+        border-radius: 2px;
+        margin: 0px 5px 0px 5px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #undo, #redo, #save {
+        background-size: auto;
+        background-position: center;
+        cursor: pointer;
+      }
+
+      #undo {
+        background: url('img/undo.svg') no-repeat, linear-gradient(white, #EEEEEE);
+      }
+
+      #redo {
+        background: url('img/redo.svg') no-repeat, linear-gradient(white, #EEEEEE);
+      }
+
+      #save {
+       background: url('img/save.svg') no-repeat, linear-gradient(white, #EEEEEE);
       }
     </style>
 
@@ -41,9 +72,9 @@
   </head>
   <body>
     <div class="toolbar">
-      <button id="undo">Undo</button>
-      <button id="redo">Redo</button>
-      <button id="save">Save</button>
+      <button id="undo" class="webbpm-button"></button>
+      <button id="redo" class="webbpm-button"></button>
+      <button id="save" class="webbpm-button"></button>
       <span id="unsavedChanges" class="hidden">File contains unsaved changes.</span>
     </div>
     <div id="bpmn-editor-container" />
