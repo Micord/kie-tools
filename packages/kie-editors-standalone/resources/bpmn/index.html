@@ -267,7 +267,7 @@
                 .then(response => response.json())
                 .then(json => {
                   console.debug(json);
-                  if (!json.errors) {
+                  if (json.data) {
                     editor.markAsSaved();
                   }
                   logResponse(json);
