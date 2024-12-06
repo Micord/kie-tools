@@ -250,17 +250,17 @@
       }
 
       function saveProcess(content, svg) {
-        const params = new URLSearchParams();
-        params.append('processPath', processPath);
-        params.append('processContent', content);
-        params.append('svgContent', svg);
+        const params = {};
+        params['processPath'] = processPath;
+        params['processContent'] = content;
+        params['svgContent'] = svg;
 
         const requestOptions = {
           method: 'PUT',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+            'Content-Type': 'application/json'
           },
-          body: params
+          body: JSON.stringify(params)
         };
 
         fetch(processSaveURL, requestOptions)
